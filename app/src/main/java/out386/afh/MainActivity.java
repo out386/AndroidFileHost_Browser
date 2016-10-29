@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import me.msfjarvis.afh.Vars;
+
 public class MainActivity extends Activity
 {
     String json="";
@@ -64,7 +66,7 @@ public class MainActivity extends Activity
         }
         public void start(String did) {
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url = String.format(String.valueOf(R.string.afh_api_device_endpoint), did);
+        String url = String.format(new Vars().getDidEndpoint(), did);
 
 // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -107,7 +109,7 @@ public class MainActivity extends Activity
         fid = new String [data.length()];
         //int i = 0;
         for(int i = 0;i < data.length();i++) {
-            fid[i] = String.format(getString(R.string.afh_api_flid_endpoint), data.getJSONObject(i).getString(getString(R.string.flid_key)));
+            fid[i] = String.format(new Vars().getFlidEndpoint(), data.getJSONObject(i).getString(getString(R.string.flid_key)));
         }
     }
     public void print() {
