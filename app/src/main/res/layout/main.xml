@@ -7,7 +7,6 @@
 
 	<TextView
         android:layout_gravity="center_horizontal"
-		android:text="@string/working"
 		android:layout_width="50dp"
 		android:layout_height="wrap_content"
 		android:id="@+id/tv"
@@ -31,15 +30,20 @@
 			android:text="@string/start"
 			android:id="@+id/mainButton"/>
 	</LinearLayout>
-	
-	<ListView
-		android:layout_gravity="center_horizontal"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:id="@+id/list"
-        android:visibility="gone"
-		android:divider="@null"/>
 
-	
+    <com.baoyz.widget.PullRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:layout_gravity="center_horizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/list"
+            android:visibility="gone"
+            android:divider="@android:drawable/divider_horizontal_dark"/>
+
+    </com.baoyz.widget.PullRefreshLayout>
+
 </LinearLayout>
 

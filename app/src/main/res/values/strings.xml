@@ -3,13 +3,11 @@
 
     <string name="app_name">AfhBrowser</string>
     <string name="hello_world">Hello world!</string>
-    <string name="parsing">Parsing</string>
     <string name="json_parse_error">Json parse error : %s</string>
     <string name="generic_error">That didn\'t work! %s</string>
     <string name="flid_key">flid</string>
     <string name="afh_api_flid_endpoint"><![CDATA[https://www.androidfilehost.com/api/?action=folder&flid=%s]]></string>
     <string name="afh_api_device_endpoint"><![CDATA[https://www.androidfilehost.com/api/?action=developers&did=%s&limit=100]]></string>
-    <string name="working">Working. This could take ages.</string>
     <string name="enter_device_id">Enter device id</string>
     <string name="start">start</string>
 
