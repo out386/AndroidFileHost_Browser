@@ -36,6 +36,7 @@ public class MainActivity extends Activity
     TextView mTextView;
     AfhAdapter adapter;
     PullRefreshLayout pullRefreshLayout;
+    String savedID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,6 +50,13 @@ public class MainActivity extends Activity
 
         ListView list = (ListView) findViewById(R.id.list);
         pullRefreshLayout = (PullRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                start(savedID);
+            }
+        });
+
         adapter = new AfhAdapter(this, R.layout.afh_items, filesD);
         list.setAdapter(adapter);
 
@@ -59,11 +67,12 @@ public class MainActivity extends Activity
                 lay.setVisibility(View.GONE);
                 mTextView.setVisibility(View.VISIBLE);
                 EditText text = (EditText) findViewById(R.id.mainEditText);
+                savedID = text.getText().toString();
                 start(text.getText().toString());
             }
         });
 
-        }
+    }
         public void start(String did) {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = String.format(new Vars().getDidEndpoint(), did);
