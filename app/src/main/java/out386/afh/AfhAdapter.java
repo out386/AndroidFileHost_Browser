@@ -1,14 +1,17 @@
 package out386.afh;
 
-import android.*;
-import android.content.*;
-import android.view.*;
-import android.widget.*;
-import java.util.*;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import java.util.List;
 
 public class AfhAdapter extends ArrayAdapter<AfhFiles>
 {
-	private Context context;
+    public Context context;
     public AfhAdapter(Context context, int resource,List<AfhFiles> items) {
         super(context,resource,items);
         this.context = context;
