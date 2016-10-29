@@ -8,5 +8,8 @@
     <string name="generic_error">That didn\'t work! %s</string>
     <string name="flid_key">flid</string>
     <string name="afh_api"><![CDATA[https://www.androidfilehost.com/api/?action=folder&flid=%s]]></string>
+    <string name="working">Working. This could take ages.</string>
+    <string name="enter_device_id">Enter device id</string>
+    <string name="start">start</string>
 
 </resources>

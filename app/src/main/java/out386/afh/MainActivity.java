@@ -120,6 +120,8 @@ public class MainActivity extends Activity
 			//devs.add(new AfhFiles(fid[i], fid[i]));
 			mTextView.setText(mTextView.getText() + " " + file.filename);
 		}
+        ListView listView = (ListView) findViewById(R.id.list);
+        listView.setVisibility(View.VISIBLE);
 		adapter.notifyDataSetChanged();
 		
 	}
