@@ -60,7 +60,7 @@ public class MainActivity extends Activity
 		}
 		public void start(String did) {
 		RequestQueue queue = Volley.newRequestQueue(this);
-		String url ="https://www.androidfilehost.com/api/?action=developers&did="+did+"&limit=100";
+		String url = String.format(String.valueOf(R.string.afh_api_device_endpoint), did);
 
 // Request a string response from the provided URL.
 	    StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -96,14 +96,14 @@ public class MainActivity extends Activity
 	
 	
 	public void parse() throws Exception {
-		JSONObject afhJson = null;
+		JSONObject afhJson;
 		afhJson = new JSONObject(json);
 		
 		JSONArray data = afhJson.getJSONArray("DATA");
 		fid = new String [data.length()];
 		//int i = 0;
 		for(int i = 0;i < data.length();i++) {
-			fid[i] = String.format(getString(R.string.afh_api), data.getJSONObject(i).getString(getString(R.string.flid_key)));
+			fid[i] = String.format(getString(R.string.afh_api_flid_endpoint), data.getJSONObject(i).getString(getString(R.string.flid_key)));
 		}
 	}
 	public void print() {
