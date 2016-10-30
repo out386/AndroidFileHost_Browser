@@ -31,7 +31,8 @@ import me.msfjarvis.afh.Vars;
 
 public class MainActivity extends Activity {
     String json = "";
-    String[] fid;
+	RequestQueue queue;
+    //List<String> fid = new ArrayList<>();
     List<AfhFiles> filesD = new ArrayList<>();
     TextView mTextView;
     AfhAdapter adapter;
@@ -46,6 +47,7 @@ public class MainActivity extends Activity {
         mTextView = (TextView) findViewById(R.id.tv);
         Button button = (Button) findViewById(R.id.mainButton);
 
+		queue = Volley.newRequestQueue(this);
         ListView list = (ListView) findViewById(R.id.list);
         pullRefreshLayout = (PullRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -74,7 +76,7 @@ public class MainActivity extends Activity {
     }
 
     public void start(String did) {
-        RequestQueue queue = Volley.newRequestQueue(this);
+        //RequestQueue queue = Volley.newRequestQueue(this);
         String url = String.format(new Vars().getDidEndpoint(), did);
 
 // Request a string response from the provided URL.
@@ -85,13 +87,15 @@ public class MainActivity extends Activity {
                         // Display the first 500 characters of the response string.
                         json = response;
                         pullRefreshLayout.setRefreshing(true);
+						List<String> fid = null;
                         try {
-                            parse();
+                            fid = parse();
                         } catch (Exception e) {
                             pullRefreshLayout.setRefreshing(false);
-                            mTextView.setText(String.format(getString(R.string.json_parse_error), e.toString()));
+                           // mTextView.setText(String.format(getString(R.string.json_parse_error), e.toString()));
                         }
-                        queryDirs();
+						if(fid != null)
+                            queryDirs(fid);
 
 
                     }
@@ -99,29 +103,29 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 pullRefreshLayout.setRefreshing(false);
-                mTextView.setText(String.format(getString(R.string.generic_error), error.toString()));
+                mTextView.setText(getString(R.string.generic_error) + error.toString());
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(120000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 // Add the request to the RequestQueue.
         queue.add(stringRequest);
     }
 
 
-    public void parse() throws Exception {
+    public List<String> parse() throws Exception {
         JSONObject afhJson;
         afhJson = new JSONObject(json);
         mTextView.setText("");
+		List<String> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
-        fid = new String[data.length()];
         for (int i = 0; i < data.length(); i++) {
-            fid[i] = String.format(new Vars().getFlidEndpoint(), data.getJSONObject(i).getString(getString(R.string.flid_key)));
+            fid.add(String.format(new Vars().getFlidEndpoint(), data.getJSONObject(i).getString(getString(R.string.flid_key))));
         }
+		return fid;
     }
 
     public void print() {
-        //List<AfhFiles> devs = new ArrayList<>();
         pullRefreshLayout.setRefreshing(false);
         Collections.sort(filesD, new Comparator<AfhFiles>() {
             @Override
@@ -133,11 +137,11 @@ public class MainActivity extends Activity {
 
     }
 
-    public void queryDirs() {
+    public void queryDirs(List <String> did) {
 
-        for (String url : fid) {
+        for (String url : did) {
             final String link = url;
-            RequestQueue queue = Volley.newRequestQueue(this);
+           // RequestQueue queue = Volley.newRequestQueue(this);
 
 // Request a string response from the provided URL.
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -149,7 +153,7 @@ public class MainActivity extends Activity {
                                 parseFiles(response);
                             } catch (Exception e) {
                                 pullRefreshLayout.setRefreshing(false);
-                                mTextView.setText(mTextView.getText().toString() + "\n\n\n" + getResources().getString(R.string.json_parse_error) + link + " " + e.toString());
+                               // mTextView.setText(mTextView.getText().toString() + "\n\n\n" + getResources().getString(R.string.json_parse_error) + link + " " + e.toString());
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -160,7 +164,7 @@ public class MainActivity extends Activity {
                 }
             });
 
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(1200000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(stringRequest);
 
         }
@@ -172,13 +176,22 @@ public class MainActivity extends Activity {
 
         JSONObject data = fileJson.getJSONObject("DATA");
         //int i = 0;
-        JSONArray folders = data.getJSONArray("folders");
-        for (int i = 0; i < folders.length(); i++) {
+        JSONArray files = data.getJSONArray("files");
+        for (int i = 0; i < files.length(); i++) {
             //fid[i] = "androidfilehost.com/api/?action=folder&flid=" + data.getJSONObject(i).getString("flid");
-            String name = folders.getJSONObject(i).getString("name");
-            String url = folders.getJSONObject(i).getString("url");
+            String name = files.getJSONObject(i).getString("name");
+            String url = files.getJSONObject(i).getString("url");
             filesD.add(new AfhFiles(name, url));
         }
+		JSONArray folders = data.getJSONArray("folders");
+		List<String> foldersD = new ArrayList<>();
+		for (int i = 0; i < folders.length(); i++) {
+			foldersD.add("https://www.androidfilehost.com/api/?action=folder&flid=" + folders.getJSONObject(i).getString("flid"));
+			//mTextView.setText(mTextView.getText() + "\n\n\n" + "Checking url : " + foldersD.get(i));
+		}
+		//foldersD.add("https://www.androidfilehost.com/api/?action=folder&flid=51856");
+		if(foldersD.size() > 0)
+			queryDirs(foldersD);
         print();
     }
 }
