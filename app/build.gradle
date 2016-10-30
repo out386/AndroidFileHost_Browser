@@ -1,22 +1,19 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "out386.afh"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 23
         versionCode 1
         versionName "0.1"
     }
     signingConfigs {
         release {
-            storeFile file("../extras/keystore/keystore.jks")
-            storePassword System.getenv("KEYSTORE_PASSWD")
-            keyAlias "MSFJarvis"
-            keyPassword System.getenv("KEY_PASSWD")
+
         }
     }
     buildTypes {
