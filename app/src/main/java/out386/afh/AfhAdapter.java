@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+import android.text.*;
+import android.text.method.*;
 
 public class AfhAdapter extends ArrayAdapter<AfhFiles>
 {
@@ -25,9 +27,10 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         AfhFiles p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
-            TextView link = (TextView) v.findViewById(R.id.rurl);
-            name.setText(p.filename);
-            link.setText(p.url);
+            //TextView link = (TextView) v.findViewById(R.id.rurl);
+            name.setText(Html.fromHtml("<a href=" + p.url + ">" + p.filename + "</a>"));
+            //link.setText(p.url);
+			name.setMovementMethod(LinkMovementMethod.getInstance());
         }
         return v;
     }
