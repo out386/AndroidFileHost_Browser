@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import me.msfjarvis.afh.Vars;
+import com.android.volley.toolbox.*;
+import com.android.volley.*;
 
 public class MainActivity extends Activity {
     String json = "";
@@ -46,9 +48,13 @@ public class MainActivity extends Activity {
 
         mTextView = (TextView) findViewById(R.id.tv);
         Button button = (Button) findViewById(R.id.mainButton);
-
-		queue = Volley.newRequestQueue(this);
         ListView list = (ListView) findViewById(R.id.list);
+		final int NETWORK_THREAD_POOL_SIZE = 30;
+		Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
+		Network network = new BasicNetwork(new HurlStack());
+		queue = new RequestQueue(cache, network, NETWORK_THREAD_POOL_SIZE);
+		
+		
         pullRefreshLayout = (PullRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
@@ -109,6 +115,7 @@ public class MainActivity extends Activity {
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(120000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 // Add the request to the RequestQueue.
+		queue.start();
         queue.add(stringRequest);
     }
 
@@ -141,8 +148,7 @@ public class MainActivity extends Activity {
 
         for (String url : did) {
             final String link = url;
-           // RequestQueue queue = Volley.newRequestQueue(this);
-
+            //RequestQueue queue = Volley.newRequestQueue(this);
 // Request a string response from the provided URL.
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
