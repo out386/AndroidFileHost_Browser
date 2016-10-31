@@ -30,7 +30,11 @@ import java.util.List;
 import me.msfjarvis.afh.Vars;
 import com.android.volley.toolbox.*;
 import com.android.volley.*;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.CompoundButton;
 
 public class MainActivity extends Activity {
     String json = "";
@@ -41,6 +45,7 @@ public class MainActivity extends Activity {
     AfhAdapter adapter;
     PullRefreshLayout pullRefreshLayout;
     String savedID;
+	boolean sortByDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +60,16 @@ public class MainActivity extends Activity {
 		Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
 		Network network = new BasicNetwork(new HurlStack());
 		queue = new RequestQueue(cache, network, NETWORK_THREAD_POOL_SIZE);
+		CheckBox sortCB = (CheckBox) findViewById(R.id.sortCB);
 		
+		
+		sortCB.setOnCheckedChangeListener(new OnCheckedChangeListener(){
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked)
+					sortByDate = true;
+			}
+		});
 		
         pullRefreshLayout = (PullRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -134,12 +148,21 @@ public class MainActivity extends Activity {
 
     public void print() {
         pullRefreshLayout.setRefreshing(false);
-        Collections.sort(filesD, new Comparator<AfhFiles>() {
-            @Override
-            public int compare(AfhFiles f1, AfhFiles f2) {
-                return (f1.filename.compareTo(f2.filename));
-            }
-        });
+		if(sortByDate) {
+            Collections.sort(filesD, new Comparator<AfhFiles>() {
+                @Override
+                public int compare(AfhFiles f1, AfhFiles f2) {
+                    return -(f1.upload_date.compareTo(f2.upload_date));
+                }
+            });
+		} else {
+			Collections.sort(filesD, new Comparator<AfhFiles>() {
+					@Override
+					public int compare(AfhFiles f1, AfhFiles f2) {
+						return (f1.filename.compareTo(f2.filename));
+					}
+				});
+		}
         adapter.notifyDataSetChanged();
 
     }
@@ -195,9 +218,11 @@ public class MainActivity extends Activity {
 			files = data.getJSONArray("files");
 			if(files != null) {
             for (int i = 0; i < files.length(); i++) {
-                String name = files.getJSONObject(i).getString("name");
-                String url = files.getJSONObject(i).getString("url");
-                filesD.add(new AfhFiles(name, url));
+                JSONObject file = files.getJSONObject(i);
+                String name = file.getString("name");
+                String url = file.getString("url");
+                String upload_date = file.getString("upload_date");
+                filesD.add(new AfhFiles(name, url, upload_date));
 	        }
         }
 		JSONArray folders = null;

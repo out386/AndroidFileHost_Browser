@@ -18,6 +18,12 @@
             android:gravity="center"
             android:hint="@string/enter_device_id"
             android:padding="20dp" />
+		<CheckBox
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:id="@+id/sortCB"
+			android:text="@string/sort"
+			android:padding="20dp"/>
 
         <Button
             android:id="@+id/mainButton"

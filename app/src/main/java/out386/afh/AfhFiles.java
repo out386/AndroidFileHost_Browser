@@ -4,8 +4,10 @@ public class AfhFiles
 {
 	String filename;
 	String url;
-	public AfhFiles(String f, String u) {
+	String upload_date;
+	public AfhFiles(String f, String u, String d) {
 		filename = f;
 		url = u;
+		upload_date = d;
 	}
 }
