@@ -30,11 +30,12 @@ import java.util.List;
 import me.msfjarvis.afh.Vars;
 import com.android.volley.toolbox.*;
 import com.android.volley.*;
+import android.widget.*;
 
 public class MainActivity extends Activity {
     String json = "";
 	RequestQueue queue;
-    //List<String> fid = new ArrayList<>();
+    ScrollView sv;
     List<AfhFiles> filesD = new ArrayList<>();
     TextView mTextView;
     AfhAdapter adapter;
@@ -47,6 +48,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         mTextView = (TextView) findViewById(R.id.tv);
+		sv = (ScrollView) findViewById(R.id.tvSv);
         Button button = (Button) findViewById(R.id.mainButton);
         ListView list = (ListView) findViewById(R.id.list);
 		final int NETWORK_THREAD_POOL_SIZE = 30;
@@ -74,7 +76,6 @@ public class MainActivity extends Activity {
                 lay.setVisibility(View.GONE);
                 rl.setVisibility(View.VISIBLE);
                 EditText text = (EditText) findViewById(R.id.mainEditText);
-                savedID = text.getText().toString();
                 start(text.getText().toString());
             }
         });
@@ -82,15 +83,12 @@ public class MainActivity extends Activity {
     }
 
     public void start(String did) {
-        //RequestQueue queue = Volley.newRequestQueue(this);
         String url = String.format(new Vars().getDidEndpoint(), did);
 
-// Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        // Display the first 500 characters of the response string.
                         json = response;
                         pullRefreshLayout.setRefreshing(true);
 						List<String> fid = null;
@@ -98,8 +96,10 @@ public class MainActivity extends Activity {
                             fid = parse();
                         } catch (Exception e) {
                             pullRefreshLayout.setRefreshing(false);
-                           // mTextView.setText(String.format(getString(R.string.json_parse_error), e.toString()));
+							sv.setVisibility(View.VISIBLE);
+                            mTextView.setText(String.format(getString(R.string.json_parse_error), e.toString()));
                         }
+						sv.setVisibility(View.GONE);
 						if(fid != null)
                             queryDirs(fid);
 
@@ -108,13 +108,13 @@ public class MainActivity extends Activity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+				sv.setVisibility(View.VISIBLE);
                 pullRefreshLayout.setRefreshing(false);
                 mTextView.setText(getString(R.string.generic_error) + error.toString());
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(120000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-// Add the request to the RequestQueue.
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 5, 1));
 		queue.start();
         queue.add(stringRequest);
     }
@@ -148,8 +148,6 @@ public class MainActivity extends Activity {
 
         for (String url : did) {
             final String link = url;
-            //RequestQueue queue = Volley.newRequestQueue(this);
-// Request a string response from the provided URL.
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
@@ -159,18 +157,20 @@ public class MainActivity extends Activity {
                                 parseFiles(response);
                             } catch (Exception e) {
                                 pullRefreshLayout.setRefreshing(false);
-                               // mTextView.setText(mTextView.getText().toString() + "\n\n\n" + getResources().getString(R.string.json_parse_error) + link + " " + e.toString());
+								sv.setVisibility(View.VISIBLE);
+                               mTextView.setText(mTextView.getText().toString() + "\n\n\n" + getResources().getString(R.string.json_parse_error) + link + " " + e.toString());
                             }
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     pullRefreshLayout.setRefreshing(false);
+					sv.setVisibility(View.VISIBLE);
                     mTextView.setText(mTextView.getText().toString() + "\n\n\n" + link + "  :   " + error.toString());
                 }
             });
 
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(1200000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(600000, 5, 1));
             queue.add(stringRequest);
 
         }
@@ -180,24 +180,38 @@ public class MainActivity extends Activity {
     public void parseFiles(String Json) throws Exception {
         JSONObject fileJson = new JSONObject(Json);
 
-        JSONObject data = fileJson.getJSONObject("DATA");
-        //int i = 0;
-        JSONArray files = data.getJSONArray("files");
-        for (int i = 0; i < files.length(); i++) {
-            //fid[i] = "androidfilehost.com/api/?action=folder&flid=" + data.getJSONObject(i).getString("flid");
-            String name = files.getJSONObject(i).getString("name");
-            String url = files.getJSONObject(i).getString("url");
-            filesD.add(new AfhFiles(name, url));
+        JSONObject data;
+		if(fileJson.isNull("DATA"))
+			return;
+		
+	    // Data will be an Object, but if it is empty, it'll be an Array
+		Object dataObj = fileJson.get("DATA");
+		if(! (dataObj instanceof JSONObject))
+			return;
+		data = (JSONObject) dataObj;
+		
+        JSONArray files = null;
+		if(! data.isNull("files"))
+			files = data.getJSONArray("files");
+			if(files != null) {
+            for (int i = 0; i < files.length(); i++) {
+                String name = files.getJSONObject(i).getString("name");
+                String url = files.getJSONObject(i).getString("url");
+                filesD.add(new AfhFiles(name, url));
+	        }
         }
-		JSONArray folders = data.getJSONArray("folders");
-		List<String> foldersD = new ArrayList<>();
-		for (int i = 0; i < folders.length(); i++) {
-			foldersD.add("https://www.androidfilehost.com/api/?action=folder&flid=" + folders.getJSONObject(i).getString("flid"));
-			//mTextView.setText(mTextView.getText() + "\n\n\n" + "Checking url : " + foldersD.get(i));
+		JSONArray folders = null;
+		if(! data.isNull("folders"))
+			folders = data.getJSONArray("folders");
+		
+		if(folders != null) {
+		    List<String> foldersD = new ArrayList<>();
+		    for (int i = 0; i < folders.length(); i++) {
+			    foldersD.add("https://www.androidfilehost.com/api/?action=folder&flid=" + folders.getJSONObject(i).getString("flid"));
+		    }
+		    if(foldersD.size() > 0)
+			    queryDirs(foldersD);
 		}
-		//foldersD.add("https://www.androidfilehost.com/api/?action=folder&flid=51856");
-		if(foldersD.size() > 0)
-			queryDirs(foldersD);
         print();
     }
 }
