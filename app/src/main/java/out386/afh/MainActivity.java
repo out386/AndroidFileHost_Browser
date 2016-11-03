@@ -149,19 +149,9 @@ public class MainActivity extends Activity {
     public void print() {
         pullRefreshLayout.setRefreshing(false);
 		if(sortByDate) {
-            Collections.sort(filesD, new Comparator<AfhFiles>() {
-                @Override
-                public int compare(AfhFiles f1, AfhFiles f2) {
-                    return -(f1.upload_date.compareTo(f2.upload_date));
-                }
-            });
+            Collections.sort(filesD, Comparators.byUploadDate);
 		} else {
-			Collections.sort(filesD, new Comparator<AfhFiles>() {
-					@Override
-					public int compare(AfhFiles f1, AfhFiles f2) {
-						return (f1.filename.compareTo(f2.filename));
-					}
-				});
+			Collections.sort(filesD, Comparators.byFileName);
 		}
         adapter.notifyDataSetChanged();
 
