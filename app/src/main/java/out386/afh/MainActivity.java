@@ -90,6 +90,7 @@ public class MainActivity extends Activity {
         adapter = new AfhAdapter(this, R.layout.afh_items, filesD);
         devAdapter = new DeviceAdapter(this, R.layout.device_items, devices);
         deviceList.setAdapter(devAdapter);
+		fileList.setAdapter(adapter);
 
         deviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
