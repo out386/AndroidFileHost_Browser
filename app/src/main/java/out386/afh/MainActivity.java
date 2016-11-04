@@ -2,6 +2,7 @@ package out386.afh;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.msfjarvis.afh.Vars;
 import com.android.volley.toolbox.*;
@@ -41,11 +44,14 @@ public class MainActivity extends Activity {
 	RequestQueue queue;
     ScrollView sv;
     List<AfhFiles> filesD = new ArrayList<>();
+    List<Device> devices = new ArrayList<>();
     TextView mTextView;
     AfhAdapter adapter;
     PullRefreshLayout pullRefreshLayout;
     String savedID;
 	boolean sortByDate;
+    final String TAG = "TAG";
+    int pages[];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +100,58 @@ public class MainActivity extends Activity {
             }
         });
 
+        findFirstDevice();
     }
 
+
+    public void findFirstDevice() {
+        String url = "https://www.androidfilehost.com/api/?action=devices&page=1&limit=100";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            Log.i(TAG, "onResponseJson: " + response);
+                            processFindDevices(response);
+                        } catch (Exception e) {
+                            Log.i(TAG, "onResponse: " + e.toString());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i(TAG, "onErrorResponse: " + error.toString());
+            }
+        });
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 5, 1));
+        queue.start();
+        queue.add(stringRequest);
+    }
+    public void findSubsequentDevices(int pageNumber) {
+        String url = "https://www.androidfilehost.com/api/?action=devices&page=" + pageNumber + "&limit=100";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject deviceListJson = new JSONObject(json);
+                            parseDevices(deviceListJson.getJSONArray("DATA"));
+                        } catch (Exception e) {
+                            Log.i(TAG, "onResponse: " + e.toString());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i(TAG, "onErrorResponseSubs: " + error.toString());
+            }
+        });
+
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 5, 1));
+        queue.start();
+        queue.add(stringRequest);
+    }
     public void start(String did) {
         String url = String.format(new Vars().getDidEndpoint(), did);
 
@@ -111,7 +167,7 @@ public class MainActivity extends Activity {
                         } catch (Exception e) {
                             pullRefreshLayout.setRefreshing(false);
 							sv.setVisibility(View.VISIBLE);
-                            mTextView.setText(String.format(getString(R.string.json_parse_error), e.toString()));
+                            mTextView.setText(getString(R.string.json_parse_error) + e.toString());
                         }
 						sv.setVisibility(View.GONE);
 						if(fid != null)
@@ -228,5 +284,38 @@ public class MainActivity extends Activity {
 			    queryDirs(foldersD);
 		}
         print();
+    }
+
+
+
+    public void processFindDevices(String json) throws Exception{
+        JSONObject deviceListJson = new JSONObject(json);
+        String message = deviceListJson.getString("MESSAGE");
+        pages = findDevicePageNumbers(message);
+        parseDevices(deviceListJson.getJSONArray("DATA"));
+
+        for(int currentPage = 2; currentPage < pages[3]; currentPage++)
+            findSubsequentDevices(currentPage);
+        Collections.sort(devices, Comparators.byManufacturer);
+
+    }
+    public int[] findDevicePageNumbers(String message) {
+        Pattern p = Pattern.compile("\\d+");
+        Matcher m = p.matcher(message);
+        int ar[] = new int[4];
+        int i = 0;
+        while (! m.hitEnd()) {
+            if (m.find() && i < 4)
+                ar[i++] = Integer.parseInt(m.group());
+        }
+        return ar;
+    }
+    public void parseDevices(JSONArray data) throws Exception {
+        if(data != null)
+            for(int i = 0; i < data.length(); i++) {
+                JSONObject dev = data.getJSONObject(i);
+                Device device = new Device(dev.getString("did"), dev.getString("manufacturer"), dev.getString("device_name"));
+                devices.add(device);
+            }
     }
 }

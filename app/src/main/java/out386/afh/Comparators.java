@@ -19,4 +19,10 @@ class Comparators {
             return (f1.filename.compareTo(f2.filename));
         }
     };
+    static Comparator <Device> byManufacturer = new Comparator<Device>() {
+        @Override
+        public int compare(Device f1, Device f2) {
+            return (f1.manufacturer.compareTo(f2.manufacturer));
+        }
+    };
 }
