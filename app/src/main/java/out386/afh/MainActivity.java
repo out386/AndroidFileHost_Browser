@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -62,7 +63,7 @@ public class MainActivity extends Activity {
         mTextView = (TextView) findViewById(R.id.tv);
 		sv = (ScrollView) findViewById(R.id.tvSv);
         ListView fileList = (ListView) findViewById(R.id.list);
-        ListView deviceList = (ListView) findViewById(R.id.deviceList);
+        final ListView deviceList = (ListView) findViewById(R.id.deviceList);
 		final int NETWORK_THREAD_POOL_SIZE = 30;
 		Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
 		Network network = new BasicNetwork(new HurlStack());
@@ -90,17 +91,16 @@ public class MainActivity extends Activity {
         devAdapter = new DeviceAdapter(this, R.layout.device_items, devices);
         deviceList.setAdapter(devAdapter);
 
-        /*button.setOnClickListener(new View.OnClickListener() {
+        deviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 LinearLayout lay = (LinearLayout) findViewById(R.id.mainLinearLayout);
                 RelativeLayout rl = (RelativeLayout) findViewById(R.id.listLayout);
                 lay.setVisibility(View.GONE);
                 rl.setVisibility(View.VISIBLE);
-                EditText text = (EditText) findViewById(R.id.mainEditText);
-                start(text.getText().toString());
+                start(devices.get(i).did);
             }
-        });*/
+        });
 
         findFirstDevice();
     }
@@ -156,7 +156,7 @@ public class MainActivity extends Activity {
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);
     }
-    public void start(String did) {
+    public void start(final String did) {
         String url = String.format(new Vars().getDidEndpoint(), did);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -167,6 +167,7 @@ public class MainActivity extends Activity {
                         pullRefreshLayout.setRefreshing(true);
 						List<String> fid = null;
                         try {
+                            sv.setVisibility(View.GONE);
                             fid = parse();
                         } catch (Exception e) {
                             pullRefreshLayout.setRefreshing(false);
@@ -184,7 +185,8 @@ public class MainActivity extends Activity {
             public void onErrorResponse(VolleyError error) {
 				sv.setVisibility(View.VISIBLE);
                 pullRefreshLayout.setRefreshing(false);
-                mTextView.setText(getString(R.string.generic_error) + error.toString());
+                mTextView.setText(error.toString());
+                start(did);
             }
         });
 
