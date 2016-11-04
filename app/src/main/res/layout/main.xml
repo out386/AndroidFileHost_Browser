@@ -11,25 +11,24 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/mainEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:hint="@string/enter_device_id"
-            android:padding="20dp" />
+        <com.baoyz.widget.PullRefreshLayout
+            android:id="@+id/deviceRefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/deviceList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null" />
+        </com.baoyz.widget.PullRefreshLayout>
+
 		<CheckBox
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:id="@+id/sortCB"
 			android:text="@string/sort"
 			android:padding="20dp"/>
-
-        <Button
-            android:id="@+id/mainButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start" />
     </LinearLayout>
 
     <RelativeLayout

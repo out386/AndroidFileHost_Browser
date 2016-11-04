@@ -16,13 +16,13 @@ class Comparators {
     static Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
-            return (f1.filename.compareTo(f2.filename));
+            return (f1.filename.compareToIgnoreCase(f2.filename));
         }
     };
     static Comparator <Device> byManufacturer = new Comparator<Device>() {
         @Override
         public int compare(Device f1, Device f2) {
-            return (f1.manufacturer.compareTo(f2.manufacturer));
+            return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
         }
     };
 }

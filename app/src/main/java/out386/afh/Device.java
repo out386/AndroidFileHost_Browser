@@ -5,9 +5,9 @@ package out386.afh;
  */
 
 class Device {
-    private String did;
+    String did;
     String manufacturer;
-    private String device_name;
+    String device_name;
     Device( String did, String manufacturer, String device_name) {
         this.did = did;
         this.manufacturer = manufacturer;

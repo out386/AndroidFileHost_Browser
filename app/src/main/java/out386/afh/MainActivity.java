@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
     List<Device> devices = new ArrayList<>();
     TextView mTextView;
     AfhAdapter adapter;
+    DeviceAdapter devAdapter;
     PullRefreshLayout pullRefreshLayout;
     String savedID;
 	boolean sortByDate;
@@ -60,8 +61,8 @@ public class MainActivity extends Activity {
 
         mTextView = (TextView) findViewById(R.id.tv);
 		sv = (ScrollView) findViewById(R.id.tvSv);
-        Button button = (Button) findViewById(R.id.mainButton);
-        ListView list = (ListView) findViewById(R.id.list);
+        ListView fileList = (ListView) findViewById(R.id.list);
+        ListView deviceList = (ListView) findViewById(R.id.deviceList);
 		final int NETWORK_THREAD_POOL_SIZE = 30;
 		Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
 		Network network = new BasicNetwork(new HurlStack());
@@ -86,9 +87,10 @@ public class MainActivity extends Activity {
         });
 
         adapter = new AfhAdapter(this, R.layout.afh_items, filesD);
-        list.setAdapter(adapter);
+        devAdapter = new DeviceAdapter(this, R.layout.device_items, devices);
+        deviceList.setAdapter(devAdapter);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        /*button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LinearLayout lay = (LinearLayout) findViewById(R.id.mainLinearLayout);
@@ -98,7 +100,7 @@ public class MainActivity extends Activity {
                 EditText text = (EditText) findViewById(R.id.mainEditText);
                 start(text.getText().toString());
             }
-        });
+        });*/
 
         findFirstDevice();
     }
@@ -121,21 +123,23 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.i(TAG, "onErrorResponse: " + error.toString());
+                findFirstDevice();
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 5, 1));
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.start();
         queue.add(stringRequest);
     }
-    public void findSubsequentDevices(int pageNumber) {
-        String url = "https://www.androidfilehost.com/api/?action=devices&page=" + pageNumber + "&limit=100";
+    public void findSubsequentDevices(final int pageNumber) {
+        final String url = "https://www.androidfilehost.com/api/?action=devices&page=" + pageNumber + "&limit=100";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            JSONObject deviceListJson = new JSONObject(json);
+                            JSONObject deviceListJson = new JSONObject(response);
+                            Log.i(TAG, "onResponseSubs: " + url);
                             parseDevices(deviceListJson.getJSONArray("DATA"));
                         } catch (Exception e) {
                             Log.i(TAG, "onResponse: " + e.toString());
@@ -145,11 +149,11 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.i(TAG, "onErrorResponseSubs: " + error.toString());
+                findSubsequentDevices(pageNumber);
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 5, 1));
-        queue.start();
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);
     }
     public void start(String did) {
@@ -184,8 +188,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 5, 1));
-		queue.start();
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);
     }
 
@@ -239,7 +242,7 @@ public class MainActivity extends Activity {
                 }
             });
 
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(600000, 5, 1));
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(stringRequest);
 
         }
@@ -293,10 +296,9 @@ public class MainActivity extends Activity {
         String message = deviceListJson.getString("MESSAGE");
         pages = findDevicePageNumbers(message);
         parseDevices(deviceListJson.getJSONArray("DATA"));
-
-        for(int currentPage = 2; currentPage < pages[3]; currentPage++)
+        Log.i(TAG, "processFindDevices: " + pages[3]);
+        for(int currentPage = 2; currentPage <= pages[3]; currentPage++)
             findSubsequentDevices(currentPage);
-        Collections.sort(devices, Comparators.byManufacturer);
 
     }
     public int[] findDevicePageNumbers(String message) {
@@ -317,5 +319,8 @@ public class MainActivity extends Activity {
                 Device device = new Device(dev.getString("did"), dev.getString("manufacturer"), dev.getString("device_name"));
                 devices.add(device);
             }
+        Collections.sort(devices, Comparators.byManufacturer);
+        Log.i(TAG, "parseDevices: " + devices.size());
+        devAdapter.notifyDataSetChanged();
     }
 }
