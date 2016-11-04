@@ -74,8 +74,14 @@ public class MainActivity extends Activity {
 		sortCB.setOnCheckedChangeListener(new OnCheckedChangeListener(){
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(isChecked)
+				if(isChecked) {
 					sortByDate = true;
+					Collections.sort(filesD,Comparators.byUploadDate);
+				} else {
+					sortByDate = false;
+					Collections.sort(filesD,Comparators.byFileName);
+				}
+				adapter.notifyDataSetChanged();
 			}
 		});
 		
