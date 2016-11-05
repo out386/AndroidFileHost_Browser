@@ -1,5 +1,7 @@
 package out386.afh;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
@@ -105,10 +107,27 @@ public class MainFragment extends Fragment {
         deviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                LinearLayout lay = (LinearLayout) rootView.findViewById(R.id.mainLinearLayout);
-                RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.listLayout);
-                lay.setVisibility(View.GONE);
+                final LinearLayout lay = (LinearLayout) rootView.findViewById(R.id.mainLinearLayout);
+                final RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.listLayout);
                 rl.setVisibility(View.VISIBLE);
+                rl.setAlpha(0.0f);
+                lay.animate()
+                        .setDuration(500)
+                        .translationX(-lay.getWidth())
+                        .alpha(0.0f)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                lay.setVisibility(View.GONE);
+                                rl.animate()
+                                        .setDuration(500)
+                                        .alpha(1.0f);
+                            }
+                        });
+
+
+
                 start(devices.get(i).did);
             }
         });
