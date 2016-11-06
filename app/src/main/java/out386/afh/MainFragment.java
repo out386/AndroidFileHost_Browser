@@ -55,11 +55,12 @@ public class MainFragment extends Fragment {
     TextView mTextView;
     AfhAdapter adapter;
     DeviceAdapter devAdapter;
-    PullRefreshLayout pullRefreshLayout;
+    PullRefreshLayout pullRefreshLayout, deviceRefreshLayout;
     String savedID;
     boolean sortByDate;
     final String TAG = "TAG";
     int pages[];
+    int currentPage = 1;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,10 +93,20 @@ public class MainFragment extends Fragment {
         });
 
         pullRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+        deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 start(savedID);
+            }
+        });
+
+        deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                devices = new ArrayList<>();
+                currentPage = 1;
+                findFirstDevice();
             }
         });
 
@@ -165,7 +176,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 sv.setVisibility(View.VISIBLE);
-                pullRefreshLayout.setRefreshing(false);
+                //pullRefreshLayout.setRefreshing(false);
                 mTextView.setText(error.toString());
                 start(did);
             }
@@ -177,6 +188,7 @@ public class MainFragment extends Fragment {
 
     public void findFirstDevice() {
         String url = "https://www.androidfilehost.com/api/?action=devices&page=1&limit=100";
+        deviceRefreshLayout.setRefreshing(true);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -207,11 +219,13 @@ public class MainFragment extends Fragment {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        currentPage++;
                         try {
                             JSONObject deviceListJson = new JSONObject(response);
                             Log.i(TAG, "onResponseSubs: " + url);
                             parseDevices(deviceListJson.getJSONArray("DATA"));
                         } catch (Exception e) {
+                            currentPage--;
                             Log.i(TAG, "onResponse: " + e.toString());
                         }
                     }
@@ -338,13 +352,13 @@ public class MainFragment extends Fragment {
     public int[] findDevicePageNumbers(String message) {
         Pattern p = Pattern.compile("\\d+");
         Matcher m = p.matcher(message);
-        int ar[] = new int[4];
+        int pages[] = new int[4];
         int i = 0;
         while (! m.hitEnd()) {
             if (m.find() && i < 4)
-                ar[i++] = Integer.parseInt(m.group());
+                pages[i++] = Integer.parseInt(m.group());
         }
-        return ar;
+        return pages;
     }
 
     public void parseDevices(JSONArray data) throws Exception {
@@ -354,8 +368,11 @@ public class MainFragment extends Fragment {
                 Device device = new Device(dev.getString("did"), dev.getString("manufacturer"), dev.getString("device_name"));
                 devices.add(device);
             }
-        Collections.sort(devices, Comparators.byManufacturer);
+        if(currentPage == pages[3]) {
+            Collections.sort(devices, Comparators.byManufacturer);
+            devAdapter.notifyDataSetChanged();
+            deviceRefreshLayout.setRefreshing(false);
+        }
         Log.i(TAG, "parseDevices: " + devices.size());
-        devAdapter.notifyDataSetChanged();
     }
 }
