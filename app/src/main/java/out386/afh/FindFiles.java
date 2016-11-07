@@ -1,6 +1,7 @@
 package out386.afh;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -33,7 +34,7 @@ class FindFiles {
     private final TextView mTextView;
     private String json = "";
     private final ScrollView sv;
-    private final List<AfhFiles> filesD = new ArrayList<>();
+    private List<AfhFiles> filesD = new ArrayList<>();
     private AfhAdapter adapter;
     private final PullRefreshLayout pullRefreshLayout;
     private String savedID;
@@ -68,6 +69,7 @@ class FindFiles {
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                filesD = new ArrayList<>();
                 start(savedID);
             }
         });
@@ -84,7 +86,6 @@ class FindFiles {
                     @Override
                     public void onResponse(String response) {
                         json = response;
-                        pullRefreshLayout.setRefreshing(true);
                         List<String> fid = null;
                         try {
                             sv.setVisibility(View.GONE);
@@ -104,7 +105,6 @@ class FindFiles {
             @Override
             public void onErrorResponse(VolleyError error) {
                 sv.setVisibility(View.VISIBLE);
-                //pullRefreshLayout.setRefreshing(false);
                 mTextView.setText(error.toString());
                 start(did);
             }
@@ -122,7 +122,6 @@ class FindFiles {
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            pullRefreshLayout.setRefreshing(true);
                             try {
                                 parseFiles(response);
                             } catch (Exception e) {
@@ -160,12 +159,12 @@ class FindFiles {
     }
 
     private void print() {
-        pullRefreshLayout.setRefreshing(false);
         if(sortByDate) {
             Collections.sort(filesD, Comparators.byUploadDate);
         } else {
             Collections.sort(filesD, Comparators.byFileName);
         }
+        Log.i("TAG", "New Files: Data changed : " + filesD.size() + " items");
         adapter.notifyDataSetChanged();
 
     }

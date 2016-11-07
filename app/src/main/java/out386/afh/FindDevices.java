@@ -64,6 +64,7 @@ class FindDevices {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 animate();
+                ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
                 findFiles.start(devices.get(i).did);
             }
         });
