@@ -17,7 +17,9 @@ package browser.afh;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Device {
+import java.io.Serializable;
+
+class Device implements Serializable{
     String did;
     String manufacturer;
     String device_name;

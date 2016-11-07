@@ -22,6 +22,7 @@ package browser.afh;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -40,6 +41,7 @@ import com.baoyz.widget.PullRefreshLayout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -57,6 +59,7 @@ class FindDevices {
     private DeviceAdapter devAdapter;
     private int pages[];
     private FindFiles findFiles;
+    private boolean refresh = false;
 
     FindDevices(final View rootView, final RequestQueue queue) {
         this.rootView = rootView;
@@ -72,6 +75,7 @@ class FindDevices {
             public void onRefresh() {
                 devices = new ArrayList<>();
                 currentPage = 1;
+                refresh = true;
                 findFirstDevice();
             }
         });
@@ -88,8 +92,13 @@ class FindDevices {
     }
 
     void findFirstDevice() {
-        String url = "https://www.androidfilehost.com/api/?action=devices&page=1&limit=100";
         deviceRefreshLayout.setRefreshing(true);
+        if(! refresh) {
+            File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
+            new ReadCache(cacheFile).execute();
+            return;
+        }
+        String url = "https://www.androidfilehost.com/api/?action=devices&page=1&limit=100";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -163,9 +172,21 @@ class FindDevices {
             }
         if (currentPage == pages[3]) {
             Collections.sort(devices, Comparators.byManufacturer);
-            devAdapter.notifyDataSetChanged();
-            deviceRefreshLayout.setRefreshing(false);
+            displayDevices();
         }
+    }
+
+    private void displayDevices() {
+        devAdapter.notifyDataSetChanged();
+        deviceRefreshLayout.setRefreshing(false);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                CacheList.write(devices, new File(rootView.getContext().getCacheDir().toString() + "/devicelist"));
+            }
+        }
+        );
+        t.start();
         Log.i(TAG, "parseDevices: " + devices.size());
     }
 
@@ -200,5 +221,29 @@ class FindDevices {
                                 .alpha(1.0f);
                     }
                 });
+    }
+
+    private class ReadCache extends AsyncTask<Void, Void, List> {
+        File cacheFile;
+        ReadCache(File cacheFile) {
+            this.cacheFile = cacheFile;
+        }
+        @Override
+        public List doInBackground(Void... v) {
+            return CacheList.read(cacheFile);
+        }
+        @Override
+        protected void onPostExecute(List output){
+            if(output != null) {
+                devAdapter.clear();
+                devices = output;
+                devAdapter.addAll(devices);				
+                displayDevices();
+            } else {
+                deviceRefreshLayout.setRefreshing(true);
+                refresh = true;
+                findFirstDevice();
+            }
+        }
     }
 }
