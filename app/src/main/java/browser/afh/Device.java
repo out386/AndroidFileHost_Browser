@@ -1,4 +1,4 @@
-package out386.afh;
+package browser.afh;
 
 /**
  * Created by Js on 11/4/2016.

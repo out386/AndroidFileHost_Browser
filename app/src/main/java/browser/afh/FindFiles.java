@@ -1,4 +1,4 @@
-package out386.afh;
+package browser.afh;
 
 import android.content.Context;
 import android.util.Log;
@@ -23,8 +23,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import me.msfjarvis.afh.Vars;
 
 /**
  * Created by Js on 11/7/2016.
@@ -79,7 +77,7 @@ class FindFiles {
 
     void start(final String did) {
         savedID = did;
-        String url = String.format(new Vars().getDidEndpoint(), did);
+        String url = String.format(Constants.did, did);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -153,7 +151,7 @@ class FindFiles {
         List<String> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
         for (int i = 0; i < data.length(); i++) {
-            fid.add(String.format(new Vars().getFlidEndpoint(), data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
+            fid.add(String.format(Constants.flid, data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
         }
         return fid;
     }

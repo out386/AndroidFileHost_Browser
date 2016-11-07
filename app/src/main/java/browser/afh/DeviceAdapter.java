@@ -1,4 +1,4 @@
-package out386.afh;
+package browser.afh;
 
 import android.content.Context;
 import android.view.LayoutInflater;

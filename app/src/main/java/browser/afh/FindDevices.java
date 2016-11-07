@@ -1,4 +1,4 @@
-package out386.afh;
+package browser.afh;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

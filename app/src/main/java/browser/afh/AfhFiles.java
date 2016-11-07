@@ -1,4 +1,4 @@
-package out386.afh;
+package browser.afh;
 
 public class AfhFiles
 {
