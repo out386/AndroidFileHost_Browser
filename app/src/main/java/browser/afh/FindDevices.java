@@ -1,5 +1,25 @@
 package browser.afh;
 
+/*
+ * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
+ */
+/*
+ * This file is part of AFH Browser.
+ *
+ * AFH Browser is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AFH Browser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.util.Log;
@@ -25,10 +45,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-/**
- * Created by Js on 11/7/2016.
- */
 
 class FindDevices {
 
@@ -127,25 +143,25 @@ class FindDevices {
     }
 
 
-    private void processFindDevices(String json) throws Exception{
+    private void processFindDevices(String json) throws Exception {
         JSONObject deviceListJson = new JSONObject(json);
         String message = deviceListJson.getString("MESSAGE");
         pages = findDevicePageNumbers(message);
         parseDevices(deviceListJson.getJSONArray("DATA"));
         Log.i(TAG, "processFindDevices: " + pages[3]);
-        for(int currentPage = 2; currentPage <= pages[3]; currentPage++)
+        for (int currentPage = 2; currentPage <= pages[3]; currentPage++)
             findSubsequentDevices(currentPage);
 
     }
 
     private void parseDevices(JSONArray data) throws Exception {
-        if(data != null)
-            for(int i = 0; i < data.length(); i++) {
+        if (data != null)
+            for (int i = 0; i < data.length(); i++) {
                 JSONObject dev = data.getJSONObject(i);
                 Device device = new Device(dev.getString("did"), dev.getString("manufacturer"), dev.getString("device_name"));
                 devices.add(device);
             }
-        if(currentPage == pages[3]) {
+        if (currentPage == pages[3]) {
             Collections.sort(devices, Comparators.byManufacturer);
             devAdapter.notifyDataSetChanged();
             deviceRefreshLayout.setRefreshing(false);
@@ -158,12 +174,12 @@ class FindDevices {
         Matcher m = p.matcher(message);
         int pages[] = new int[4];
         int i = 0;
-        while (! m.hitEnd()) {
+        while (!m.hitEnd()) {
             if (m.find() && i < 4)
                 pages[i++] = Integer.parseInt(m.group());
         }
         return pages;
-}
+    }
 
     private void animate() {
         final LinearLayout lay = (LinearLayout) rootView.findViewById(R.id.mainLinearLayout);
