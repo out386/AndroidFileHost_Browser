@@ -9,6 +9,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import browser.afh.types.Device;
+
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386)
  */

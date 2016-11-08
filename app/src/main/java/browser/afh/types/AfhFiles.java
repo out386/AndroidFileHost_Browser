@@ -1,4 +1,4 @@
-package browser.afh;
+package browser.afh.types;
 
 /*
  * This file is part of AFH Browser.
@@ -19,9 +19,9 @@ package browser.afh;
 
 public class AfhFiles
 {
-	String filename;
-	String url;
-	String upload_date;
+	public String filename;
+	public String url;
+	public String upload_date;
 	public AfhFiles(String f, String u, String d) {
 		filename = f;
 		url = u;

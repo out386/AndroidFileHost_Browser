@@ -48,6 +48,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import browser.afh.tools.CacheList;
+import browser.afh.tools.Comparators;
+import browser.afh.types.Device;
+
 class FindDevices {
 
     private final String TAG = "TAG";

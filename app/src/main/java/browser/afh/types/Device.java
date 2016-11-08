@@ -1,8 +1,5 @@
-package browser.afh;
+package browser.afh.types;
 
-/*
- * Copyright (C) 2016 Harsh Shandilya (MSF-Jarvis)
- */
 /*
  * This file is part of AFH Browser.
  *
@@ -20,7 +17,15 @@ package browser.afh;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Constants {
-    static final String did = "https://www.androidfilehost.com/api/?action=developers&did=%s&limit=100";
-    static final String flid = "https://www.androidfilehost.com/api/?action=folder&flid=%s";
+import java.io.Serializable;
+
+public class Device implements Serializable{
+    public String did;
+    public String manufacturer;
+    public String device_name;
+    public Device( String did, String manufacturer, String device_name) {
+        this.did = did;
+        this.manufacturer = manufacturer;
+        this.device_name = device_name;
+    }
 }

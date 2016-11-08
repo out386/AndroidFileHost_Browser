@@ -31,6 +31,8 @@ import java.util.List;
 import android.text.*;
 import android.text.method.*;
 
+import browser.afh.types.AfhFiles;
+
 public class AfhAdapter extends ArrayAdapter<AfhFiles>
 {
     public Context context;

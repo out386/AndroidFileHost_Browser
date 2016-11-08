@@ -44,6 +44,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import browser.afh.tools.Comparators;
+import browser.afh.tools.Constants;
+import browser.afh.types.AfhFiles;
+
 class FindFiles {
     private final TextView mTextView;
     private String json = "";
@@ -93,7 +97,7 @@ class FindFiles {
 
     void start(final String did) {
         savedID = did;
-        String url = String.format(Constants.did, did);
+        String url = String.format(Constants.DID, did);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -167,7 +171,7 @@ class FindFiles {
         List<String> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
         for (int i = 0; i < data.length(); i++) {
-            fid.add(String.format(Constants.flid, data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
+            fid.add(String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
         }
         return fid;
     }

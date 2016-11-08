@@ -1,6 +1,9 @@
-package browser.afh;
+package browser.afh.tools;
 
 import java.util.Comparator;
+
+import browser.afh.types.AfhFiles;
+import browser.afh.types.Device;
 
 /*
  * This file is part of AFH Browser.
@@ -19,20 +22,20 @@ import java.util.Comparator;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class Comparators {
-    static Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
+public class Comparators {
+    public static Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
             return -(f1.upload_date.compareTo(f2.upload_date));
         }
     };
-    static Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
+    public static Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
             return (f1.filename.compareToIgnoreCase(f2.filename));
         }
     };
-    static Comparator <Device> byManufacturer = new Comparator<Device>() {
+    public static Comparator <Device> byManufacturer = new Comparator<Device>() {
         @Override
         public int compare(Device f1, Device f2) {
             return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
