@@ -23,10 +23,10 @@ package browser.afh;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.AsyncTask;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
@@ -216,20 +216,20 @@ class FindDevices {
     }
 
     private void animate() {
-        final LinearLayout lay = (LinearLayout) rootView.findViewById(R.id.mainLinearLayout);
-        final RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.listLayout);
-        rl.setVisibility(View.VISIBLE);
-        rl.setAlpha(0.0f);
-        lay.animate()
+        final CardView deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
+        final CardView filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
+        filesHolder.setVisibility(View.VISIBLE);
+        filesHolder.setAlpha(0.0f);
+        deviceHolder.animate()
                 .setDuration(500)
-                .translationX(-lay.getWidth())
+                .translationX(-deviceHolder.getWidth())
                 .alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        lay.setVisibility(View.GONE);
-                        rl.animate()
+                        deviceHolder.setVisibility(View.GONE);
+                        filesHolder.animate()
                                 .setDuration(500)
                                 .alpha(1.0f);
                     }
