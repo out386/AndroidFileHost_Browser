@@ -1,4 +1,4 @@
-package browser.afh;
+package browser.afh.adaptors;
 
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386)
@@ -31,6 +31,7 @@ import java.util.List;
 import android.text.*;
 import android.text.method.*;
 
+import browser.afh.R;
 import browser.afh.types.AfhFiles;
 
 public class AfhAdapter extends ArrayAdapter<AfhFiles>

@@ -1,4 +1,4 @@
-package browser.afh;
+package browser.afh.utils;
 
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
@@ -44,11 +44,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import browser.afh.R;
+import browser.afh.adaptors.AfhAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhFiles;
 
-class FindFiles {
+public class FindFiles {
     private final TextView mTextView;
     private String json = "";
     private final ScrollView sv;

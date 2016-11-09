@@ -22,6 +22,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import browser.afh.R;
+import browser.afh.fragments.MainFragment;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override

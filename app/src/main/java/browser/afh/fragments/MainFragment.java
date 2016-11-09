@@ -1,4 +1,4 @@
-package browser.afh;
+package browser.afh.fragments;
 
 /*
  * This file is part of AFH Browser.
@@ -29,6 +29,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
+
+import browser.afh.utils.FindDevices;
+import browser.afh.R;
 
 public class MainFragment extends Fragment {
     View rootView;

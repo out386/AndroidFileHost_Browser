@@ -1,4 +1,4 @@
-package browser.afh;
+package browser.afh.adaptors;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import browser.afh.R;
 import browser.afh.types.Device;
 
 /*

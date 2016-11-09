@@ -1,4 +1,4 @@
-package browser.afh;
+package browser.afh.utils;
 
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
@@ -28,7 +28,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -48,12 +47,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import browser.afh.R;
+import browser.afh.adaptors.DeviceAdapter;
 import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.types.Device;
 
-class FindDevices {
+public class FindDevices {
 
     private final String TAG = Constants.TAG;
     private View rootView;
@@ -66,7 +67,7 @@ class FindDevices {
     private FindFiles findFiles;
     private boolean refresh = false;
 
-    FindDevices(final View rootView, final RequestQueue queue) {
+    public FindDevices(final View rootView, final RequestQueue queue) {
         this.rootView = rootView;
         this.queue = queue;
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
@@ -96,7 +97,7 @@ class FindDevices {
 
     }
 
-    void findFirstDevice() {
+    public void findFirstDevice() {
         deviceRefreshLayout.setRefreshing(true);
         if (!refresh) {
             File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
