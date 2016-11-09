@@ -46,7 +46,7 @@ public class CacheList {
     public static List read(File file) {
         List list = null;
         if (!file.exists()) {
-            Log.i("TAG", "read: File missing");
+            Log.i(Constants.TAG, "read: File missing");
             return null;
         }
         try {
@@ -54,7 +54,7 @@ public class CacheList {
             list = (List) objectInputStream.readObject();
             objectInputStream.close();
         } catch (IOException e) {
-            Log.i("TAG", "read: " + e.toString());
+            Log.i(Constants.TAG, "read: " + e.toString());
         } catch (ClassNotFoundException e) {
             file.delete();
         }

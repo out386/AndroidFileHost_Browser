@@ -50,11 +50,12 @@ import java.util.regex.Pattern;
 
 import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
+import browser.afh.tools.Constants;
 import browser.afh.types.Device;
 
 class FindDevices {
 
-    private final String TAG = "TAG";
+    private final String TAG = Constants.TAG;
     private View rootView;
     private RequestQueue queue;
     private final PullRefreshLayout deviceRefreshLayout;
@@ -77,7 +78,7 @@ class FindDevices {
         deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                devices = new ArrayList<>();
+                devices.clear();
                 currentPage = 1;
                 refresh = true;
                 findFirstDevice();
@@ -97,7 +98,7 @@ class FindDevices {
 
     void findFirstDevice() {
         deviceRefreshLayout.setRefreshing(true);
-        if(! refresh) {
+        if (!refresh) {
             File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
             new ReadCache(cacheFile).execute();
             return;
@@ -117,6 +118,10 @@ class FindDevices {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (error.toString().contains("NoConnectionError")) {
+                    deviceRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 Log.i(TAG, "onErrorResponse: " + error.toString());
                 findFirstDevice();
             }
@@ -146,6 +151,10 @@ class FindDevices {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (error.toString().contains("NoConnectionError")) {
+                    deviceRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 Log.i(TAG, "onErrorResponseSubs: " + error.toString());
                 findSubsequentDevices(pageNumber);
             }
@@ -241,7 +250,7 @@ class FindDevices {
             if(output != null) {
                 devAdapter.clear();
                 devices = output;
-                devAdapter.addAll(devices);				
+                devAdapter.addAll(devices);
                 displayDevices();
             } else {
                 deviceRefreshLayout.setRefreshing(true);

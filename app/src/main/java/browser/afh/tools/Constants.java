@@ -23,4 +23,5 @@ package browser.afh.tools;
 public class Constants {
     public static final String DID = "https://www.androidfilehost.com/api/?action=developers&DID=%s&limit=100";
     public static final String FLID = "https://www.androidfilehost.com/api/?action=folder&FLID=%s";
+    public static final String TAG = "AFHBrowser";
 }

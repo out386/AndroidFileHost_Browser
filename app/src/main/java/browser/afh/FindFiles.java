@@ -122,6 +122,10 @@ class FindFiles {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (error.toString().contains("NoConnectionError")) {
+                    pullRefreshLayout.setRefreshing(false);
+                    return;
+                }
                 sv.setVisibility(View.VISIBLE);
                 mTextView.setText(error.toString());
                 start(did);
@@ -152,6 +156,8 @@ class FindFiles {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     pullRefreshLayout.setRefreshing(false);
+                    if (error.toString().contains("NoConnectionError"))
+                        return;
                     sv.setVisibility(View.VISIBLE);
                     mTextView.setText(mTextView.getText().toString() + "\n\n\n" + link + "  :   " + error.toString());
                 }
@@ -182,7 +188,7 @@ class FindFiles {
         } else {
             Collections.sort(filesD, Comparators.byFileName);
         }
-        Log.i("TAG", "New Files: Data changed : " + filesD.size() + " items");
+        Log.i(Constants.TAG, "New Files: Data changed : " + filesD.size() + " items");
         adapter.notifyDataSetChanged();
 
     }

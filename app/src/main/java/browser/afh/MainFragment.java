@@ -32,13 +32,7 @@ import com.android.volley.toolbox.HurlStack;
 
 public class MainFragment extends Fragment {
     View rootView;
-
     RequestQueue queue;
-
-
-
-
-    final String TAG = "TAG";
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
