@@ -61,7 +61,7 @@ public class FindFiles {
     private boolean sortByDate;
     private final RequestQueue queue;
     private final Context context;
-    private final String TAG = "TAG";
+    private final String TAG = Constants.TAG;
 
     FindFiles(View rootView, RequestQueue queue) {
         Log.d(TAG,"Inside FindFiles");
