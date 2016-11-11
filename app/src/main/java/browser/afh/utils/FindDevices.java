@@ -48,7 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import browser.afh.R;
-import browser.afh.adaptors.DeviceAdapter;
+import browser.afh.adapters.DeviceAdapter;
 import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;

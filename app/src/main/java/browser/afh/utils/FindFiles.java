@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.List;
 
 import browser.afh.R;
-import browser.afh.adaptors.AfhAdapter;
+import browser.afh.adapters.AfhAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhFiles;

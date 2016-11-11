@@ -1,4 +1,4 @@
-package browser.afh.adaptors;
+package browser.afh.adapters;
 
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386)
