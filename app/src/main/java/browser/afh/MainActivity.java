@@ -18,11 +18,22 @@ package browser.afh;
  */
 
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
-import browser.afh.R;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+
+import browser.afh.activities.PreferencesActivity;
 import browser.afh.fragments.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,8 +42,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        final Context context = this;
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        if (SP.getBoolean("alternateUI",false)){
+            setSupportActionBar(toolbar);
+        }else{
+            toolbar.setVisibility(View.GONE);
+        }
+        new DrawerBuilder()
+                .withActivity(this)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName("Home").withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription("The things!"),
+                        new DividerDrawerItem(),
+                        new PrimaryDrawerItem().withName("Settings").withIcon(R.drawable.ic_settings_black_24px).withIdentifier(1).withDescription("Settings for AFH Browser")
+                )
+                .withCloseOnClick(true)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        if (drawerItem.getIdentifier()==1){
+                            Intent intent = new Intent(context, PreferencesActivity.class);
+                            startActivity(intent);
+                        }
+                        return false;
+                    }
+                })
+                .build();
 
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
