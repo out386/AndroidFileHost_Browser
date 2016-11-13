@@ -45,17 +45,14 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (SP.getBoolean("alternateUI",false)){
-            setSupportActionBar(toolbar);
-        }else{
-            toolbar.setVisibility(View.GONE);
-        }
+        setSupportActionBar(toolbar);
         new DrawerBuilder()
                 .withActivity(this)
+                .withToolbar(toolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("Home").withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription("The things!"),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("Settings").withIcon(R.drawable.ic_settings_black_24px).withIdentifier(1).withDescription("Settings for AFH Browser")
+                        new PrimaryDrawerItem().withName("Settings").withIcon(R.drawable.ic_settings_black_24px).withIdentifier(1).withDescription("Settings for AFH Browser").withEnabled(false)
                 )
                 .withCloseOnClick(true)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
