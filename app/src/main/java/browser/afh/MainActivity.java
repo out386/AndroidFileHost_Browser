@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         new DrawerBuilder()
                 .withActivity(this)
+                .withToolbar(toolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription("The things!"),
                         new DividerDrawerItem(),
