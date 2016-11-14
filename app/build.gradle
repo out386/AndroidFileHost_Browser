@@ -11,6 +11,14 @@ android {
         versionCode 1
         versionName "0.1"
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent, "afh-browser_beta_" + versionCode + ".apk")
+        }
+    }
+
     signingConfigs {
         release {
             storeFile file("../extras/keystore/keystore.jks")
