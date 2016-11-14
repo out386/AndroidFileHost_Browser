@@ -7,5 +7,7 @@
     <string name="enter_device_id">Enter device id</string>
     <string name="start">start</string>
     <string name="sort">Sort by decending order of date</string>
+    <string name="home">Home</string>
+    <string name="settings">Settings</string>
 
 </resources>
