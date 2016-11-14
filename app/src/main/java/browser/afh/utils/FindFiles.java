@@ -64,7 +64,6 @@ public class FindFiles {
     private final String TAG = Constants.TAG;
 
     FindFiles(View rootView, RequestQueue queue) {
-        Log.d(TAG,"Inside FindFiles");
         this.queue = queue;
         context = rootView.getContext();
 
@@ -100,7 +99,6 @@ public class FindFiles {
     }
 
     void start(final String did) {
-        Log.d(TAG,"Starting da thingz!");
         savedID = did;
         String url = String.format(Constants.DID, did);
 
@@ -108,7 +106,6 @@ public class FindFiles {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(TAG,"inside onReponse");
                         json = response;
                         List<String> fid = null;
                         try {
@@ -143,7 +140,6 @@ public class FindFiles {
     }
 
     private void queryDirs(List<String> did) {
-        Log.d(TAG,"querying dirs");
 
         for (String url : did) {
             final String link = url;
@@ -178,7 +174,6 @@ public class FindFiles {
     }
 
     private List<String> parse() throws Exception {
-        Log.d(TAG,"Jobless so parsing shit");
         JSONObject afhJson;
         afhJson = new JSONObject(json);
         mTextView.setText("");
@@ -191,7 +186,6 @@ public class FindFiles {
     }
 
     private void print() {
-        Log.d(TAG,"Why the fuck we printing crap?");
         if(sortByDate) {
             Collections.sort(filesD, Comparators.byUploadDate);
         } else {
@@ -203,7 +197,6 @@ public class FindFiles {
     }
 
     private void parseFiles(String Json) throws Exception {
-        Log.d(TAG,"Bored so parse some files, k?");
         JSONObject fileJson = new JSONObject(Json);
 
         JSONObject data;
