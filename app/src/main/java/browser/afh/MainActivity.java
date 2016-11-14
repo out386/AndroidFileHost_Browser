@@ -20,13 +20,12 @@ package browser.afh;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.mikepenz.aboutlibraries.ui.LibsFragment;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -43,22 +42,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         final Context context = this;
-        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription("The things!"),
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_libraries).withIcon(R.drawable.ic_info_black_24px).withIdentifier(1).withDescription(R.string.drawer_desc_libraries),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.settings).withIcon(R.drawable.ic_settings_black_24px).withIdentifier(1).withDescription("Settings for AFH Browser")
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings_black_24px).withIdentifier(2).withDescription(R.string.drawer_desc_settings)
                 )
                 .withCloseOnClick(true)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem.getIdentifier()==1){
+                        if (drawerItem.getIdentifier() == 0) {
+                            mainFragment();
+                        } else if (drawerItem.getIdentifier() == 1) {
+                            FragmentManager fragmentManager = getFragmentManager();
+                            fragmentManager.beginTransaction()
+                                    .replace(R.id.mainFrame, new LibsFragment())
+                                    .commit();
+                        } else if (drawerItem.getIdentifier() == 2) {
                             Intent intent = new Intent(context, PreferencesActivity.class);
                             startActivity(intent);
                         }
@@ -66,7 +72,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
+        mainFragment();
 
+    }
+
+    public void mainFragment() {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, new MainFragment())

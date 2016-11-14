@@ -3,7 +3,7 @@
         android:enabled="true"
         android:icon="@drawable/ic_settings_black_24px"
         android:shortcutId="settings"
-        android:shortcutShortLabel="@string/settings">
+        android:shortcutShortLabel="@string/drawer_title_settings">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass=".activities.PreferencesActivity"
@@ -15,7 +15,7 @@
         android:enabled="true"
         android:icon="@drawable/ic_home_black_24px"
         android:shortcutId="home"
-        android:shortcutShortLabel="@string/home">
+        android:shortcutShortLabel="@string/drawer_title_home">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass=".MainActivity"
