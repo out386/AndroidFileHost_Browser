@@ -23,11 +23,13 @@ package browser.afh.data;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -36,6 +38,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.baoyz.widget.PullRefreshLayout;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.adapters.FastItemAdapter;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
+import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
+import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,7 +56,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import browser.afh.R;
-import browser.afh.adapters.DeviceAdapter;
+import browser.afh.adapters.StickyHeaderAdapter;
 import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
@@ -62,7 +70,7 @@ public class FindDevices {
     private final PullRefreshLayout deviceRefreshLayout;
     private List<Device> devices = new ArrayList<>();
     private int currentPage = 1;
-    private DeviceAdapter devAdapter;
+    private FastItemAdapter devAdapter;
     private int pages[];
     private FindFiles findFiles;
     private boolean refresh = false;
@@ -71,10 +79,39 @@ public class FindDevices {
         this.rootView = rootView;
         this.queue = queue;
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
-        devAdapter = new DeviceAdapter(rootView.getContext(), R.layout.device_items, devices);
-        ListView deviceList = (ListView) rootView.findViewById(R.id.deviceList);
+
+        devAdapter = new FastItemAdapter();
+        final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
+        deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        devAdapter.withSelectable(true);
+        final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();
+        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
+        final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
+        deviceRecyclerView.addItemDecoration(decoration);
+        TouchScrollBar materialScrollBar = new TouchScrollBar(rootView.getContext(), deviceRecyclerView, true);
+        materialScrollBar.setHandleColour(ContextCompat.getColor(rootView.getContext(), R.color.accent));
+        materialScrollBar.addIndicator(new AlphabetIndicator(rootView.getContext()), true);
+
+
+        /* Needed to prevent PullRefreshLayout from refreshing every time someone
+         * tries to scroll down. The fast scrollbar needs RecyclerView to be a child
+         * of a RelativeLayout. PullRefreshLayout needs a scrollable child. That makes this
+         * workaround necessary.
+         */
+        deviceRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int scroll = deviceRecyclerView.computeVerticalScrollOffset();
+                if (scroll == 0)
+                    deviceRefreshLayout.setEnabled(true);
+                else
+                    deviceRefreshLayout.setEnabled(false);
+            }
+        });
+
         findFiles = new FindFiles(rootView, queue);
-        deviceList.setAdapter(devAdapter);
 
         deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
@@ -86,12 +123,13 @@ public class FindDevices {
             }
         });
 
-        deviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        devAdapter.withOnClickListener(new FastAdapter.OnClickListener<Device>() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public boolean onClick(View v, IAdapter<Device> adapter, Device item, int position) {
                 animate();
                 ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
-                findFiles.start(devices.get(i).did);
+                findFiles.start(devices.get(position).did);
+                return true;
             }
         });
 
@@ -192,6 +230,7 @@ public class FindDevices {
 
     private void displayDevices() {
         devAdapter.notifyDataSetChanged();
+        devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
         Thread t = new Thread(new Runnable() {
             @Override
@@ -249,9 +288,7 @@ public class FindDevices {
         @Override
         protected void onPostExecute(List output){
             if(output != null) {
-                devAdapter.clear();
                 devices = output;
-                devAdapter.addAll(devices);
                 queue.start();
                 displayDevices();
             } else {

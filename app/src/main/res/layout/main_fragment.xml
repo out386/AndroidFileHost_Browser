@@ -29,11 +29,16 @@
             android:id="@+id/deviceRefresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <ListView
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false">
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/deviceList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:divider="@null" />
+            </RelativeLayout>
         </com.baoyz.widget.PullRefreshLayout>
     </android.support.v7.widget.CardView>
 

@@ -17,9 +17,18 @@ package browser.afh.types;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.Serializable;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
-public class Device implements Serializable{
+import com.mikepenz.fastadapter.items.AbstractItem;
+
+import java.io.Serializable;
+import java.util.List;
+
+import browser.afh.R;
+
+public class Device extends AbstractItem<Device, Device.ViewHolder> implements Serializable {
     public String did;
     public String manufacturer;
     public String device_name;
@@ -27,5 +36,40 @@ public class Device implements Serializable{
         this.did = did;
         this.manufacturer = manufacturer;
         this.device_name = device_name;
+    }
+
+    @Override
+    public int getType() {
+        return R.id.mName;
+    }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.device_items;
+    }
+
+    @Override
+    public void bindView(ViewHolder viewHolder, List payloads) {
+        super.bindView(viewHolder, payloads);
+        viewHolder.mName.setText(manufacturer);
+        viewHolder.dName.setText(device_name);
+    }
+
+    @Override
+    public void unbindView(ViewHolder holder) {
+        super.unbindView(holder);
+        holder.mName.setText(null);
+        holder.dName.setText(null);
+    }
+
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
+        protected TextView mName;
+        protected TextView dName;
+
+        public ViewHolder(View view) {
+            super(view);
+            this.mName = (TextView) view.findViewById(R.id.mName);
+            this.dName = (TextView) view.findViewById(R.id.dName);
+        }
     }
 }

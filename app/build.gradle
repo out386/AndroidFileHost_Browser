@@ -48,10 +48,16 @@ dependencies {
     compile 'com.android.support:cardview-v7:25.0.0'
     compile 'com.android.support:design:25.0.0'
     compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
     compile('com.mikepenz:materialdrawer:5.7.0@aar') {
         transitive = true
     }
     compile('com.mikepenz:aboutlibraries:5.8.5@aar') {
         transitive = true
     }
+    compile('com.mikepenz:fastadapter:2.0.0@aar') {
+        transitive = true
+    }
+    compile 'com.mikepenz.thirdparty:stickyheadersrecyclerview:0.4.4-SNAPSHOT@aar'
+    compile 'com.turingtechnologies.materialscrollbar:lib:10.0.1'
 }
