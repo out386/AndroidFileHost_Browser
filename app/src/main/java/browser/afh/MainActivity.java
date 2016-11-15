@@ -17,6 +17,7 @@ package browser.afh;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
@@ -25,7 +26,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.mikepenz.aboutlibraries.ui.LibsFragment;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -49,21 +51,23 @@ public class MainActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_libraries).withIcon(R.drawable.ic_info_black_24px).withIdentifier(1).withDescription(R.string.drawer_desc_libraries),
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_libraries).withIcon(R.drawable.ic_info_black_24px).withIdentifier(1).withDescription(R.string.drawer_desc_libraries).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings_black_24px).withIdentifier(2).withDescription(R.string.drawer_desc_settings)
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings_black_24px).withIdentifier(2).withDescription(R.string.drawer_desc_settings).withSelectable(false)
                 )
                 .withCloseOnClick(true)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem.getIdentifier() == 0) {
-                            mainFragment();
+                            changeFragment(new MainFragment());
                         } else if (drawerItem.getIdentifier() == 1) {
-                            FragmentManager fragmentManager = getFragmentManager();
-                            fragmentManager.beginTransaction()
-                                    .replace(R.id.mainFrame, new LibsFragment())
-                                    .commit();
+                            new LibsBuilder()
+                                    .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                    .withAboutAppName(getString(R.string.app_name))
+                                    .withAboutIconShown(true)
+                                    .withAboutVersionShown(true)
+                                    .start(context);
                         } else if (drawerItem.getIdentifier() == 2) {
                             Intent intent = new Intent(context, PreferencesActivity.class);
                             startActivity(intent);
@@ -72,14 +76,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
-        mainFragment();
+        changeFragment(new MainFragment());
 
     }
-
-    public void mainFragment() {
+    public void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.mainFrame, new MainFragment())
+                .replace(R.id.mainFrame, fragment)
                 .commit();
     }
 }
