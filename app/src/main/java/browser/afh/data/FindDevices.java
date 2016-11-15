@@ -128,7 +128,10 @@ public class FindDevices {
             public boolean onClick(View v, IAdapter<Device> adapter, Device item, int position) {
                 animate();
                 ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
-                findFiles.start(devices.get(position).did);
+                // Just in case monkeys decide to tap around while the list is refreshing
+                // (List is cleared before refresh)
+                if (devices.size() > position)
+                    findFiles.start(devices.get(position).did);
                 return true;
             }
         });
@@ -229,7 +232,6 @@ public class FindDevices {
     }
 
     private void displayDevices() {
-        devAdapter.notifyDataSetChanged();
         devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
         Thread t = new Thread(new Runnable() {
