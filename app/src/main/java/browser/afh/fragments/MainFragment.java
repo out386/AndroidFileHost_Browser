@@ -30,7 +30,7 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 
-import browser.afh.utils.FindDevices;
+import browser.afh.data.FindDevices;
 import browser.afh.R;
 
 public class MainFragment extends Fragment {

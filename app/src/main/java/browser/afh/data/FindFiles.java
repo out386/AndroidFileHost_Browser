@@ -1,4 +1,4 @@
-package browser.afh.utils;
+package browser.afh.data;
 
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
