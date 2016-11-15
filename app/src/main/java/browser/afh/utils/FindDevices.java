@@ -252,6 +252,7 @@ public class FindDevices {
                 devAdapter.clear();
                 devices = output;
                 devAdapter.addAll(devices);
+                queue.start();
                 displayDevices();
             } else {
                 deviceRefreshLayout.setRefreshing(true);

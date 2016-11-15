@@ -135,7 +135,7 @@ public class FindFiles {
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);
     }
 
@@ -166,7 +166,7 @@ public class FindFiles {
                 }
             });
 
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(stringRequest);
 
         }
@@ -182,6 +182,8 @@ public class FindFiles {
         for (int i = 0; i < data.length(); i++) {
             fid.add(String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
         }
+        // The first list of available files is here
+        pullRefreshLayout.setRefreshing(false);
         return fid;
     }
 
@@ -191,7 +193,7 @@ public class FindFiles {
         } else {
             Collections.sort(filesD, Comparators.byFileName);
         }
-        Log.i(Constants.TAG, "New Files: Data changed : " + filesD.size() + " items");
+        Log.i(TAG, "New Files: Data changed : " + filesD.size() + " items");
         adapter.notifyDataSetChanged();
 
     }
