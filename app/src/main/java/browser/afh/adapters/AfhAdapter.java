@@ -21,6 +21,8 @@ package browser.afh.adapters;
  */
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +30,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
-import android.text.*;
 import android.text.method.*;
 
 import browser.afh.R;
@@ -47,11 +48,17 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         View v = convertView;
         if(v == null)
             v= LayoutInflater.from(getContext()).inflate(R.layout.afh_items,null);
-        AfhFiles p = getItem(position);
+        final AfhFiles p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
-            //TextView link = (TextView) v.findViewById(R.id.rurl);
-            name.setText(Html.fromHtml("<a href=" + p.url + ">" + p.filename + "</a>"));
+            name.setText(p.filename);
+            name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(p.url));
+                    context.startActivity(intent);
+                }
+            });
             //link.setText(p.url);
 			name.setMovementMethod(LinkMovementMethod.getInstance());
         }
