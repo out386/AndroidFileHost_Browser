@@ -13,4 +13,13 @@
 		android:paddingStart="8dp"
 		android:gravity="center"
         android:textSize="16sp" />
+    <TextView
+        android:id="@+id/rsize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="8dp"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
+        android:gravity="end"
+        android:textSize="16sp" />
 </LinearLayout>

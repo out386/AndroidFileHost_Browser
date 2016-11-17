@@ -21,16 +21,17 @@ package browser.afh.adapters;
  */
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
+import android.support.customtabs.CustomTabsIntent;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+
 import java.util.List;
-import android.text.method.*;
 
 import browser.afh.R;
 import browser.afh.types.AfhFiles;
@@ -43,6 +44,12 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         this.context = context;
     }
 
+    private void customTab(String Url){
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setShowTitle(true);
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(context, Uri.parse(Url));
+    }
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
         View v = convertView;
@@ -51,15 +58,15 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         final AfhFiles p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
+            TextView size = (TextView) v.findViewById(R.id.rsize);
             name.setText(p.filename);
+            size.setText(p.file_size);
             name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(p.url));
-                    context.startActivity(intent);
+                    customTab(p.url);
                 }
             });
-            //link.setText(p.url);
 			name.setMovementMethod(LinkMovementMethod.getInstance());
         }
         return v;

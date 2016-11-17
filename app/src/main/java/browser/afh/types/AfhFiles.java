@@ -21,10 +21,10 @@ public class AfhFiles
 {
 	public String filename;
 	public String url;
-	public String upload_date;
-	public AfhFiles(String f, String u, String d) {
+	public String file_size;
+	public AfhFiles(String f, String u, String s) {
 		filename = f;
 		url = u;
-		upload_date = d;
+		file_size = String.valueOf(Integer.parseInt(s)/(1024*1024))+"MB";
 	}
 }
