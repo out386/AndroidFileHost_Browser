@@ -23,10 +23,12 @@ public class AfhFiles
 {
 	public String filename;
 	public String url;
+	public String upload_date;
 	public String file_size;
-	public AfhFiles(String f, String u, String s) {
+	public AfhFiles(String f, String u, String d, String s) {
 		filename = f;
 		url = u;
+		upload_date = d;
 		file_size = Utils.sizeFormat(Integer.parseInt(s));
 	}
 }

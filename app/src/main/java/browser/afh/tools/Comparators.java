@@ -26,7 +26,7 @@ public class Comparators {
     public static Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
-            return -(f1.file_size.compareTo(f2.file_size));
+            return -(f1.upload_date.compareTo(f2.upload_date));
         }
     };
     public static Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {

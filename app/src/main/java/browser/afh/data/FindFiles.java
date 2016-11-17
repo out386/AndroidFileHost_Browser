@@ -219,8 +219,9 @@ public class FindFiles {
                 JSONObject file = files.getJSONObject(i);
                 String name = file.getString("name");
                 String url = file.getString("url");
+                String upload_date = file.getString("upload_date");
                 String file_size = file.getString("file_size");
-                filesD.add(new AfhFiles(name, url, file_size));
+                filesD.add(new AfhFiles(name, url, upload_date, file_size));
             }
         }
         JSONArray folders = null;
