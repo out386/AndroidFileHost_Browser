@@ -17,6 +17,8 @@ package browser.afh.types;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import browser.afh.tools.Utils;
+
 public class AfhFiles
 {
 	public String filename;
@@ -25,6 +27,6 @@ public class AfhFiles
 	public AfhFiles(String f, String u, String s) {
 		filename = f;
 		url = u;
-		file_size = String.valueOf(Integer.parseInt(s)/(1024*1024))+"MB";
+		file_size = Utils.sizeFormat(Integer.parseInt(s));
 	}
 }
