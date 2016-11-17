@@ -14,7 +14,7 @@ import com.turingtechnologies.materialscrollbar.INameableAdapter;
 import java.util.List;
 
 import browser.afh.R;
-import browser.afh.types.Device;
+import browser.afh.types.DeviceData;
 
 /**
  * Created by mikepenz on 30.12.15.
@@ -28,8 +28,8 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
 
         //in our sample we want a separate header per first letter of our items
         //this if is not necessary for your code, we only use it as this sticky header is reused for different item implementations
-        if (item instanceof Device && ((Device) item).manufacturer != null) {
-            return Character.toUpperCase(((Device) item).manufacturer.charAt(0));
+        if (item instanceof DeviceData && ((DeviceData) item).manufacturer != null) {
+            return Character.toUpperCase(((DeviceData) item).manufacturer.charAt(0));
         }
         return -1;
     }
@@ -47,9 +47,9 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
         TextView textView = (TextView) holder.itemView.findViewById(R.id.headerTV);
 
         IItem item = getItem(position);
-        if (item instanceof Device && ((Device) item).manufacturer != null) {
+        if (item instanceof DeviceData && ((DeviceData) item).manufacturer != null) {
             //based on the position we set the headers text
-            textView.setText(String.valueOf(((Device) item).manufacturer.charAt(0)).toUpperCase());
+            textView.setText(String.valueOf(((DeviceData) item).manufacturer.charAt(0)).toUpperCase());
         }
     }
 
@@ -99,7 +99,7 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
     @Override
     public Character getCharacterForElement(int element) {
         IItem item = getItem(element);
-        return ((Device) item).manufacturer.charAt(0);
+        return ((DeviceData) item).manufacturer.charAt(0);
     }
 
 }

@@ -3,7 +3,7 @@ package browser.afh.tools;
 import java.util.Comparator;
 
 import browser.afh.types.AfhFiles;
-import browser.afh.types.Device;
+import browser.afh.types.DeviceData;
 
 /*
  * This file is part of AFH Browser.
@@ -35,9 +35,9 @@ public class Comparators {
             return (f1.filename.compareToIgnoreCase(f2.filename));
         }
     };
-    public static Comparator <Device> byManufacturer = new Comparator<Device>() {
+    public static Comparator <DeviceData> byManufacturer = new Comparator<DeviceData>() {
         @Override
-        public int compare(Device f1, Device f2) {
+        public int compare(DeviceData f1, DeviceData f2) {
             return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
         }
     };

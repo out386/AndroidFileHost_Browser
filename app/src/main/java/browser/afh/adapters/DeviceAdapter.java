@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import browser.afh.R;
-import browser.afh.types.Device;
+import browser.afh.types.DeviceData;
 
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386)
@@ -32,10 +32,10 @@ import browser.afh.types.Device;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class DeviceAdapter extends ArrayAdapter<Device> {
+public class DeviceAdapter extends ArrayAdapter<DeviceData> {
     private Context context;
 
-    public DeviceAdapter(Context context, int resource, List<Device> items) {
+    public DeviceAdapter(Context context, int resource, List<DeviceData> items) {
         super(context, resource, items);
         this.context = context;
     }
@@ -45,7 +45,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         View v = convertView;
         if (v == null)
             v = LayoutInflater.from(getContext()).inflate(R.layout.device_items, null);
-        Device p = getItem(position);
+        DeviceData p = getItem(position);
         if (p != null) {
             TextView manufacturer = (TextView) v.findViewById(R.id.mName);
             TextView dev = (TextView) v.findViewById(R.id.dName);

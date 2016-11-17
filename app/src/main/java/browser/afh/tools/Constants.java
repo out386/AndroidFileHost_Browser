@@ -21,6 +21,15 @@ package browser.afh.tools;
  */
 
 public class Constants {
+    public static final String BASE_URL = "https://www.androidfilehost.com/";
+    public static final String ENDPOINT = "api";
+
+    /* The number of pages of devices at the time of writing
+     * This allows parallel requesting of multiple pages
+     * This number does not need to be accurate
+     */
+    public static final int MIN_PAGES = 9;
+
     public static final String DID = "https://www.androidfilehost.com/api/?action=developers&did=%s&limit=100";
     public static final String FLID = "https://www.androidfilehost.com/api/?action=folder&flid=%s";
     public static final String TAG = "AFHBrowser";

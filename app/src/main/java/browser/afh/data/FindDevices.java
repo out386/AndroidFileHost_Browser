@@ -31,12 +31,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.baoyz.widget.PullRefreshLayout;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
@@ -44,9 +39,6 @@ import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,7 +52,12 @@ import browser.afh.adapters.StickyHeaderAdapter;
 import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
+import browser.afh.tools.Retrofit.ApiInterface;
+import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.types.Device;
+import browser.afh.types.DeviceData;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class FindDevices {
 
@@ -68,12 +65,12 @@ public class FindDevices {
     private View rootView;
     private RequestQueue queue;
     private final PullRefreshLayout deviceRefreshLayout;
-    private List<Device> devices = new ArrayList<>();
-    private int currentPage = 1;
+    private List<DeviceData> devices = new ArrayList<>();
+    private int currentPage = 0;
     private FastItemAdapter devAdapter;
-    private int pages[];
+    private int pages[] = null;
     private FindFiles findFiles;
-    private boolean refresh = false;
+    private boolean refresh = false, morePagesRequested = false;
 
     public FindDevices(final View rootView, final RequestQueue queue) {
         this.rootView = rootView;
@@ -117,15 +114,15 @@ public class FindDevices {
             @Override
             public void onRefresh() {
                 devices.clear();
-                currentPage = 1;
+                currentPage = 0;
                 refresh = true;
                 findFirstDevice();
             }
         });
 
-        devAdapter.withOnClickListener(new FastAdapter.OnClickListener<Device>() {
+        devAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceData>() {
             @Override
-            public boolean onClick(View v, IAdapter<Device> adapter, Device item, int position) {
+            public boolean onClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
                 animate();
                 ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
                 // Just in case monkeys decide to tap around while the list is refreshing
@@ -139,96 +136,64 @@ public class FindDevices {
     }
 
     public void findFirstDevice() {
+
         deviceRefreshLayout.setRefreshing(true);
+        ApiInterface retro = RetroClient.getRetrofit().create(ApiInterface.class);
         if (!refresh) {
             File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
             new ReadCache(cacheFile).execute();
             return;
         }
-        String url = "https://www.androidfilehost.com/api/?action=devices&page=1&limit=100";
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            Log.i(TAG, "onResponseJson: " + response);
-                            processFindDevices(response);
-                        } catch (Exception e) {
-                            Log.i(TAG, "onResponse: " + e.toString());
-                        }
-                    }
-                }, new Response.ErrorListener() {
+
+        for (int page = 1; page <= Constants.MIN_PAGES; page++) {
+            findDevices(page, retro);
+        }
+    }
+
+    private void findDevices(final int pageNumber, final ApiInterface retro) {
+        Log.i(TAG, "findDevices: Queueing page : " + pageNumber);
+        Call<Device> call = retro.getDevices("devices", pageNumber, 100);
+        call.enqueue(new Callback<Device>() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                if (error.toString().contains("NoConnectionError")) {
-                    deviceRefreshLayout.setRefreshing(false);
+            public void onResponse(Call<Device> call, retrofit2.Response<Device> response) {
+                Log.i(TAG, "onResponse: Page number : " + pageNumber);
+                currentPage++;
+                String message = response.body().message;
+                Log.i(TAG, "onResponseJson: " + message);
+                List<DeviceData> deviceDatas;
+
+                if (response.body().data == null) {
+                    Log.i(TAG, "NULL!");
                     return;
                 }
-                Log.i(TAG, "onErrorResponse: " + error.toString());
+                deviceDatas = response.body().data;
+                int size = devices.size();
+                if (deviceDatas != null)
+                    devices.addAll(deviceDatas);
+                Log.i(TAG, "onResponseJson: in devices: " + devices.get(size == 0 ? 0 : size - 1).device_name + " " + devices.size() + "elements");
+
+                if (pages == null) {
+                    pages = findDevicePageNumbers(message);
+                } else {
+                    if (currentPage >= pages[3]) {
+                        Collections.sort(devices, Comparators.byManufacturer);
+                        displayDevices();
+                    } else {
+                        if (!morePagesRequested) {
+                            morePagesRequested = true;
+                            for (int newPages = Constants.MIN_PAGES + 1; newPages <= pages[3]; newPages++)
+                                findDevices(newPages, retro);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Device> call, Throwable t) {
+                Log.i(TAG, "onErrorResponse: " + t.toString());
                 findFirstDevice();
             }
         });
-
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.start();
-        queue.add(stringRequest);
-    }
-
-    private void findSubsequentDevices(final int pageNumber) {
-        final String url = "https://www.androidfilehost.com/api/?action=devices&page=" + pageNumber + "&limit=100";
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        currentPage++;
-                        try {
-                            JSONObject deviceListJson = new JSONObject(response);
-                            Log.i(TAG, "onResponseSubs: " + url);
-                            parseDevices(deviceListJson.getJSONArray("DATA"));
-                        } catch (Exception e) {
-                            currentPage--;
-                            Log.i(TAG, "onResponse: " + e.toString());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if (error.toString().contains("NoConnectionError")) {
-                    deviceRefreshLayout.setRefreshing(false);
-                    return;
-                }
-                Log.i(TAG, "onErrorResponseSubs: " + error.toString());
-                findSubsequentDevices(pageNumber);
-            }
-        });
-
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.add(stringRequest);
-    }
-
-
-    private void processFindDevices(String json) throws Exception {
-        JSONObject deviceListJson = new JSONObject(json);
-        String message = deviceListJson.getString("MESSAGE");
-        pages = findDevicePageNumbers(message);
-        parseDevices(deviceListJson.getJSONArray("DATA"));
-        Log.i(TAG, "processFindDevices: " + pages[3]);
-        for (int currentPage = 2; currentPage <= pages[3]; currentPage++)
-            findSubsequentDevices(currentPage);
-
-    }
-
-    private void parseDevices(JSONArray data) throws Exception {
-        if (data != null)
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject dev = data.getJSONObject(i);
-                Device device = new Device(dev.getString("did"), dev.getString("manufacturer"), dev.getString("device_name"));
-                devices.add(device);
-            }
-        if (currentPage == pages[3]) {
-            Collections.sort(devices, Comparators.byManufacturer);
-            displayDevices();
-        }
     }
 
     private void displayDevices() {
@@ -280,16 +245,19 @@ public class FindDevices {
 
     private class ReadCache extends AsyncTask<Void, Void, List> {
         File cacheFile;
+
         ReadCache(File cacheFile) {
             this.cacheFile = cacheFile;
         }
+
         @Override
         public List doInBackground(Void... v) {
             return CacheList.read(cacheFile);
         }
+
         @Override
-        protected void onPostExecute(List output){
-            if(output != null) {
+        protected void onPostExecute(List output) {
+            if (output != null) {
                 devices = output;
                 queue.start();
                 displayDevices();
