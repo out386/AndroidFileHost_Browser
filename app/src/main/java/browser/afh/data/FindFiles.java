@@ -40,9 +40,12 @@ import com.baoyz.widget.PullRefreshLayout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import browser.afh.R;
 import browser.afh.adapters.AfhAdapter;
@@ -62,10 +65,14 @@ public class FindFiles {
     private final RequestQueue queue;
     private final Context context;
     private final String TAG = Constants.TAG;
+    SimpleDateFormat sdf;
 
     FindFiles(View rootView, RequestQueue queue) {
         this.queue = queue;
         context = rootView.getContext();
+
+        sdf = new SimpleDateFormat("yyyy/MM/dd \nHH:mm");
+        sdf.setTimeZone(TimeZone.getDefault());
 
         mTextView = (TextView) rootView.findViewById(R.id.tv);
         sv = (ScrollView) rootView.findViewById(R.id.tvSv);
@@ -221,7 +228,8 @@ public class FindFiles {
                 String url = file.getString("url");
                 String upload_date = file.getString("upload_date");
                 String file_size = file.getString("file_size");
-                filesD.add(new AfhFiles(name, url, upload_date, file_size));
+                String hDate = sdf.format(new Date(Integer.parseInt(upload_date) * 1000L));
+                filesD.add(new AfhFiles(name, url, file_size, hDate));
             }
         }
         JSONArray folders = null;

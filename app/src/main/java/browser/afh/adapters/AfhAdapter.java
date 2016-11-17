@@ -59,15 +59,16 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
             TextView size = (TextView) v.findViewById(R.id.rsize);
+            TextView date = (TextView) v.findViewById(R.id.rdate);
             name.setText(p.filename);
             size.setText(p.file_size);
-            name.setOnClickListener(new View.OnClickListener() {
+            date.setText(p.hDate);
+            v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     customTab(p.url);
                 }
             });
-			name.setMovementMethod(LinkMovementMethod.getInstance());
         }
         return v;
     }

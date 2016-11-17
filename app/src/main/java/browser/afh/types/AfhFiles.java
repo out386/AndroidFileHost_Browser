@@ -17,18 +17,22 @@ package browser.afh.types;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import browser.afh.tools.Utils;
 
 public class AfhFiles
 {
 	public String filename;
 	public String url;
-	public String upload_date;
 	public String file_size;
-	public AfhFiles(String f, String u, String d, String s) {
+    public String hDate;
+	public AfhFiles(String f, String u, String s, String hDate) {
 		filename = f;
 		url = u;
-		upload_date = d;
+        this.hDate = hDate;
 		file_size = Utils.sizeFormat(Integer.parseInt(s));
 	}
 }
