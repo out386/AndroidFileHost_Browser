@@ -237,7 +237,7 @@ public class FindDevices {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.GONE);
                         filesHolder.animate()
-                                .setDuration(500)
+                                .setDuration(200)
                                 .alpha(1.0f);
                     }
                 });
