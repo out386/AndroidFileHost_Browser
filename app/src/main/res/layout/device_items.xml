@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingBottom="15dp"
-    android:paddingTop="15dp">
+    android:paddingTop="15dp"
+    android:background="?android:selectableItemBackground">
 
     <TextView
         android:id="@+id/mName"
