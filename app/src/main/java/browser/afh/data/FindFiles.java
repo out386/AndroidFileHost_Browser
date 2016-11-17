@@ -108,31 +108,36 @@ public class FindFiles {
     void start(final String did) {
         savedID = did;
         String url = String.format(Constants.DID, did);
-
+        Log.i(TAG, "start: DID: " + did);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        Log.i(TAG, "onResponse: " + response);
                         json = response;
                         List<String> fid = null;
                         try {
                             sv.setVisibility(View.GONE);
                             fid = parse();
                         } catch (Exception e) {
+                            Log.i(TAG, "onResponse: ERRORS! " + e.toString());
                             pullRefreshLayout.setRefreshing(false);
                             sv.setVisibility(View.VISIBLE);
                             mTextView.setText(String.format(context.getString(R.string.json_parse_error),  e.toString()));
                         }
-                        sv.setVisibility(View.GONE);
-                        if(fid != null)
+                        if(fid != null && fid.size() > 0) {
+                            Log.i(TAG, "onResponse: NOT NULL : " + fid.get(0));
+                            sv.setVisibility(View.GONE);
                             queryDirs(fid);
-
+                        }
+                        else Log.i(TAG, "onResponse: Fid null");
 
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 if (error.toString().contains("NoConnectionError")) {
+                    Log.i(TAG, "onErrorResponse: No connection");
                     pullRefreshLayout.setRefreshing(false);
                     return;
                 }
@@ -142,18 +147,20 @@ public class FindFiles {
             }
         });
 
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(stringRequest);
     }
 
     private void queryDirs(List<String> did) {
 
         for (String url : did) {
+            Log.i(TAG, "queryDirs: did : " + did);
             final String link = url;
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
+                            Log.i(TAG, "onResponseDirs: " + response);
                             try {
                                 parseFiles(response);
                             } catch (Exception e) {
@@ -173,7 +180,7 @@ public class FindFiles {
                 }
             });
 
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(60000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
             queue.add(stringRequest);
 
         }
@@ -187,7 +194,12 @@ public class FindFiles {
         List<String> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
         for (int i = 0; i < data.length(); i++) {
+            Log.i(TAG, "parse: " + data.getJSONObject(i).getString(context.getString(R.string.flid_key)));
             fid.add(String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
+        }
+        if (fid.size() == 0) {
+            sv.setVisibility(View.VISIBLE);
+            mTextView.setText("No files were found for this device.");
         }
         // The first list of available files is here
         pullRefreshLayout.setRefreshing(false);
@@ -212,7 +224,7 @@ public class FindFiles {
         if(fileJson.isNull("DATA"))
             return;
 
-        // Data will be an Object, but if it is empty, it'll be an Array
+        // Data will be an Object, but if it is empty, it'll be an array
         Object dataObj = fileJson.get("DATA");
         if(! (dataObj instanceof JSONObject))
             return;
