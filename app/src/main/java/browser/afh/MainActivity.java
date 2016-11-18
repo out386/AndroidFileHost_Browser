@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         final Context context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -85,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
-        boolean idgaf_cuz_I_eez_reech = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("idgaf_for_data_costs_i_eez_reech", false);
-        if (!idgaf_cuz_I_eez_reech){
+        boolean isFirstInternetWarning = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("idgaf_for_data_costs_i_eez_reech", false);
+        if (!isFirstInternetWarning){
             if (checkIfMobileData()){
                 new BottomDialog.Builder(this)
                         .setTitle(R.string.bottom_dialog_warning_title)
