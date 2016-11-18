@@ -17,15 +17,23 @@ package browser.afh;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -36,6 +44,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import browser.afh.activities.PreferencesActivity;
 import browser.afh.fragments.MainFragment;
+import browser.afh.tools.Constants;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -76,7 +85,40 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
-        changeFragment(new MainFragment());
+        boolean idgaf_cuz_I_eez_reech = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("idgaf_for_data_costs_i_eez_reech", false);
+        if (!idgaf_cuz_I_eez_reech){
+            if (checkIfMobileData()){
+                new BottomDialog.Builder(this)
+                        .setTitle(R.string.bottom_dialog_warning_title)
+                        .setContent(R.string.bottom_dialog_warning_desc)
+                        .setPositiveText(R.string.bottom_dialog_positive_text)
+                        .setNegativeText(R.string.bottom_dialog_negative_text)
+                        .setNegativeTextColorResource(R.color.colorAccent)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @SuppressLint("CommitPrefEdits")
+                            @Override
+                            public void onClick(@NonNull BottomDialog bottomDialog) {
+                                bottomDialog.dismiss();
+                                changeFragment(new MainFragment());
+                                SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                                edit.putBoolean("idgaf_for_data_costs_i_eez_reech", true);
+                                edit.commit();
+                            }
+                        })
+                        .onNegative(new BottomDialog.ButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull BottomDialog bottomDialog) {
+                                bottomDialog.dismiss();
+                                finish();
+                            }
+                        })
+                        .show();
+            }else{
+                changeFragment(new MainFragment());
+            }
+        }else{
+            changeFragment(new MainFragment());
+        }
 
     }
     public void changeFragment(Fragment fragment) {
@@ -84,5 +126,10 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, fragment)
                 .commit();
+    }
+
+    public boolean checkIfMobileData() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected();
     }
 }
