@@ -13,5 +13,9 @@
     <string name="drawer_desc_settings">Settings for AFH Browser</string>
     <string name="drawer_title_libraries">Used Libraries</string>
     <string name="drawer_desc_libraries">Libraries used to make this app</string>
+    <string name="bottom_dialog_warning_title">Warning</string>
+    <string name="bottom_dialog_warning_desc">The app may download potentially large amounts of data, are you sure you want to continue using mobile data?</string>
+    <string name="bottom_dialog_positive_text">Yes</string>
+    <string name="bottom_dialog_negative_text">Exit</string>
 
 </resources>
