@@ -73,5 +73,9 @@ dependencies {
     }
     compile 'com.mikepenz.thirdparty:stickyheadersrecyclerview:0.4.4-SNAPSHOT@aar'
     compile 'com.turingtechnologies.materialscrollbar:lib:10.0.1'
+
+    // dialogs
     compile 'com.github.javiersantos:BottomDialogs:1.2.1'
+    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
+
 }

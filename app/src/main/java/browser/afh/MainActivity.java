@@ -21,6 +21,7 @@ import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -33,6 +34,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -124,6 +127,28 @@ public class MainActivity extends AppCompatActivity implements FindDevices.Appba
             }
         } else {
             changeFragment(new MainFragment());
+        }
+
+        boolean its_unofficial = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("its_unofficial", false);
+        if (!its_unofficial){
+            new MaterialDialog.Builder(context)
+                    .title(R.string.unofficial_disclaimer_title)
+                    .content(R.string.unofficial_disclaimer_text)
+                    .neutralText(R.string.file_dialog_neutral_button_label)
+                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            dialog.dismiss();
+                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("its_unofficial",true).apply();
+                        }
+                    })
+                    .dismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialogInterface) {
+                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("its_unofficial",true).apply();
+                        }
+                    })
+                    .build();
         }
 
     }

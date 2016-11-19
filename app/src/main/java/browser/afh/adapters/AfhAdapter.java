@@ -23,6 +23,7 @@ package browser.afh.adapters;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -30,6 +31,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.List;
 
@@ -58,39 +62,36 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         final AfhFiles p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
-            TextView size = (TextView) v.findViewById(R.id.rsize);
-            TextView date = (TextView) v.findViewById(R.id.rdate);
             name.setText(p.filename);
-            size.setText(p.file_size);
-            date.setText(p.hDate);
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    customTab(p.url);
-                }
-            });
             v.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-                    alertDialogBuilder.setIcon(R.drawable.afh_stalker);
-                    alertDialogBuilder.setTitle("Download");
-                    alertDialogBuilder.setMessage(String.format("Filename: %s" +
-                            "Size: %s" +
-                            "Uploaded: %s", p.filename, p.file_size, p.hDate));
-                    alertDialogBuilder.setPositiveButton("Open", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            customTab(p.url);
-                        }
-                    });
-                    alertDialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
+                    customTab(p.url);
                     return false;
+                }
+            });
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new MaterialDialog.Builder(context)
+                            .title(R.string.file_dialog_title)
+                            .content(String.format(context.getString(R.string.file_dialog_content), p.filename,p.file_size,p.hDate))
+                            .positiveText(R.string.file_dialog_positive_button_label)
+                            .neutralText(R.string.file_dialog_neutral_button_label)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    customTab(p.url);
+                                    dialog.dismiss();
+                                }
+                            })
+                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .build();
                 }
             });
         }
