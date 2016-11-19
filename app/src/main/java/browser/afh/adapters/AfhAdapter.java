@@ -1,7 +1,7 @@
 package browser.afh.adapters;
 
 /*
- * Copyright (C) 2016 Ritayan Chakraborty (out386)
+ * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
  */
 /*
  * This file is part of AFH Browser.
@@ -21,14 +21,15 @@ package browser.afh.adapters;
  */
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 
 import java.util.List;
 
@@ -66,6 +67,30 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                 @Override
                 public void onClick(View view) {
                     customTab(p.url);
+                }
+            });
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    alertDialogBuilder.setIcon(R.drawable.afh_stalker);
+                    alertDialogBuilder.setTitle("Download");
+                    alertDialogBuilder.setMessage(String.format("Filename: %s" +
+                            "Size: %s" +
+                            "Uploaded: %s", p.filename, p.file_size, p.hDate));
+                    alertDialogBuilder.setPositiveButton("Open", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            customTab(p.url);
+                        }
+                    });
+                    alertDialogBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    return false;
                 }
             });
         }
