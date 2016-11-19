@@ -4,9 +4,7 @@
     <string name="app_name">AfhBrowser</string>
     <string name="json_parse_error">Json parse error : %s</string>
     <string name="flid_key">flid</string>
-    <string name="enter_device_id">Enter device id</string>
-    <string name="start">start</string>
-    <string name="sort">Sort by decending order of date</string>
+    <string name="sort">Sort by date, latest first</string>
     <string name="drawer_title_home">Home</string>
     <string name="drawer_title_settings">Settings</string>
     <string name="drawer_desc_home">The things!</string>
@@ -19,5 +17,6 @@
     <string name="bottom_dialog_negative_text">Exit</string>
     <string name="device_list_header_text">Select the device you want files for from the list.</string>
     <string name="files_list_header_text">Tap a file to download it. If the list stays blank for too long, then close the app and try again. It is a server side problem, and nothing can be done about it.</string>
+    <string name="file_loading_wait">Working. This could take ages.</string>
 
 </resources>
