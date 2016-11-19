@@ -71,11 +71,15 @@ public class FindDevices {
     private int pages[] = null;
     private FindFiles findFiles;
     private boolean refresh = false, morePagesRequested = false;
+    private AppbarScroll appbarScroll;
+    private String headerMessage;
 
-    public FindDevices(final View rootView, final RequestQueue queue) {
+    public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll) {
         this.rootView = rootView;
         this.queue = queue;
+        this.appbarScroll = appbarScroll;
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
+        headerMessage = rootView.getContext().getResources().getString(R.string.device_list_header_text);
 
         devAdapter = new FastItemAdapter();
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
@@ -101,10 +105,18 @@ public class FindDevices {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 int scroll = deviceRecyclerView.computeVerticalScrollOffset();
-                if (scroll == 0)
+                if (scroll == 0) {
+                    appbarScroll.setText(headerMessage);
+                    appbarScroll.expand();
                     deviceRefreshLayout.setEnabled(true);
-                else
+                } else {
                     deviceRefreshLayout.setEnabled(false);
+                    if (scroll > 50) {
+                        appbarScroll.collapse();
+                        // Not needed now but will be used later. After a listener for the appbar is added
+                        headerMessage = appbarScroll.getText();
+                    }
+                }
             }
         });
 
@@ -124,6 +136,8 @@ public class FindDevices {
             @Override
             public boolean onClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
                 animate();
+                appbarScroll.expand();
+                appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
                 ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
                 // Just in case monkeys decide to tap around while the list is refreshing
                 // (List is cleared before refresh)
@@ -267,5 +281,12 @@ public class FindDevices {
                 findFirstDevice();
             }
         }
+    }
+
+    public interface AppbarScroll {
+        void expand();
+        void collapse();
+        void setText(String text);
+        String getText();
     }
 }

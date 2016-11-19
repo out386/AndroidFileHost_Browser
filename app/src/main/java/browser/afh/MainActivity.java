@@ -28,10 +28,12 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.mikepenz.aboutlibraries.Libs;
@@ -43,10 +45,14 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import browser.afh.activities.PreferencesActivity;
+import browser.afh.data.FindDevices;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.Constants;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FindDevices.AppbarScroll {
+
+    AppBarLayout appBarLayout;
+    TextView headerTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        headerTV = (TextView) findViewById(R.id.header_tv);
         new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -87,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .build();
         boolean isFirstInternetWarning = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("idgaf_for_data_costs_i_eez_reech", false);
-        if (!isFirstInternetWarning){
-            if (checkIfMobileData()){
+        if (!isFirstInternetWarning) {
+            if (checkIfMobileData()) {
                 new BottomDialog.Builder(this)
                         .setTitle(R.string.bottom_dialog_warning_title)
                         .setContent(R.string.bottom_dialog_warning_desc)
@@ -114,14 +122,15 @@ public class MainActivity extends AppCompatActivity {
                             }
                         })
                         .show();
-            }else{
+            } else {
                 changeFragment(new MainFragment());
             }
-        }else{
+        } else {
             changeFragment(new MainFragment());
         }
 
     }
+
     public void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction()
@@ -132,5 +141,22 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkIfMobileData() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected();
+    }
+
+    @Override
+    public void expand() {
+        appBarLayout.setExpanded(true, true);
+    }
+    @Override
+    public void collapse() {
+        appBarLayout.setExpanded(false, true);
+    }
+    @Override
+    public void setText(String message) {
+        headerTV.setText(message);
+    }
+    @Override
+    public String getText() {
+        return headerTV.getText().toString();
     }
 }
