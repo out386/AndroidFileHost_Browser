@@ -6,4 +6,4 @@ source configure.sh $1
 echo "Starting build..."
 ./gradlew assembleAppDebug
 
-echo "Build finished"
+[ $? -eq 0 ] || echo "Build failed"

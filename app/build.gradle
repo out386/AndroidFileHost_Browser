@@ -23,7 +23,7 @@ android {
         release {
             storeFile file("../extras/keystore/keystore.jks")
             storePassword System.getenv("KEYSTORE_PASSWD")
-            keyAlias "MSFJarvis"
+            keyAlias "stalker"
             keyPassword System.getenv("KEY_PASSWD")
          }
     }
