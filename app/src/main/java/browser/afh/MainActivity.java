@@ -24,14 +24,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -47,7 +45,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import browser.afh.activities.PreferencesActivity;
 import browser.afh.data.FindDevices;
 import browser.afh.fragments.MainFragment;
-import browser.afh.tools.Constants;
 
 public class MainActivity extends AppCompatActivity implements FindDevices.AppbarScroll {
 
