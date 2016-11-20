@@ -58,7 +58,7 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
     public View getView(int position, final View convertView, ViewGroup parent) {
         View v = convertView;
         if(v == null)
-            v= LayoutInflater.from(getContext()).inflate(R.layout.afh_items,null);
+            v= LayoutInflater.from(getContext()).inflate(R.layout.afh_items, null);
         final AfhFiles p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);

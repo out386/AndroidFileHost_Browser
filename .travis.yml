@@ -12,7 +12,10 @@ android:
     - android-25
 
 
-script: "./gradlew assembleRelease"
+script: 
+    - ./gradlew assembleRelease
+    - find . -name afh-browser_beta_*.apk
+    - export version = $(cat app/build.gradle | grep versionCode\ | dd bs=1 count=1 skip=20 2>/dev/null)
 
 deploy:
   provider: releases

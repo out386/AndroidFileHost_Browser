@@ -15,7 +15,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
             output.outputFile = new File(
-                    output.outputFile.parent, "afh-browser_beta_" + versionCode + ".apk")
+                    output.outputFile.parent, "afh-browser_beta_"+versionCode+".apk")
         }
     }
 
@@ -38,6 +38,9 @@ android {
             minifyEnabled false
             shrinkResources false
         }
+    }
+    lintOptions {
+        disable  'InflateParams','StringFormatInvalid','Overdraw','UnusedResources','GoogleAppIndexingWarning','RelativeOverlap','IconMissingDensityFolder','InvalidPackage'
     }
 }
 
@@ -78,4 +81,10 @@ dependencies {
     compile 'com.github.javiersantos:BottomDialogs:1.2.1'
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
 
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.equals("lint")) {
+        task.enabled = false
+    }
 }

@@ -25,5 +25,7 @@
     <string name="unofficial_disclaimer_text">This app or it\'s developers are NOT affiliated to AndroidFileHost in any form or shape! Bug reports for the app belong to us not them!</string>
     <string name="unofficial_disclaimer_title">Disclaimer</string>
     <string name="aboutLibraries_description_text">Made by Ritayan Chakraborty and Harsh Shandilya</string>
+    <string name="error_no_files_found">No files were found for this device.</string>
+    <string name="h" translatable="false">H</string>
 
 </resources>

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import browser.afh.R;
@@ -71,7 +72,7 @@ public class FindFiles {
         this.queue = queue;
         context = rootView.getContext();
 
-        sdf = new SimpleDateFormat("yyyy/MM/dd \nHH:mm");
+        sdf = new SimpleDateFormat("yyyy/MM/dd \nHH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
 
         mTextView = (TextView) rootView.findViewById(R.id.tv);
@@ -166,7 +167,7 @@ public class FindFiles {
                             } catch (Exception e) {
                                 pullRefreshLayout.setRefreshing(false);
                                 sv.setVisibility(View.VISIBLE);
-                                mTextView.setText(mTextView.getText().toString() + "\n\n\n" + context.getString(R.string.json_parse_error) + link + " " + e.toString());
+                                mTextView.setText(String.format("%s\n\n\n%s%s %s", mTextView.getText().toString(), context.getString(R.string.json_parse_error), link, e.toString()));
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -176,7 +177,7 @@ public class FindFiles {
                     if (error.toString().contains("NoConnectionError"))
                         return;
                     sv.setVisibility(View.VISIBLE);
-                    mTextView.setText(mTextView.getText().toString() + "\n\n\n" + link + "  :   " + error.toString());
+                    mTextView.setText(String.format("%s\n\n\n%s  :   %s", mTextView.getText().toString(), link, error.toString()));
                 }
             });
 
@@ -199,7 +200,7 @@ public class FindFiles {
         }
         if (fid.size() == 0) {
             sv.setVisibility(View.VISIBLE);
-            mTextView.setText("No files were found for this device.");
+            mTextView.setText(R.string.error_no_files_found);
         }
         // The first list of available files is here
         pullRefreshLayout.setRefreshing(false);

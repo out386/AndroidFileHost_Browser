@@ -12,6 +12,7 @@ import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 import com.turingtechnologies.materialscrollbar.INameableAdapter;
 
 import java.util.List;
+import java.util.Locale;
 
 import browser.afh.R;
 import browser.afh.types.DeviceData;
@@ -49,7 +50,7 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
         IItem item = getItem(position);
         if (item instanceof DeviceData && ((DeviceData) item).manufacturer != null) {
             //based on the position we set the headers text
-            textView.setText(String.valueOf(((DeviceData) item).manufacturer.charAt(0)).toUpperCase());
+            textView.setText(String.valueOf(((DeviceData) item).manufacturer.charAt(0)).toUpperCase(Locale.getDefault()));
         }
     }
 
