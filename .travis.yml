@@ -18,7 +18,7 @@ deploy:
   provider: releases
   api_key:
     secure: wg+vg6ILgav3TwT3bOA5YP0ospUsAb+3j3vs0isiGaD4vXX01ZrFH6yjftNgmNh0SyzJRN3ksW/HJ8j6+IQNFrKQxfmWy3yy5v8MitvSebGoy+NViZsR4Zxm2t+F7Ce77O0GZ38BNAxWyMcr0HO6slnv0Y667qit82Dak6j8rV1hzobKUaKF6FlNBBP7TeYX5EkSc29PmiricyxomlOiCF87nF9u7TeLYgvhygZU77L7EOZxxKf2EraUnHHuDro1hmvlUkVhTTUyxV32wISUpW9q8zxybqZ5hJOBimJ1ZdobNScUI3R9gt7o2Jh8ECp56SLHi2GnnAb6FHq8I1dkzxn9YFfWo/DS73LlvYwFuc6SDwIWa5fSktHvICUtq+7s91pe2iIT18tJOR6xXbjhZjpf2+Bm1sFkBe+Kyagoi4fW5eOBCGsr/ySsWzgS4SDOBrjojrUtXOhGqdeedbbmWVxay86gO1bAsOzvfNQEP7Poar3sgWJkECCCDW9c3g6pwe/Vndi6KmlkJPpaAZXssRugJyBybx4Squ6jjKyRVahfDnzj4uQSIEn91EVD5A5V9MCmz/f4HyGeQv4KcNSVbCBH/jl1/0O6ViXfsuSjPN6F3jIXNqCY/VYl+917UgWbBa9cZI9h21j2OkFZQXPl+wiQ48FlfAL8xD1UW9PKvsE=
-  file: app/afh*.apk
+  file: app/build/outputs/apk/afh-browser_beta_*.apk
   on:
     repo: out386/AndroidFileHost_Browser
 
