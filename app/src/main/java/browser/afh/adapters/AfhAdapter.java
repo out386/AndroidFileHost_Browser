@@ -91,7 +91,7 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                                     dialog.dismiss();
                                 }
                             })
-                            .build();
+                            .show();
                 }
             });
         }

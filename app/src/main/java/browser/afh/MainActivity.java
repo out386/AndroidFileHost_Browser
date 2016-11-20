@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements FindDevices.Appba
                             PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("its_unofficial",true).apply();
                         }
                     })
-                    .build();
+                    .show();
         }
 
     }
