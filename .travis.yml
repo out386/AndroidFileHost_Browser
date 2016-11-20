@@ -1,12 +1,19 @@
 language: android
+
+jdk:
+  - oraclejdk8
+
 android:
   components:
-  - extra-android-m2repository
-  - platform-tools
-  - tools
-  - build-tools-25.0.0
-  - android-25
+    - extra-android-m2repository
+    - platform-tools
+    - tools
+    - build-tools-25.0.0
+    - android-25
+
+
 script: "./gradlew assembleRelease"
+
 deploy:
   provider: releases
   api_key:
@@ -14,5 +21,6 @@ deploy:
   file: app/afh*.apk
   on:
     repo: out386/AndroidFileHost_Browser
+
 notifications: 
-email: true
+  email: true
