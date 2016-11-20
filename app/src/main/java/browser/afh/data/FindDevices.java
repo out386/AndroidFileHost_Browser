@@ -205,7 +205,7 @@ public class FindDevices {
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
                 Log.i(TAG, "onErrorResponse: " + t.toString());
-                findFirstDevice();
+                findDevices(pageNumber, retro);
             }
         });
     }
