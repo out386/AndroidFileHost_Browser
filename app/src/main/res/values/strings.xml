@@ -19,10 +19,10 @@
     <string name="files_list_header_text">Tap a file to download it. If the list stays blank for too long, then close the app and try again. It is a server side problem, and nothing can be done about it.</string>
     <string name="file_loading_wait">Working. This could take ages.</string>
     <string name="file_dialog_title">File</string>
-    <string name="file_dialog_content" formatted="false">File Name : %s \\n Size : %s \\n Upload Date : %s</string>
+    <string name="file_dialog_content" formatted="false">File Name : %s \n\nSize : %s \n\nUpload Date : %s</string>
     <string name="file_dialog_positive_button_label">Open</string>
     <string name="file_dialog_neutral_button_label">OK</string>
-    <string name="unofficial_disclaimer_text">This app or it\'s developers are NOT affiliated to AndroidFileHost in any form or shape! Bug reports for the app belong to us not them!</string>
+    <string name="unofficial_disclaimer_text">Neither this app nor its developers are affiliated to AndroidFileHost. All bug reports for this app should be submitted to us, and not to them.</string>
     <string name="unofficial_disclaimer_title">Disclaimer</string>
     <string name="aboutLibraries_description_text">Made by Ritayan Chakraborty and Harsh Shandilya</string>
     <string name="error_no_files_found">No files were found for this device.</string>
