@@ -70,14 +70,14 @@ public class FindDevices {
     private FastItemAdapter devAdapter;
     private int pages[] = null;
     private FindFiles findFiles;
-    private boolean refresh = false, morePagesRequested = false;
-    private AppbarScroll appbarScroll;
+    private boolean refresh = false, morePagesRequested = false, devicesWereEmpty = true;
     private String headerMessage;
+    private FragmentRattach fragmentRattach;
 
-    public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll) {
+    public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll, final FragmentRattach fragmentRattach) {
         this.rootView = rootView;
         this.queue = queue;
-        this.appbarScroll = appbarScroll;
+        this.fragmentRattach = fragmentRattach;
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
         headerMessage = rootView.getContext().getResources().getString(R.string.device_list_header_text);
 
@@ -222,6 +222,9 @@ public class FindDevices {
         );
         t.start();
         Log.i(TAG, "parseDevices: " + devices.size());
+        if(devicesWereEmpty) {
+            fragmentRattach.reattach();
+        }
     }
 
     private int[] findDevicePageNumbers(String message) {
@@ -273,6 +276,7 @@ public class FindDevices {
         protected void onPostExecute(List output) {
             if (output != null) {
                 devices = output;
+                devicesWereEmpty = false;
                 queue.start();
                 displayDevices();
             } else {
@@ -288,5 +292,9 @@ public class FindDevices {
         void collapse();
         void setText(String text);
         String getText();
+    }
+
+    public interface FragmentRattach {
+        void reattach();
     }
 }

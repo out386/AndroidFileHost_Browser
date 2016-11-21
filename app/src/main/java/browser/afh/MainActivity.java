@@ -46,10 +46,12 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import browser.afh.activities.PreferencesActivity;
-import browser.afh.data.FindDevices;
+import browser.afh.data.FindDevices.AppbarScroll;
+import browser.afh.data.FindDevices.FragmentRattach;
 import browser.afh.fragments.MainFragment;
+import browser.afh.tools.Constants;
 
-public class MainActivity extends AppCompatActivity implements FindDevices.AppbarScroll {
+public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentRattach {
 
     AppBarLayout appBarLayout;
     TextView headerTV;
@@ -180,5 +182,17 @@ public class MainActivity extends AppCompatActivity implements FindDevices.Appba
     @Override
     public String getText() {
         return headerTV.getText().toString();
+    }
+    @Override
+    public void reattach() {
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment current = fragmentManager.findFragmentById(R.id.mainFrame);
+        if (current instanceof MainFragment) {
+            fragmentManager.beginTransaction()
+                    .detach(current)
+                    .attach(current)
+                    .commit();
+            changeFragment(current);
+        }
     }
 }

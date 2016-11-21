@@ -26,18 +26,21 @@ import android.view.ViewGroup;
 
 import browser.afh.data.FindDevices;
 import browser.afh.data.FindDevices.AppbarScroll;
+import browser.afh.data.FindDevices.FragmentRattach;
 import browser.afh.R;
 import browser.afh.tools.VolleySingleton;
 
 public class MainFragment extends Fragment {
     View rootView;
     AppbarScroll appbarScroll;
+    FragmentRattach fragmentRattach;
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
             appbarScroll = (AppbarScroll) activity;
+            fragmentRattach = (FragmentRattach) activity;
         } catch (ClassCastException e) {
 
         }
@@ -46,7 +49,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        new FindDevices(rootView, VolleySingleton.getInstance(getActivity()).getRequestQueue(), appbarScroll).findFirstDevice();
+        new FindDevices(rootView, VolleySingleton.getInstance(getActivity()).getRequestQueue(), appbarScroll, fragmentRattach).findFirstDevice();
         return rootView;
     }
 }
