@@ -14,8 +14,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimary"
-        android:id="@+id/headerTV"
-        android:text="@string/h" />
+        android:id="@+id/headerTV"/>
 
     <View
         android:layout_width="match_parent"

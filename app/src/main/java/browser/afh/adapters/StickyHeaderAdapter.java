@@ -100,7 +100,11 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
     @Override
     public Character getCharacterForElement(int element) {
         IItem item = getItem(element);
-        return ((DeviceData) item).manufacturer.charAt(0);
+        DeviceData data = (DeviceData) item;
+        if (item != null && data.manufacturer != null && data.manufacturer.length() > 0)
+            return ((DeviceData) item).manufacturer.charAt(0);
+        else
+            return 0;
     }
 
 }

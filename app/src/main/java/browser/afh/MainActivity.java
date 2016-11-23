@@ -29,8 +29,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
@@ -53,8 +58,9 @@ import browser.afh.tools.Constants;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentRattach {
 
-    AppBarLayout appBarLayout;
-    TextView headerTV;
+    private AppBarLayout appBarLayout;
+    private TextView headerTV;
+    private Intent searchIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
                         new PrimaryDrawerItem().withName(R.string.drawer_title_libraries).withIcon(R.drawable.ic_info_black_24px).withIdentifier(1).withDescription(R.string.drawer_desc_libraries).withSelectable(false),
                         new DividerDrawerItem()
-//                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings_black_24px).withIdentifier(2).withDescription(R.string.drawer_desc_settings).withSelectable(false)
                 )
                 .withCloseOnClick(true)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -96,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     }
                 })
                 .build();
+
         boolean isFirstInternetWarning = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, false);
         if (!isFirstInternetWarning) {
             if (checkIfMobileData()) {
@@ -168,6 +174,31 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchIntent = new Intent(Constants.INTENT_SEARCH);
+                searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, query);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchIntent = new Intent(Constants.INTENT_SEARCH);
+                searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, newText);
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
+                return true;
+            }
+        });
+
+        return true;
+    }
+    @Override
     public void expand() {
         appBarLayout.setExpanded(true, true);
     }
@@ -177,6 +208,12 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
     @Override
     public void setText(String message) {
+        if (message != null)
+            headerTV.setVisibility(View.VISIBLE);
+        else {
+            headerTV.setVisibility(View.GONE);
+            return;
+        }
         headerTV.setText(message);
     }
     @Override

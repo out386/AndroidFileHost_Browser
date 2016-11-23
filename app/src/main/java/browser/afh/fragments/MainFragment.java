@@ -18,8 +18,13 @@ package browser.afh.fragments;
  */
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +33,14 @@ import browser.afh.data.FindDevices;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentRattach;
 import browser.afh.R;
+import browser.afh.tools.Constants;
 import browser.afh.tools.VolleySingleton;
 
 public class MainFragment extends Fragment {
     View rootView;
     AppbarScroll appbarScroll;
     FragmentRattach fragmentRattach;
-
+    private FindDevices findDevices;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -49,7 +55,20 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        new FindDevices(rootView, VolleySingleton.getInstance(getActivity()).getRequestQueue(), appbarScroll, fragmentRattach).findFirstDevice();
+        findDevices = new FindDevices(rootView, VolleySingleton.getInstance(getActivity()).getRequestQueue(), appbarScroll, fragmentRattach);
+        findDevices.findFirstDevice();
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        findDevices.registerReceiver();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        findDevices.unregisterReceiver();
+        super.onPause();
     }
 }

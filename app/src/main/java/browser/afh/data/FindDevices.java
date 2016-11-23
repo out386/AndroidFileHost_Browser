@@ -22,8 +22,13 @@ package browser.afh.data;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +40,7 @@ import com.android.volley.RequestQueue;
 import com.baoyz.widget.PullRefreshLayout;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.IItemAdapter;
 import com.mikepenz.fastadapter.adapters.FastItemAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
@@ -71,15 +77,20 @@ public class FindDevices {
     private int pages[] = null;
     private FindFiles findFiles;
     private boolean refresh = false, morePagesRequested = false, devicesWereEmpty = true;
-    private String headerMessage;
     private FragmentRattach fragmentRattach;
+
+    private BroadcastReceiver searchReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            devAdapter.filter(intent.getStringExtra(Constants.INTENT_SEARCH_QUERY));
+        }
+    };
 
     public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll, final FragmentRattach fragmentRattach) {
         this.rootView = rootView;
         this.queue = queue;
         this.fragmentRattach = fragmentRattach;
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
-        headerMessage = rootView.getContext().getResources().getString(R.string.device_list_header_text);
 
         devAdapter = new FastItemAdapter();
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
@@ -94,7 +105,6 @@ public class FindDevices {
         materialScrollBar.setHandleColour(ContextCompat.getColor(rootView.getContext(), R.color.accent));
         materialScrollBar.addIndicator(new AlphabetIndicator(rootView.getContext()), true);
 
-
         /* Needed to prevent PullRefreshLayout from refreshing every time someone
          * tries to scroll down. The fast scrollbar needs RecyclerView to be a child
          * of a RelativeLayout. PullRefreshLayout needs a scrollable child. That makes this
@@ -106,17 +116,24 @@ public class FindDevices {
                 super.onScrolled(recyclerView, dx, dy);
                 int scroll = deviceRecyclerView.computeVerticalScrollOffset();
                 if (scroll == 0) {
-                    appbarScroll.setText(headerMessage);
+                    appbarScroll.setText(null);
                     appbarScroll.expand();
                     deviceRefreshLayout.setEnabled(true);
                 } else {
                     deviceRefreshLayout.setEnabled(false);
                     if (scroll > 50) {
                         appbarScroll.collapse();
-                        // Not needed now but will be used later. After a listener for the appbar is added
-                        headerMessage = appbarScroll.getText();
                     }
                 }
+            }
+        });
+
+        devAdapter.withFilterPredicate(new IItemAdapter.Predicate<DeviceData>() {
+            @Override
+            public boolean filter(DeviceData item, CharSequence constraint) {
+
+                return ! (item.device_name.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase())
+                        || item.manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
             }
         });
 
@@ -149,6 +166,15 @@ public class FindDevices {
 
     }
 
+    public void registerReceiver() {
+        IntentFilter search = new IntentFilter();
+        search.addAction(Constants.INTENT_SEARCH);
+        LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(searchReciever, search);
+    }
+
+    public void unregisterReceiver() {
+        LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(searchReciever);
+    }
     public void findFirstDevice() {
 
         deviceRefreshLayout.setRefreshing(true);
@@ -297,4 +323,5 @@ public class FindDevices {
     public interface FragmentRattach {
         void reattach();
     }
+
 }
