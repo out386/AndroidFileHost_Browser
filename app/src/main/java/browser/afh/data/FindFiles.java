@@ -241,8 +241,13 @@ public class FindFiles {
                 String url = file.getString("url");
                 String upload_date = file.getString("upload_date");
                 String file_size = file.getString("file_size");
+                int downloads = file.getInt("downloads");
                 String hDate = sdf.format(new Date(Integer.parseInt(upload_date) * 1000L));
-                filesD.add(new AfhFiles(name, url, file_size, hDate));
+
+                // Attempting to filter out private files, which typically get less than 10 downloads
+                // This will hide all newly uploaded files, which is not the objective.
+                if (downloads >= 10)
+                    filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
             }
         }
         JSONArray folders = null;
