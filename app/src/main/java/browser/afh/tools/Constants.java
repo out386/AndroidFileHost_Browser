@@ -33,4 +33,7 @@ public class Constants {
     public static final String DID = "https://www.androidfilehost.com/api/?action=developers&did=%s&limit=100";
     public static final String FLID = "https://www.androidfilehost.com/api/?action=folder&flid=%s";
     public static final String TAG = "AFHBrowser";
+
+    public static final String PREF_ASSERT_DATA_COSTS_KEY = "idgaf_for_data_costs_i_eez_reech";
+    public static final String PREF_ASSERT_UNOFFICIAL_CLIENT = "its_unofficial";
 }

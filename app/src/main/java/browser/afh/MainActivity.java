@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     }
                 })
                 .build();
-        boolean isFirstInternetWarning = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean("idgaf_for_data_costs_i_eez_reech", false);
+        boolean isFirstInternetWarning = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, false);
         if (!isFirstInternetWarning) {
             if (checkIfMobileData()) {
                 new BottomDialog.Builder(this)
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                                 bottomDialog.dismiss();
                                 changeFragment(new MainFragment());
                                 SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
-                                edit.putBoolean("idgaf_for_data_costs_i_eez_reech", true);
+                                edit.putBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
                                 edit.commit();
                             }
                         })
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             changeFragment(new MainFragment());
         }
 
-        boolean its_unofficial = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("its_unofficial", false);
+        boolean its_unofficial = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial){
             new MaterialDialog.Builder(context)
                     .title(R.string.unofficial_disclaimer_title)
@@ -141,13 +141,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             dialog.dismiss();
-                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("its_unofficial",true).apply();
+                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
                         }
                     })
                     .dismissListener(new DialogInterface.OnDismissListener() {
                         @Override
                         public void onDismiss(DialogInterface dialogInterface) {
-                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean("its_unofficial",true).apply();
+                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
                         }
                     })
                     .show();
