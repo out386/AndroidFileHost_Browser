@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -34,7 +33,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -50,17 +48,19 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+
 import browser.afh.activities.PreferencesActivity;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentRattach;
 import browser.afh.fragments.MainFragment;
+import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentRattach {
-
-    private AppBarLayout appBarLayout;
-    private TextView headerTV;
     private Intent searchIntent;
+    AppBarLayout appBarLayout;
+    TextView headerTV;
+    boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         final Context context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        assert toolbar != null;
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
@@ -102,40 +103,34 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 })
                 .build();
 
-        boolean isFirstInternetWarning = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, false);
-        if (!isFirstInternetWarning) {
-            if (checkIfMobileData()) {
-                new BottomDialog.Builder(this)
-                        .setTitle(R.string.bottom_dialog_warning_title)
-                        .setContent(R.string.bottom_dialog_warning_desc)
-                        .setPositiveText(R.string.bottom_dialog_positive_text)
-                        .setNegativeText(R.string.bottom_dialog_negative_text)
-                        .setNegativeTextColorResource(R.color.colorAccent)
-                        .onPositive(new BottomDialog.ButtonCallback() {
-                            @SuppressLint("CommitPrefEdits")
-                            @Override
-                            public void onClick(@NonNull BottomDialog bottomDialog) {
-                                bottomDialog.dismiss();
-                                changeFragment(new MainFragment());
-                                SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
-                                edit.putBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
-                                edit.commit();
-                            }
-                        })
-                        .onNegative(new BottomDialog.ButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull BottomDialog bottomDialog) {
-                                bottomDialog.dismiss();
-                                finish();
-                            }
-                        })
-                        .show();
-            } else {
-                changeFragment(new MainFragment());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                isConnected = new ConnectionDetector(context).isConnectingToInternet();
             }
-        } else {
-            changeFragment(new MainFragment());
-        }
+        }).start();
+
+        if (isConnected) {
+            new BottomDialog.Builder(context)
+                    .setTitle(R.string.bottom_dialog_warning_title)
+                    .setContent(R.string.bottom_dialog_warning_desc)
+                    .setPositiveText(R.string.bottom_dialog_positive_text)
+                    .setNegativeTextColorResource(R.color.colorAccent)
+                    .onPositive(new BottomDialog.ButtonCallback() {
+                                @SuppressLint("CommitPrefEdits")
+                                @Override
+                                public void onClick(@NonNull BottomDialog bottomDialog) {
+                                    bottomDialog.dismiss();
+                                    changeFragment(new MainFragment());
+                                    SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                                    edit.putBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
+                                    edit.commit();
+                                }
+                            })
+                            .show();
+                } else {
+                    changeFragment(new MainFragment());
+                }
 
         boolean its_unofficial = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial){
@@ -166,11 +161,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, fragment)
                 .commit();
-    }
-
-    public boolean checkIfMobileData() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        return connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected();
     }
 
     @Override
