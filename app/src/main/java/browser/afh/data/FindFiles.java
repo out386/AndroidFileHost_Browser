@@ -246,8 +246,11 @@ public class FindFiles {
 
                 // Attempting to filter out private files, which typically get less than 10 downloads
                 // This will hide all newly uploaded files, which is not the objective.
-                if (downloads >= 10)
-                    filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
+                if (downloads >= 10) {
+                    // Filtering out APK files as Google Play hates them
+                    if (! name.substring(name.lastInstanceOf('.')).equalsIgnoreCase(".apk"))
+                        filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
+                }
             }
         }
         JSONArray folders = null;
