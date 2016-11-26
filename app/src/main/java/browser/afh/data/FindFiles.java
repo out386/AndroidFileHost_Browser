@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import browser.afh.BuildConfig;
 import browser.afh.R;
 import browser.afh.adapters.AfhAdapter;
 import browser.afh.tools.Comparators;
@@ -56,17 +57,17 @@ import browser.afh.types.AfhFiles;
 
 public class FindFiles {
     private final TextView mTextView;
-    private String json = "";
     private final ScrollView sv;
-    private List<AfhFiles> filesD = new ArrayList<>();
-    private AfhAdapter adapter;
     private final PullRefreshLayout pullRefreshLayout;
-    private String savedID;
-    private boolean sortByDate;
     private final RequestQueue queue;
     private final Context context;
     private final String TAG = Constants.TAG;
     SimpleDateFormat sdf;
+    private String json = "";
+    private List<AfhFiles> filesD = new ArrayList<>();
+    private AfhAdapter adapter;
+    private String savedID;
+    private boolean sortByDate;
 
     FindFiles(View rootView, RequestQueue queue) {
         this.queue = queue;
@@ -244,12 +245,19 @@ public class FindFiles {
                 int downloads = file.getInt("downloads");
                 String hDate = sdf.format(new Date(Integer.parseInt(upload_date) * 1000L));
 
-                // Attempting to filter out private files, which typically get less than 10 downloads
-                // This will hide all newly uploaded files, which is not the objective.
-                if (downloads >= 10) {
-                    // Filtering out APK files as Google Play hates them
-                    if (! name.endsWith(".apk") || ! name.endsWith(".APK"))
-                        filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
+                // Lets lock out our Play Store policy compatibility stuff
+                // into an easier to toggle system
+                if (BuildConfig.PLAY_COMPTABILE) {
+                    // Attempting to filter out private files, which typically get less than 10 downloads
+                    // This will hide all newly uploaded files, which is not the objective.
+                    if (downloads >= 10) {
+                        // Filtering out APK files as Google Play hates them
+                        if (!name.endsWith(".apk") || !name.endsWith(".APK"))
+                            filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
+                    }
+                } else {
+                    filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
+
                 }
             }
         }
