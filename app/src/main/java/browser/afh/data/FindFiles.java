@@ -248,7 +248,7 @@ public class FindFiles {
                 // This will hide all newly uploaded files, which is not the objective.
                 if (downloads >= 10) {
                     // Filtering out APK files as Google Play hates them
-                    if (! name.substring(name.lastInstanceOf('.')).equalsIgnoreCase(".apk"))
+                    if (! name.endsWith(".apk") || ! name.endsWith(".APK"))
                         filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
                 }
             }

@@ -143,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             dialog.dismiss();
                             PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
+                            forceCrash();
                         }
                     })
                     .dismissListener(new DialogInterface.OnDismissListener() {
@@ -153,8 +154,12 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     })
                     .show();
         }
-
     }
+
+    public void forceCrash() {
+        throw new RuntimeException("This is a crash");
+    }
+
 
     public void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
