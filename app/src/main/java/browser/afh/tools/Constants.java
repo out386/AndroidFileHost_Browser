@@ -39,4 +39,10 @@ public class Constants {
 
     public static final String INTENT_SEARCH = "rom.stalker.INTENT_SEARCH";
     public static final String INTENT_SEARCH_QUERY = "rom.stalker.INTENT_SEARCH_QUERY";
+
+
+    // This is to let users know that the Play Store version is tied down
+    public static final String XDA_LABS_PACKAGE_NAME = "com.xda.labs";
+    public static final String XDA_LABS_APP_PAGE_LINK = "https://labs.xda-developers.com/store/apps/rom.stalker";
+    public static final String XDA_LABS_DOWNLOAD_PAGE = "https://www.xda-developers.com/xda-labs/";
 }

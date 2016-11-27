@@ -26,5 +26,10 @@
     <string name="aboutLibraries_description_text">Made by Ritayan Chakraborty and Harsh Shandilya</string>
     <string name="error_no_files_found">No files were found for this device.</string>
     <string name="search">Search</string>
+    <string name="disclaimer_google_play_title">Important information</string>
+    <string name="disclaimer_google_play_desc">Due to Google Play restrictions some features have been disabled. Please download the XDA Labs version to enjoy unfiltered ROMs!</string>
+    <string name="ok">OK</string>
+    <string name="download">Download</string>
+    <string name="err_xda_labs_not_installed">XDA Labs not installed, redirecting to download page.</string>
 
 </resources>

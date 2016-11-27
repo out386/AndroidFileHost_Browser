@@ -1,4 +1,4 @@
-wpackage browser.afh;
+package browser.afh;
 
 /*
  * This file is part of AFH Browser.
@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -36,6 +37,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -55,6 +57,7 @@ import browser.afh.data.FindDevices.FragmentRattach;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
+import browser.afh.tools.Utils;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentRattach {
     private Intent searchIntent;
@@ -132,6 +135,30 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     changeFragment(new MainFragment());
                 }
 
+        final MaterialDialog.Builder useLabsVariantDialog = new MaterialDialog.Builder(context)
+                .title(R.string.disclaimer_google_play_title)
+                .content(R.string.disclaimer_google_play_desc)
+                .negativeText(R.string.ok)
+                .positiveText(R.string.download)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                        if (Utils.isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())){
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_APP_PAGE_LINK)));
+                        } else {
+                            Toast.makeText(context, R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_DOWNLOAD_PAGE)));
+                        }
+
+                    }
+                });
         boolean its_unofficial = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial){
             new MaterialDialog.Builder(context)
@@ -149,6 +176,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onDismiss(DialogInterface dialogInterface) {
                             PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
+                            if (BuildConfig.PLAY_COMPTABILE) useLabsVariantDialog.show();
                         }
                     })
                     .show();
