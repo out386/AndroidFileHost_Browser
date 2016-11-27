@@ -9,6 +9,7 @@
 
     <TextView
         android:id="@+id/mName"
+        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
@@ -20,6 +21,7 @@
         android:textStyle="bold"/>
     <TextView
         android:id="@+id/dName"
+        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
