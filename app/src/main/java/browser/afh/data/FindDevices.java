@@ -22,6 +22,7 @@ package browser.afh.data;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +36,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.android.volley.RequestQueue;
 import com.baoyz.widget.PullRefreshLayout;
@@ -289,6 +291,9 @@ public class FindDevices {
         filesHolder.setAlpha(0.0f);
         filesHolder.setVisibility(View.VISIBLE);
         fragmentInterface.showSearch(false);
+        InputMethodManager inputMethodManager = (InputMethodManager) rootView.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
+
         deviceHolder.animate()
                 .setDuration(ANIM_DURATION)
                 .translationX(-deviceHolder.getWidth())
