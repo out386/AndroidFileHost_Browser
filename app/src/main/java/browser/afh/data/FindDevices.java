@@ -77,19 +77,32 @@ public class FindDevices {
     private int pages[] = null;
     private FindFiles findFiles;
     private boolean refresh = false, morePagesRequested = false, devicesWereEmpty = true;
-    private FragmentRattach fragmentRattach;
+    private FragmentInterface fragmentInterface;
+    private CardView deviceHolder;
+    private CardView filesHolder;
 
-    private BroadcastReceiver searchReciever = new BroadcastReceiver() {
+    private BroadcastReceiver searchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             devAdapter.filter(intent.getStringExtra(Constants.INTENT_SEARCH_QUERY));
         }
     };
+    private BroadcastReceiver backReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (filesHolder.getVisibility() == View.VISIBLE)
+                reverseAnimate();
+            else
+                fragmentInterface.onSuperBack();
+        }
+    };
 
-    public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll, final FragmentRattach fragmentRattach) {
+    public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll, final FragmentInterface fragmentInterface) {
         this.rootView = rootView;
         this.queue = queue;
-        this.fragmentRattach = fragmentRattach;
+        this.fragmentInterface = fragmentInterface;
+        deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
+        filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
 
         devAdapter = new FastItemAdapter<>();
@@ -168,11 +181,15 @@ public class FindDevices {
     public void registerReceiver() {
         IntentFilter search = new IntentFilter();
         search.addAction(Constants.INTENT_SEARCH);
-        LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(searchReciever, search);
+        LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(searchReceiver, search);
+        IntentFilter back = new IntentFilter();
+        back.addAction(Constants.INTENT_BACK);
+        LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(backReceiver, back);
     }
 
     public void unregisterReceiver() {
-        LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(searchReciever);
+        LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(searchReceiver);
+        LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(backReceiver);
     }
     public void findFirstDevice() {
 
@@ -248,7 +265,7 @@ public class FindDevices {
         t.start();
         Log.i(TAG, "parseDevices: " + devices.size());
         if(devicesWereEmpty) {
-            fragmentRattach.reattach();
+            fragmentInterface.reattach();
         }
     }
 
@@ -265,12 +282,11 @@ public class FindDevices {
     }
 
     private void animate() {
-        final CardView deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
-        final CardView filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
-        filesHolder.setVisibility(View.VISIBLE);
+        filesHolder.setTranslationX(filesHolder.getWidth());
         filesHolder.setAlpha(0.0f);
+        filesHolder.setVisibility(View.VISIBLE);
         deviceHolder.animate()
-                .setDuration(500)
+                .setDuration(2000)
                 .translationX(-deviceHolder.getWidth())
                 .alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -278,11 +294,48 @@ public class FindDevices {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.GONE);
-                        filesHolder.animate()
-                                .setDuration(200)
-                                .alpha(1.0f);
                     }
                 });
+        filesHolder.animate()
+                .translationX(0)
+                .setDuration(2000)
+                .alpha(1.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        filesHolder.setVisibility(View.VISIBLE);
+                    }
+                });
+    }
+
+    private void reverseAnimate() {
+        Log.i(TAG, "reverseAnimate: ");
+        deviceHolder.setAlpha(0.0f);
+        deviceHolder.setTranslationX(-deviceHolder.getWidth());
+        deviceHolder.setVisibility(View.VISIBLE);
+        filesHolder.animate()
+                .setDuration(2000)
+                .translationX(filesHolder.getWidth())
+                .alpha(0.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        filesHolder.setVisibility(View.GONE);
+                    }
+                });
+        deviceHolder.animate()
+                .translationX(0)
+                .setDuration(2000)
+                .alpha(1.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        deviceHolder.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
     private class ReadCache extends AsyncTask<Void, Void, List> {
@@ -319,8 +372,9 @@ public class FindDevices {
         String getText();
     }
 
-    public interface FragmentRattach {
+    public interface FragmentInterface {
         void reattach();
+        void onSuperBack();
     }
 
 }

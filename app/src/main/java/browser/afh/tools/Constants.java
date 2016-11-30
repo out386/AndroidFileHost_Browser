@@ -39,6 +39,7 @@ public class Constants {
 
     public static final String INTENT_SEARCH = "rom.stalker.INTENT_SEARCH";
     public static final String INTENT_SEARCH_QUERY = "rom.stalker.INTENT_SEARCH_QUERY";
+    public static final String INTENT_BACK = "rom.stalker.INTENT_BACK";
 
 
     // This is to let users know that the Play Store version is tied down

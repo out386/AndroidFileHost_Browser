@@ -53,13 +53,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import browser.afh.activities.PreferencesActivity;
 import browser.afh.data.FindDevices.AppbarScroll;
-import browser.afh.data.FindDevices.FragmentRattach;
+import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Utils;
 
-public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentRattach {
+public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     private Intent searchIntent;
     AppBarLayout appBarLayout;
     TextView headerTV;
@@ -249,5 +249,15 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .commit();
             changeFragment(current);
         }
+    }
+    @Override
+    public void onSuperBack() {
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent backIntent = new Intent(Constants.INTENT_BACK);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(backIntent);
     }
 }
