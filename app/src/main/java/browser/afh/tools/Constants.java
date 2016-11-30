@@ -41,6 +41,8 @@ public class Constants {
     public static final String INTENT_SEARCH_QUERY = "rom.stalker.INTENT_SEARCH_QUERY";
     public static final String INTENT_BACK = "rom.stalker.INTENT_BACK";
 
+    public static final String VOLLEY_FILES_TAG = "VOLLEY_FILES_TAG";
+
 
     // This is to let users know that the Play Store version is tied down
     public static final String XDA_LABS_PACKAGE_NAME = "com.xda.labs";

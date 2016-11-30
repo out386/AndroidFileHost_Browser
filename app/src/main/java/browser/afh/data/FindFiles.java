@@ -55,14 +55,14 @@ import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhFiles;
 
-public class FindFiles {
+class FindFiles {
     private final TextView mTextView;
     private final ScrollView sv;
     private final PullRefreshLayout pullRefreshLayout;
     private final RequestQueue queue;
     private final Context context;
     private final String TAG = Constants.TAG;
-    SimpleDateFormat sdf;
+    private SimpleDateFormat sdf;
     private String json = "";
     private List<AfhFiles> filesD = new ArrayList<>();
     private AfhAdapter adapter;
@@ -150,6 +150,7 @@ public class FindFiles {
         });
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        stringRequest.setTag(Constants.VOLLEY_FILES_TAG);
         queue.add(stringRequest);
     }
 
@@ -183,6 +184,7 @@ public class FindFiles {
             });
 
             stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            stringRequest.setTag(Constants.VOLLEY_FILES_TAG);
             queue.add(stringRequest);
 
         }
@@ -275,5 +277,9 @@ public class FindFiles {
         }
         print();
     }
-
+    void reset() {
+        queue.cancelAll(Constants.VOLLEY_FILES_TAG);
+        filesD.clear();
+        print();
+    }
 }

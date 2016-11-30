@@ -80,6 +80,8 @@ public class FindDevices {
     private FragmentInterface fragmentInterface;
     private CardView deviceHolder;
     private CardView filesHolder;
+    private final long ANIM_DURATION = 500;
+    private AppbarScroll appbarScroll;
 
     private BroadcastReceiver searchReceiver = new BroadcastReceiver() {
         @Override
@@ -91,7 +93,7 @@ public class FindDevices {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (filesHolder.getVisibility() == View.VISIBLE)
-                reverseAnimate();
+                animateShowDevices();
             else
                 fragmentInterface.onSuperBack();
         }
@@ -101,6 +103,7 @@ public class FindDevices {
         this.rootView = rootView;
         this.queue = queue;
         this.fragmentInterface = fragmentInterface;
+        this.appbarScroll = appbarScroll;
         deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
         filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
@@ -164,7 +167,7 @@ public class FindDevices {
         devAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceData>() {
             @Override
             public boolean onClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
-                animate();
+                animateShowFiles();
                 appbarScroll.expand();
                 appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
                 ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
@@ -281,12 +284,12 @@ public class FindDevices {
         return pages;
     }
 
-    private void animate() {
+    private void animateShowFiles() {
         filesHolder.setTranslationX(filesHolder.getWidth());
         filesHolder.setAlpha(0.0f);
         filesHolder.setVisibility(View.VISIBLE);
         deviceHolder.animate()
-                .setDuration(2000)
+                .setDuration(ANIM_DURATION)
                 .translationX(-deviceHolder.getWidth())
                 .alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -294,11 +297,12 @@ public class FindDevices {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.GONE);
+                        appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
                     }
                 });
         filesHolder.animate()
                 .translationX(0)
-                .setDuration(2000)
+                .setDuration(ANIM_DURATION)
                 .alpha(1.0f)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -309,13 +313,13 @@ public class FindDevices {
                 });
     }
 
-    private void reverseAnimate() {
-        Log.i(TAG, "reverseAnimate: ");
+    private void animateShowDevices() {
+        Log.i(TAG, "animateShowDevices: ");
         deviceHolder.setAlpha(0.0f);
         deviceHolder.setTranslationX(-deviceHolder.getWidth());
         deviceHolder.setVisibility(View.VISIBLE);
         filesHolder.animate()
-                .setDuration(2000)
+                .setDuration(ANIM_DURATION)
                 .translationX(filesHolder.getWidth())
                 .alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -323,17 +327,19 @@ public class FindDevices {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         filesHolder.setVisibility(View.GONE);
+                        appbarScroll.setText(null);
                     }
                 });
         deviceHolder.animate()
                 .translationX(0)
-                .setDuration(2000)
+                .setDuration(ANIM_DURATION)
                 .alpha(1.0f)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.VISIBLE);
+                        findFiles.reset();
             }
         });
     }
