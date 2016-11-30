@@ -41,7 +41,7 @@ import com.baoyz.widget.PullRefreshLayout;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItemAdapter;
-import com.mikepenz.fastadapter.adapters.FastItemAdapter;
+import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
@@ -73,7 +73,7 @@ public class FindDevices {
     private final PullRefreshLayout deviceRefreshLayout;
     private List<DeviceData> devices = new ArrayList<>();
     private int currentPage = 0;
-    private FastItemAdapter devAdapter;
+    private FastItemAdapter<DeviceData> devAdapter;
     private int pages[] = null;
     private FindFiles findFiles;
     private boolean refresh = false, morePagesRequested = false, devicesWereEmpty = true;
@@ -92,7 +92,7 @@ public class FindDevices {
         this.fragmentRattach = fragmentRattach;
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
 
-        devAdapter = new FastItemAdapter();
+        devAdapter = new FastItemAdapter<>();
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
         deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());

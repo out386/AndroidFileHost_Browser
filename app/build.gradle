@@ -73,9 +73,10 @@ dependencies {
     compile('com.mikepenz:aboutlibraries:5.8.5@aar') {
         transitive = true
     }
-    compile('com.mikepenz:fastadapter:2.0.0@aar') {
+    compile('com.mikepenz:fastadapter:2.1.5@aar') {
         transitive = true
     }
+    compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
     compile 'com.mikepenz.thirdparty:stickyheadersrecyclerview:0.4.4-SNAPSHOT@aar'
     compile 'com.turingtechnologies.materialscrollbar:lib:10.0.1'
 
