@@ -97,8 +97,8 @@ public class FindDevices {
         deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
         deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());
         devAdapter.withSelectable(true);
+        devAdapter.withPositionBasedStateManagement(false);
         final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();
-        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
         final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
         deviceRecyclerView.addItemDecoration(decoration);
         TouchScrollBar materialScrollBar = new TouchScrollBar(rootView.getContext(), deviceRecyclerView, true);
@@ -136,7 +136,6 @@ public class FindDevices {
                         || item.manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
             }
         });
-
         findFiles = new FindFiles(rootView, queue);
 
         deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -157,12 +156,12 @@ public class FindDevices {
                 appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
                 ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
                 // Just in case monkeys decide to tap around while the list is refreshing
-                // (List is cleared before refresh)
                 if (devices.size() > position)
-                    findFiles.start(devices.get(position).did);
+                    findFiles.start(item.did);
                 return true;
             }
         });
+        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
 
     }
 
