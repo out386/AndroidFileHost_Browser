@@ -288,6 +288,7 @@ public class FindDevices {
         filesHolder.setTranslationX(filesHolder.getWidth());
         filesHolder.setAlpha(0.0f);
         filesHolder.setVisibility(View.VISIBLE);
+        fragmentInterface.showSearch(false);
         deviceHolder.animate()
                 .setDuration(ANIM_DURATION)
                 .translationX(-deviceHolder.getWidth())
@@ -340,6 +341,7 @@ public class FindDevices {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.VISIBLE);
                         findFiles.reset();
+                        fragmentInterface.showSearch(true);
             }
         });
     }
@@ -381,6 +383,7 @@ public class FindDevices {
     public interface FragmentInterface {
         void reattach();
         void onSuperBack();
+        void showSearch(boolean show);
     }
 
 }

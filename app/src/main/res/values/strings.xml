@@ -31,5 +31,6 @@
     <string name="ok">OK</string>
     <string name="download">Download</string>
     <string name="err_xda_labs_not_installed">XDA Labs not installed, redirecting to download page.</string>
+    <string name="search_hint">Search devices...</string>
 
 </resources>

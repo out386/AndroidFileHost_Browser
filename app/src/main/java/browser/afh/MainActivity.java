@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     AppBarLayout appBarLayout;
     TextView headerTV;
     boolean isConnected;
+    private Menu mainMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,8 +195,12 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+        mainMenu = menu;
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
-
+        searchView.setIconifiedByDefault(false);
+        searchView.setQueryHint(getResources().getString(R.string.search_hint));
+        searchView.setFocusable(false);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -259,5 +264,11 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     public void onBackPressed() {
         Intent backIntent = new Intent(Constants.INTENT_BACK);
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(backIntent);
+    }
+
+    @Override
+    public void showSearch(boolean show) {
+        if (mainMenu != null)
+            mainMenu.findItem(R.id.search).setVisible(show);
     }
 }
