@@ -85,9 +85,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.7.0@aar') {
         transitive = true
     }
-    compile('com.mikepenz:aboutlibraries:5.8.5@aar') {
-        transitive = true
-    }
+    compile('de.psdev.licensesdialog:licensesdialog:1.8.1')
     compile('com.mikepenz:fastadapter:2.1.5@aar') {
         transitive = true
     }
