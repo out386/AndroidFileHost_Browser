@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.Crashlytics;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -58,6 +59,7 @@ import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Utils;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     private Intent searchIntent;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.main_activity);
         final Context context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

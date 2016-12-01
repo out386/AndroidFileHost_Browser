@@ -5,3 +5,4 @@ app/build/
 *.iml
 *.apk
 local.properties
+app/fabric.properties
