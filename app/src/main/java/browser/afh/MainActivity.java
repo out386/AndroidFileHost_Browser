@@ -32,10 +32,10 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +49,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-
 import browser.afh.activities.PreferencesActivity;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
@@ -57,21 +56,17 @@ import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Utils;
-import io.fabric.sdk.android.Fabric;
-
 import de.psdev.licensesdialog.LicensesDialog;
-import de.psdev.licensesdialog.LicensesDialogFragment;
-import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
-import de.psdev.licensesdialog.licenses.GnuLesserGeneralPublicLicense21;
+import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense30;
 import de.psdev.licensesdialog.licenses.License;
 import de.psdev.licensesdialog.model.Notice;
-import de.psdev.licensesdialog.model.Notices;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
-    private Intent searchIntent;
     AppBarLayout appBarLayout;
     TextView headerTV;
     boolean isConnected;
+    private Intent searchIntent;
     private Menu mainMenu;
 
     @Override
@@ -86,6 +81,14 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
+        final String name = "AFH Browser";
+        final String url = "https://msfjarvis.me";
+        final String copyright = "Copyright 2016 Harsh Shandilya and Ritayan Chakraborty <me@msfjarvis.me>";
+        final License license = new GnuGeneralPublicLicense30();
+        final Notice notice = new Notice(name, url, copyright, license);
+        final LicensesDialog licensesDialog = new LicensesDialog.Builder(context)
+                .setNotices(notice)
+                .build();
         new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -101,15 +104,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         if (drawerItem.getIdentifier() == 0) {
                             changeFragment(new MainFragment());
                         } else if (drawerItem.getIdentifier() == 1) {
-                          final String name = "AFH Browser";
-                          final String url = "https://msfjarvis.me";
-                          final String copyright = "Copyright 2016 Harsh Shandilya <me@msfjarvis.me>";
-                          final License license = new ApacheSoftwareLicense20();
-                          final Notice notice = new Notice(name, url, copyright, license);
-                          new LicensesDialog.Builder(context)
-                          .setNotices(notice)
-                          .build()
-                          .show();
+                            licensesDialog.show();
                         } else if (drawerItem.getIdentifier() == 2) {
                             Intent intent = new Intent(context, PreferencesActivity.class);
                             startActivity(intent);
@@ -241,6 +236,12 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     public void collapse() {
         appBarLayout.setExpanded(false, true);
     }
+
+    @Override
+    public String getText() {
+        return headerTV.getText().toString();
+    }
+
     @Override
     public void setText(String message) {
         if (message != null)
@@ -251,10 +252,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         }
         headerTV.setText(message);
     }
-    @Override
-    public String getText() {
-        return headerTV.getText().toString();
-    }
+
     @Override
     public void reattach() {
         FragmentManager fragmentManager = getFragmentManager();
