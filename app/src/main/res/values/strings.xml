@@ -23,7 +23,7 @@
     <string name="file_dialog_neutral_button_label">OK</string>
     <string name="unofficial_disclaimer_text">Neither this app nor its developers are affiliated to AndroidFileHost. All bug reports for this app should be submitted to us, and not to them.</string>
     <string name="unofficial_disclaimer_title">Disclaimer</string>
-    <string name="aboutLibraries_description_text">Made by Ritayan Chakraborty and Harsh Shandilya</string>
+    <string name="copyright_text">Copyright 2016, Ritayan Chakraborty and Harsh Shandilya</string>
     <string name="error_no_files_found">No files were found for this device.</string>
     <string name="search">Search</string>
     <string name="disclaimer_google_play_title">Important information</string>

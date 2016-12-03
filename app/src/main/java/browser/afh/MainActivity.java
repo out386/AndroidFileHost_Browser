@@ -1,6 +1,9 @@
 package browser.afh;
 
 /*
+ * Copyright (C) 2016 Harsh Shandilya (MSF-Jarvis) and Ritayan Cakraborty (out386)
+ */
+/*
  * This file is part of AFH Browser.
  *
  * AFH Browser is free software: you can redistribute it and/or modify
@@ -83,9 +86,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         headerTV = (TextView) findViewById(R.id.header_tv);
         final String name = "AFH Browser";
         final String url = "https://msfjarvis.me";
-        final String copyright = "Copyright 2016 Harsh Shandilya and Ritayan Chakraborty <me@msfjarvis.me>";
         final License license = new GnuGeneralPublicLicense30();
-        final Notice notice = new Notice(name, url, copyright, license);
+        final Notice notice = new Notice(name, url, getResources().getString(R.string.copyright_text), license);
         final LicensesDialog licensesDialog = new LicensesDialog.Builder(context)
                 .setNotices(notice)
                 .build();
