@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onDismiss(DialogInterface dialogInterface) {
                             PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
-                            if (BuildConfig.PLAY_COMPTABILE) useLabsVariantDialog.show();
+                            if (BuildConfig.PLAY_COMPATIBLE) useLabsVariantDialog.show();
                         }
                     })
                     .show();

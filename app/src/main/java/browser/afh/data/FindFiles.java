@@ -249,7 +249,7 @@ class FindFiles {
 
                 // Lets lock out our Play Store policy compatibility stuff
                 // into an easier to toggle system
-                if (BuildConfig.PLAY_COMPTABILE) {
+                if (BuildConfig.PLAY_COMPATIBLE) {
                     // Attempting to filter out private files, which typically get less than 10 downloads
                     // This will hide all newly uploaded files, which is not the objective.
                     if (downloads >= 10) {

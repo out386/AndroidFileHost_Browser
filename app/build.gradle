@@ -47,13 +47,13 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources true
-            buildConfigField("boolean", "PLAY_COMPTABILE", "true")
+            buildConfigField("boolean", "PLAY_COMPATIBLE", "true")
         }
         debug {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            buildConfigField("boolean", "PLAY_COMPTABILE", "true")
+            buildConfigField("boolean", "PLAY_COMPATIBLE", "true")
         }
     }
     lintOptions {
