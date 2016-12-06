@@ -1,0 +1,6 @@
+{
+  "name": "Androidfilehost browser",
+  "tagline": "A little android app to browse all the directories on AFH for a given device. ",
+  "body": "AFH Browser is an Android app that fetches a list of all files for a given device from AndroidFileHost.com.\r\nThe list of files can be sorted by name or upload date, and a tap opens the AndroidFileHost page for that file, which can then be downloaded.\r\n\r\nThe process of fetching the list of files can be very slow at times. Please give it about 4 minutes to load.",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
