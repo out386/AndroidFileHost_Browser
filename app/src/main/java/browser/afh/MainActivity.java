@@ -27,10 +27,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
@@ -42,6 +44,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.appthemeengine.ATE;
+import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
@@ -71,13 +75,38 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     boolean isConnected;
     private Intent searchIntent;
     private Menu mainMenu;
+    private String colorPrimary,colorPrimaryDark,colorAccent;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ATE.preApply(this, getATEKey());
         super.onCreate(savedInstanceState);
+        updateTime = System.currentTimeMillis();
+        context = this;
+        pullThemeConfigs();
+        ATE.config(context, null)
+                // 0 to disable, sets a default theme for all Activities which use this config key
+                .activityTheme(R.style.AppTheme)
+                // true by default, colors support action bars and toolbars
+                .coloredActionBar(true)
+                // defaults to colorPrimary attribute value
+                .primaryColor(parseColor(colorPrimary))
+                // when true, primaryColorDark is auto generated from primaryColor
+                .autoGeneratePrimaryDark(true)
+                // defaults to colorPrimaryDark attribute value
+                .primaryColorDark(parseColor(colorPrimaryDark))
+                // defaults to colorAccent attribute value
+                .accentColor(parseColor(colorAccent))
+                // by default, is equal to primaryColorDark's value
+                .statusBarColor(parseColor(colorAccent))
+                // true by default, setting to false disables coloring even if statusBarColor is set
+                .coloredStatusBar(true)
+                // dark status bar icons on Marshmallow (API 23)+, auto uses light status bar mode when primaryColor is light
+                .lightStatusBarMode(Config.LIGHT_STATUS_BAR_AUTO)
+                .apply(this);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.main_activity);
-        final Context context = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert toolbar != null;
@@ -85,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
         final String name = "AFH Browser";
-        final String url = "https://msfjarvis.me";
+        final String url = "https://out386.github.io/AndroidFileHost_Browser";
         final License license = new GnuGeneralPublicLicense30();
         final Notice notice = new Notice(name, url, getResources().getString(R.string.copyright_text), license);
         final LicensesDialog licensesDialog = new LicensesDialog.Builder(context)
@@ -203,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        ATE.themeOverflow(this, getATEKey());
         getMenuInflater().inflate(R.menu.menu, menu);
         mainMenu = menu;
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
@@ -288,5 +318,42 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     public void showSearch(boolean show) {
         if (mainMenu != null)
             mainMenu.findItem(R.id.search).setVisible(show);
+    }
+
+    public int parseColor(String string){
+        return Color.parseColor(string);
+    }
+
+    public void pullThemeConfigs(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        colorPrimary = sharedPreferences.getString("color_primary","#3F51B5");
+        colorPrimaryDark = sharedPreferences.getString("color_primary_dark","#303F9F");
+        colorAccent = sharedPreferences.getString("color_accent","#FF5252");
+
+    }
+    private long updateTime = -1;
+
+    @Nullable
+    public String getATEKey() {
+        return null;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ATE.postApply(this, getATEKey());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ATE.invalidateActivity(this, updateTime, getATEKey());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (isFinishing())
+            ATE.cleanup();
     }
 }

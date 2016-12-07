@@ -100,6 +100,11 @@ dependencies {
         transitive = true;
     }
 
+    // theming
+    compile('com.github.garretyoder:app-theme-engine:1.5@aar') {
+        transitive = true
+    }
+
 }
 
 tasks.whenTaskAdded { task ->
