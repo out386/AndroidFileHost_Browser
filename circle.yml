@@ -1,0 +1,8 @@
+test:
+  override:
+    - ./buildReleaseApp.sh
+deployment:
+  release:
+    tag: /v.*/
+    commands:
+      - ./deploy.sh
