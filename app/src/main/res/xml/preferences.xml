@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:title="Alternate UI"
+        android:title="Beta Updates"
         android:defaultValue="false"
-        android:summary="When enabled, uses a more card-like interface for the app"
-        android:key="alternateUI" />
+        android:summary="Enable to get per-commit builds of the app. Stuff can break. You get to keep all pieces."
+        android:key="beta_testing" />
 </PreferenceScreen>

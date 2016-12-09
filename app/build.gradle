@@ -105,6 +105,9 @@ dependencies {
         transitive = true
     }
 
+    // updates
+    compile 'com.github.javiersantos:AppUpdater:2.5'
+
 }
 
 tasks.whenTaskAdded { task ->
