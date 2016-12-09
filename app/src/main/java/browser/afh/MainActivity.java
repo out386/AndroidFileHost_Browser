@@ -86,23 +86,14 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         context = this;
         pullThemeConfigs();
         ATE.config(context, null)
-                // 0 to disable, sets a default theme for all Activities which use this config key
                 .activityTheme(R.style.AppTheme)
-                // true by default, colors support action bars and toolbars
                 .coloredActionBar(true)
-                // defaults to colorPrimary attribute value
                 .primaryColor(parseColor(colorPrimary))
-                // when true, primaryColorDark is auto generated from primaryColor
                 .autoGeneratePrimaryDark(true)
-                // defaults to colorPrimaryDark attribute value
                 .primaryColorDark(parseColor(colorPrimaryDark))
-                // defaults to colorAccent attribute value
                 .accentColor(parseColor(colorAccent))
-                // by default, is equal to primaryColorDark's value
                 .statusBarColor(parseColor(colorAccent))
-                // true by default, setting to false disables coloring even if statusBarColor is set
                 .coloredStatusBar(true)
-                // dark status bar icons on Marshmallow (API 23)+, auto uses light status bar mode when primaryColor is light
                 .lightStatusBarMode(Config.LIGHT_STATUS_BAR_AUTO)
                 .apply(this);
         Fabric.with(this, new Crashlytics());
