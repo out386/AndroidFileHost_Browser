@@ -105,7 +105,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .coloredStatusBar(true)
                 .lightStatusBarMode(Config.LIGHT_STATUS_BAR_AUTO)
                 .apply(this);
-        Fabric.with(this, new Crashlytics());
+        if (!BuildConfig.DEBUG){
+          Fabric.with(this, new Crashlytics());
+        }
         setContentView(R.layout.main_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
