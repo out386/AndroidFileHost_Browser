@@ -53,7 +53,7 @@ android {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            buildConfigField("boolean", "PLAY_COMPATIBLE", "true")
+            //buildConfigField("boolean", "PLAY_COMPATIBLE", "true")
         }
     }
     lintOptions {
