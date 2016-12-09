@@ -43,9 +43,10 @@ public class Constants {
 
     public static final String VOLLEY_FILES_TAG = "VOLLEY_FILES_TAG";
 
-
     // This is to let users know that the Play Store version is tied down
     public static final String XDA_LABS_PACKAGE_NAME = "com.xda.labs";
     public static final String XDA_LABS_APP_PAGE_LINK = "https://labs.xda-developers.com/store/apps/rom.stalker";
     public static final String XDA_LABS_DOWNLOAD_PAGE = "https://www.xda-developers.com/xda-labs/";
+
+    public static final String UPDATER_MANIFEST_URL = "http://jenkins.msfjarvis.me/job/afh-browser-master/lastSuccessfulBuild/artifact/manifest.xml";
 }

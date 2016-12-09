@@ -48,6 +48,9 @@ import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.Display;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -80,7 +83,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private String colorPrimary,colorPrimaryDark,colorAccent;
     private Context context;
     private long updateTime = -1;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor edit;
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ATE.preApply(this, getATEKey());
@@ -107,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        edit = prefs.edit();
+        updatesCheck(prefs.getBoolean("beta_tester",false));
         final String name = "AFH Browser";
         final String url = "https://out386.github.io/AndroidFileHost_Browser";
         final License license = new GnuGeneralPublicLicense30();
@@ -193,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
                     }
                 });
-        boolean its_unofficial = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
+        boolean its_unofficial = prefs.getBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial){
             new MaterialDialog.Builder(context)
                     .title(R.string.unofficial_disclaimer_title)
@@ -203,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             dialog.dismiss();
-                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
+                            edit.putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
                         }
                     })
                     .dismissListener(new DialogInterface.OnDismissListener() {
@@ -345,5 +354,26 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         super.onPause();
         if (isFinishing())
             ATE.cleanup();
+    }
+
+    public void updatesCheck(boolean beta_tester){
+        if (!beta_tester){
+            new AppUpdater(context)
+                    .setUpdateFrom(UpdateFrom.GITHUB)
+                    .setGitHubUserAndRepo("out386","AndroidFileHost_Browser")
+                    .showEvery(5)
+                    .showAppUpdated(false)
+                    .setDisplay(Display.SNACKBAR)
+                    .start();
+        }else{
+            new AppUpdater(context)
+                    .setUpdateFrom(UpdateFrom.XML)
+                    .setUpdateXML(Constants.UPDATER_MANIFEST_URL)
+                    .showEvery(5)
+                    .showAppUpdated(false)
+                    .setDisplay(Display.SNACKBAR)
+                    .start();
+        }
+
     }
 }
