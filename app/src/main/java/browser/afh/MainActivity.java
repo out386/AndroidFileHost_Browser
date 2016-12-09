@@ -1,7 +1,7 @@
 package browser.afh;
 
 /*
- * Copyright (C) 2016 Harsh Shandilya (MSF-Jarvis) and Ritayan Cakraborty (out386)
+ * Copyright (C) 2016 Harsh Shandilya (MSF-Jarvis) and Ritayan Chakraborty (out386)
  */
 /*
  * This file is part of AFH Browser.
@@ -27,7 +27,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -62,12 +61,15 @@ import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
-import browser.afh.tools.Utils;
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense30;
 import de.psdev.licensesdialog.licenses.License;
 import de.psdev.licensesdialog.model.Notice;
 import io.fabric.sdk.android.Fabric;
+
+import static browser.afh.tools.Utils.getStringColor;
+import static browser.afh.tools.Utils.isPackageInstalled;
+import static browser.afh.tools.Utils.parseColor;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     AppBarLayout appBarLayout;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Menu mainMenu;
     private String colorPrimary,colorPrimaryDark,colorAccent;
     private Context context;
+    private long updateTime = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
-                        if (Utils.isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())){
+                        if (isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())){
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_APP_PAGE_LINK)));
                         } else {
                             Toast.makeText(context, R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
@@ -312,18 +315,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             mainMenu.findItem(R.id.search).setVisible(show);
     }
 
-    public int parseColor(String string){
-        return Color.parseColor(string);
-    }
-
     public void pullThemeConfigs(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        colorPrimary = sharedPreferences.getString("color_primary","#3F51B5");
-        colorPrimaryDark = sharedPreferences.getString("color_primary_dark","#303F9F");
-        colorAccent = sharedPreferences.getString("color_accent","#FF5252");
+        colorPrimary = sharedPreferences.getString("color_primary", getStringColor(getResources(), R.color.colorPrimary));
+        colorPrimaryDark = sharedPreferences.getString("color_primary_dark", getStringColor(getResources(), R.color.colorPrimaryDark));
+        colorAccent = sharedPreferences.getString("color_accent", getStringColor(getResources(), R.color.colorAccent));
 
     }
-    private long updateTime = -1;
 
     @Nullable
     public String getATEKey() {
