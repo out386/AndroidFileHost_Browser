@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.22.0'
     }
 }
 apply plugin: 'com.android.application'
@@ -53,7 +53,7 @@ android {
             debuggable true
             minifyEnabled false
             shrinkResources false
-            //buildConfigField("boolean", "PLAY_COMPATIBLE", "true")
+            buildConfigField("boolean", "PLAY_COMPATIBLE", "false")
         }
     }
     lintOptions {
@@ -65,11 +65,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // support libraries
-    compile 'com.android.support:cardview-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
-    compile 'com.android.support:customtabs:25.0.0'
+    compile 'com.android.support:cardview-v7:25.0.1'
+    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:recyclerview-v7:25.0.1'
+    compile 'com.android.support:customtabs:25.0.1'
 
     // networking
     compile 'com.android.volley:volley:1.0.0'
@@ -104,6 +104,7 @@ dependencies {
     compile('com.github.garretyoder:app-theme-engine:1.5@aar') {
         transitive = true
     }
+    compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
 
     // updates
     compile 'com.github.javiersantos:AppUpdater:2.5'
