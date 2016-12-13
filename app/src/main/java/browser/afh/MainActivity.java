@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -64,6 +63,7 @@ import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
+import browser.afh.tools.Prefs;
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense30;
 import de.psdev.licensesdialog.licenses.License;
@@ -83,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private String colorPrimary,colorPrimaryDark,colorAccent;
     private Context context;
     private long updateTime = -1;
-    private SharedPreferences prefs;
-    private SharedPreferences.Editor edit;
+    private Prefs prefs;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         super.onCreate(savedInstanceState);
         updateTime = System.currentTimeMillis();
         context = this;
+        prefs = new Prefs(context);
         pullThemeConfigs();
         ATE.config(context, null)
                 .activityTheme(R.style.AppTheme)
@@ -115,9 +115,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        edit = prefs.edit();
-        updatesCheck(prefs.getBoolean("beta_tester",false));
+        updatesCheck(prefs.get("beta_tester",false));
         final String name = "AFH Browser";
         final String url = "https://out386.github.io/AndroidFileHost_Browser";
         final License license = new GnuGeneralPublicLicense30();
@@ -170,9 +168,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                                 public void onClick(@NonNull BottomDialog bottomDialog) {
                                     bottomDialog.dismiss();
                                     changeFragment(new MainFragment());
-                                    SharedPreferences.Editor edit = PreferenceManager.getDefaultSharedPreferences(context).edit();
-                                    edit.putBoolean(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
-                                    edit.commit();
+                                    prefs.put(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
                                 }
                             })
                             .show();
@@ -204,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
                     }
                 });
-        boolean its_unofficial = prefs.getBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
+        boolean its_unofficial = prefs.get(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial){
             new MaterialDialog.Builder(context)
                     .title(R.string.unofficial_disclaimer_title)
@@ -214,13 +210,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             dialog.dismiss();
-                            edit.putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
+                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true);
                         }
                     })
                     .dismissListener(new DialogInterface.OnDismissListener() {
                         @Override
                         public void onDismiss(DialogInterface dialogInterface) {
-                            PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true).apply();
+                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true);
                             if (BuildConfig.PLAY_COMPATIBLE) useLabsVariantDialog.show();
                         }
                     })
@@ -327,10 +323,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     public void pullThemeConfigs(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        colorPrimary = sharedPreferences.getString("color_primary", getStringColor(getResources(), R.color.colorPrimary));
-        colorPrimaryDark = sharedPreferences.getString("color_primary_dark", getStringColor(getResources(), R.color.colorPrimaryDark));
-        colorAccent = sharedPreferences.getString("color_accent", getStringColor(getResources(), R.color.colorAccent));
+        colorPrimary = prefs.get("color_primary", getStringColor(getResources(), R.color.colorPrimary));
+        colorPrimaryDark = prefs.get("color_primary_dark", getStringColor(getResources(), R.color.colorPrimaryDark));
+        colorAccent = prefs.get("color_accent", getStringColor(getResources(), R.color.colorAccent));
 
     }
 
