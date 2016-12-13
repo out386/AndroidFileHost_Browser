@@ -100,11 +100,12 @@ dependencies {
         transitive = true;
     }
 
-    // theming
+    /* theming
     compile('com.github.garretyoder:app-theme-engine:1.5@aar') {
         transitive = true
     }
     compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
+    */
 
     // updates
     compile 'com.github.javiersantos:AppUpdater:2.5'
