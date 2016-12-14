@@ -22,6 +22,7 @@ package browser.afh.adapters;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.ActivityNotFoundException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
@@ -66,7 +67,22 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
             v.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    customTab(p.url);
+                    try {
+                      customTab(p.url);
+                    } catch (ActivityNotFoundException exc){
+                    new MaterialDialog.Builder(context)
+                            .title("Huh?")
+                            .content("No browser installed? ಠ_ಠ")
+                            .neutralText("Yes I'm a fool")
+                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                               @Override
+                               public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which) {
+                                   dialog.dismiss();
+                               }
+
+                            })
+                            .show();
+                    }
                     return false;
                 }
             });
