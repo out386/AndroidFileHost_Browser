@@ -49,6 +49,8 @@ import com.afollestad.appthemeengine.Config;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.SearchEvent;
 import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.enums.Display;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
@@ -249,6 +251,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                Answers.getInstance().logSearch(new SearchEvent()
+                        .putQuery(query));
                 searchIntent = new Intent(Constants.INTENT_SEARCH);
                 searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, query);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
