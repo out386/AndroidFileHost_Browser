@@ -65,7 +65,6 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
         super.bindView(viewHolder, payloads);
         viewHolder.mName.setText(manufacturer);
         viewHolder.dName.setText(device_name);
-        Log.i(Constants.TAG, "Device " + device_name + "(did : " + did +") has image " + image);
         Glide
                 .with(context)
                 .load(image)
