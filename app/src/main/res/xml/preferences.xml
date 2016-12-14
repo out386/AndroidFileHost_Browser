@@ -5,4 +5,9 @@
         android:defaultValue="false"
         android:summary="Enable to get per-commit builds of the app. Stuff can break. You get to keep all pieces."
         android:key="beta_testing" />
+    <CheckBoxPreference
+        android:title="Devices grid"
+        android:defaultValue="true"
+        android:summary="Display available devices in a grid"
+        android:key="devices_grid" />
 </PreferenceScreen>

@@ -33,6 +33,7 @@ import java.util.List;
 
 import browser.afh.R;
 import browser.afh.tools.Constants;
+import browser.afh.tools.Prefs;
 
 public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> implements Serializable {
     @SerializedName("did")
@@ -56,7 +57,7 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
 
     @Override
     public int getLayoutRes() {
-        return R.layout.device_items;
+        return R.layout.device_items_list;
     }
 
     @Override

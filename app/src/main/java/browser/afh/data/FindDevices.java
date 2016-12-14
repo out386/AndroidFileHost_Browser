@@ -32,6 +32,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -60,6 +61,7 @@ import browser.afh.adapters.StickyHeaderAdapter;
 import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
+import browser.afh.tools.Prefs;
 import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.types.Device;
@@ -112,7 +114,14 @@ public class FindDevices {
 
         devAdapter = new FastItemAdapter<>();
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
-        deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        Prefs prefs = new Prefs(rootView.getContext());
+
+        if (prefs.get("devices_grid", true))
+            deviceRecyclerView.setLayoutManager(new GridLayoutManager(rootView.getContext(), 3));
+        else
+            deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+
+
         deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());
         devAdapter.withSelectable(true);
         devAdapter.withPositionBasedStateManagement(false);
