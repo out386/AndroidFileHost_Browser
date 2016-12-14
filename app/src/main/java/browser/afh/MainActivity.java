@@ -251,8 +251,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Answers.getInstance().logSearch(new SearchEvent()
-                        .putQuery(query));
+                if (!BuildConfig.DEBUG){
+                    Answers.getInstance().logSearch(new SearchEvent()
+                            .putQuery(query));
+                }
                 searchIntent = new Intent(Constants.INTENT_SEARCH);
                 searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, query);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
