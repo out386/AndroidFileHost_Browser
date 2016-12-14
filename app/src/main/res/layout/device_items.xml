@@ -2,34 +2,48 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
     android:orientation="horizontal"
     android:paddingBottom="15dp"
-    android:paddingTop="15dp"
-    android:background="?android:selectableItemBackground">
+    android:paddingTop="15dp">
+
+    <ImageView
+        android:id="@+id/deviceImage"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:minHeight="40dp"
+        android:maxHeight="60dp"
+        android:adjustViewBounds="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
 
     <TextView
         android:id="@+id/mName"
-        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:paddingBottom="8dp"
-        android:paddingRight="8dp"
-        android:paddingLeft="40dp"
         android:paddingEnd="8dp"
+        android:paddingLeft="40dp"
+        android:paddingRight="8dp"
         android:paddingStart="40dp"
+        android:textColor="@color/black"
         android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/dName"
-        android:textColor="@color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:paddingRight="40dp"
-        android:paddingLeft="8dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="40dp"
-        android:textSize="16sp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"/>
+        android:paddingBottom="8dp"
+        android:paddingEnd="40dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="40dp"
+        android:paddingStart="8dp"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
 </RelativeLayout>
