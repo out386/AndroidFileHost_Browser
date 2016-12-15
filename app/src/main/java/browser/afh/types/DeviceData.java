@@ -21,12 +21,15 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.annotations.SerializedName;
 import com.mikepenz.fastadapter.items.AbstractItem;
+import com.mikepenz.fastadapter.utils.ViewHolderFactory;
+import com.mikepenz.materialdrawer.model.AbstractBadgeableDrawerItem;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,6 +39,7 @@ import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 
 public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> implements Serializable {
+    private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
     @SerializedName("did")
     public String did;
     @SerializedName("manufacturer")
@@ -60,11 +64,13 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
         return R.layout.device_items_list;
     }
 
+
     @Override
     public void bindView(ViewHolder viewHolder, List payloads) {
         Context context = viewHolder.dImage.getContext();
         super.bindView(viewHolder, payloads);
-        viewHolder.mName.setText(manufacturer);
+        if (viewHolder.mName != null)
+            viewHolder.mName.setText(manufacturer);
         viewHolder.dName.setText(device_name);
         Glide
                 .with(context)
@@ -77,12 +83,23 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
     @Override
     public void unbindView(ViewHolder holder) {
         super.unbindView(holder);
-        holder.mName.setText(null);
+        if (holder.mName != null)
+            holder.mName.setText(null);
         holder.dName.setText(null);
         holder.dImage.setImageDrawable(null);
     }
 
-    protected static class ViewHolder extends RecyclerView.ViewHolder {
+    protected static class ItemFactory implements ViewHolderFactory<ViewHolder> {
+        public ViewHolder create(View v) {
+            return new ViewHolder(v);
+        }
+    }
+    @Override
+    public ViewHolderFactory<? extends ViewHolder> getFactory() {
+        return FACTORY;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         protected TextView mName;
         protected TextView dName;
         protected ImageView dImage;

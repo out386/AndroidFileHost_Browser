@@ -36,7 +36,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.android.volley.RequestQueue;
@@ -121,6 +123,19 @@ public class FindDevices {
         else
             deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
+
+        devAdapter.withOnCreateViewHolderListener(new FastAdapter.OnCreateViewHolderListener() {
+            @Override
+            public DeviceData.ViewHolder onPreCreateViewHolder(ViewGroup parent, int type) {
+                return devAdapter.getTypeInstance(type).getViewHolder(
+                        LayoutInflater.from(rootView.getContext()).inflate(R.layout.device_items_grid, parent, false)
+                );
+            }
+            @Override
+            public RecyclerView.ViewHolder onPostCreateViewHolder(RecyclerView.ViewHolder viewHolder) {
+                return viewHolder;
+            }
+        });
 
         deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());
         devAdapter.withSelectable(true);

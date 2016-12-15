@@ -7,7 +7,7 @@
         android:key="beta_testing" />
     <CheckBoxPreference
         android:title="Devices grid"
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:summary="Display available devices in a grid"
         android:key="devices_grid" />
 </PreferenceScreen>
