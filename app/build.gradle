@@ -47,7 +47,7 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled false
             shrinkResources false
-            buildConfigField("boolean", "PLAY_COMPATIBLE", "true")
+            buildConfigField("boolean", "PLAY_COMPATIBLE", "false")
         }
         debug {
             debuggable true
