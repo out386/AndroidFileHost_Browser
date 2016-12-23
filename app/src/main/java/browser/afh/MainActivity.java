@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -61,7 +62,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import browser.afh.activities.PreferencesActivity;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.fragments.MainFragment;
@@ -147,8 +147,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         } else if (drawerItem.getIdentifier() == 1) {
                             licensesDialog.show();
                         } else if (drawerItem.getIdentifier() == 2) {
-                            Intent intent = new Intent(context, PreferencesActivity.class);
-                            startActivity(intent);
+                            changeFragment(new MyPreferenceFragment());
                         }
                         return false;
                     }
@@ -233,6 +232,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     public void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
+        if (fragment instanceof MainFragment)
+            showSearch(true);
+        else
+            showSearch(false);
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, fragment)
                 .commit();
@@ -385,5 +388,15 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .start();
         }
 
+    }
+
+    public static class MyPreferenceFragment extends PreferenceFragment
+    {
+        @Override
+        public void onCreate(final Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.preferences);
+        }
     }
 }
