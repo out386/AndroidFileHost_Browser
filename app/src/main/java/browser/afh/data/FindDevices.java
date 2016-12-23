@@ -32,7 +32,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -116,19 +115,20 @@ public class FindDevices {
 
         devAdapter = new FastItemAdapter<>();
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
-        Prefs prefs = new Prefs(rootView.getContext());
-
-        if (prefs.get("devices_grid", true))
-            deviceRecyclerView.setLayoutManager(new GridLayoutManager(rootView.getContext(), 3));
-        else
-            deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-
+        final Prefs prefs = new Prefs(rootView.getContext());
+        deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
         devAdapter.withOnCreateViewHolderListener(new FastAdapter.OnCreateViewHolderListener() {
+            // Required for the images toggle
             @Override
             public DeviceData.ViewHolder onPreCreateViewHolder(ViewGroup parent, int type) {
+                int deviceLayoutRes;
+                if (prefs.get("device_image", true))
+                    deviceLayoutRes = R.layout.device_items_image;
+                else
+                    deviceLayoutRes = R.layout.device_items_no_image;
                 return devAdapter.getTypeInstance(type).getViewHolder(
-                        LayoutInflater.from(rootView.getContext()).inflate(R.layout.device_items_grid, parent, false)
+                        LayoutInflater.from(rootView.getContext()).inflate(deviceLayoutRes, parent, false)
                 );
             }
             @Override

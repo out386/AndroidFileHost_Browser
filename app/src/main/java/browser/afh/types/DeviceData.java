@@ -19,9 +19,7 @@ package browser.afh.types;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,14 +27,11 @@ import com.bumptech.glide.Glide;
 import com.google.gson.annotations.SerializedName;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.fastadapter.utils.ViewHolderFactory;
-import com.mikepenz.materialdrawer.model.AbstractBadgeableDrawerItem;
 
 import java.io.Serializable;
 import java.util.List;
 
 import browser.afh.R;
-import browser.afh.tools.Constants;
-import browser.afh.tools.Prefs;
 
 public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> implements Serializable {
     private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
@@ -61,32 +56,34 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
 
     @Override
     public int getLayoutRes() {
-        return R.layout.device_items_list;
+        return R.layout.device_items_no_image;
     }
 
 
     @Override
     public void bindView(ViewHolder viewHolder, List payloads) {
-        Context context = viewHolder.dImage.getContext();
         super.bindView(viewHolder, payloads);
-        if (viewHolder.mName != null)
-            viewHolder.mName.setText(manufacturer);
+        viewHolder.mName.setText(manufacturer);
         viewHolder.dName.setText(device_name);
-        Glide
-                .with(context)
-                .load(image)
-                .placeholder(R.drawable.device_image_placeholder)
-                .crossFade()
-                .into(viewHolder.dImage);
+
+        if (viewHolder.dImage != null) {
+            Context context = viewHolder.dImage.getContext();
+            Glide
+                    .with(context)
+                    .load(image)
+                    .placeholder(R.drawable.device_image_placeholder)
+                    .crossFade()
+                    .fitCenter()
+                    .into(viewHolder.dImage);
+        }
     }
 
     @Override
     public void unbindView(ViewHolder holder) {
         super.unbindView(holder);
-        if (holder.mName != null)
-            holder.mName.setText(null);
         holder.dName.setText(null);
-        holder.dImage.setImageDrawable(null);
+        if (holder.dImage != null)
+            holder.dImage.setImageDrawable(null);
     }
 
     protected static class ItemFactory implements ViewHolderFactory<ViewHolder> {
