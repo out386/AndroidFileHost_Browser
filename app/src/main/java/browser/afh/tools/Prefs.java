@@ -7,8 +7,8 @@ import android.preference.PreferenceManager;
 
 
 public class Prefs {
-    private SharedPreferences preferences;
-    private SharedPreferences.Editor editor;
+    private final SharedPreferences preferences;
+    private final SharedPreferences.Editor editor;
     public Prefs(Context context){
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
         editor = preferences.edit();

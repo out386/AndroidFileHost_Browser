@@ -23,19 +23,19 @@ import browser.afh.types.DeviceData;
  */
 
 public class Comparators {
-    public static Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
+    public static final Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
             return -(f1.hDate.compareTo(f2.hDate));
         }
     };
-    public static Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
+    public static final Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
             return (f1.filename.compareToIgnoreCase(f2.filename));
         }
     };
-    public static Comparator <DeviceData> byManufacturer = new Comparator<DeviceData>() {
+    public static final Comparator <DeviceData> byManufacturer = new Comparator<DeviceData>() {
         @Override
         public int compare(DeviceData f1, DeviceData f2) {
             return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));

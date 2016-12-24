@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroClient {
     private static Retrofit retrofit = null;
-    private static HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    private static final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
     public static Retrofit getRetrofit() {
         if (retrofit == null) {
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);

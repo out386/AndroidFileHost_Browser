@@ -62,7 +62,7 @@ class FindFiles {
     private final RequestQueue queue;
     private final Context context;
     private final String TAG = Constants.TAG;
-    private SimpleDateFormat sdf;
+    private final SimpleDateFormat sdf;
     private String json = "";
     private List<AfhFiles> filesD = new ArrayList<>();
     private AfhAdapter adapter;

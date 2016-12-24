@@ -36,11 +36,11 @@ import browser.afh.R;
 public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> implements Serializable {
     private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
     @SerializedName("did")
-    public String did;
+    public final String did;
     @SerializedName("manufacturer")
-    public String manufacturer;
+    public final String manufacturer;
     @SerializedName("device_name")
-    public String device_name;
+    public final String device_name;
     @SerializedName("image")
     public String image;
     public DeviceData(String did, String manufacturer, String device_name) {
@@ -86,7 +86,7 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
             holder.dImage.setImageDrawable(null);
     }
 
-    protected static class ItemFactory implements ViewHolderFactory<ViewHolder> {
+    private static class ItemFactory implements ViewHolderFactory<ViewHolder> {
         public ViewHolder create(View v) {
             return new ViewHolder(v);
         }
@@ -97,11 +97,11 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        protected TextView mName;
-        protected TextView dName;
-        protected ImageView dImage;
+        final TextView mName;
+        final TextView dName;
+        final ImageView dImage;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             this.mName = (TextView) view.findViewById(R.id.mName);
             this.dName = (TextView) view.findViewById(R.id.dName);

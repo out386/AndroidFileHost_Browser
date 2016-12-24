@@ -73,28 +73,28 @@ import retrofit2.Callback;
 public class FindDevices {
 
     private final String TAG = Constants.TAG;
-    private View rootView;
-    private RequestQueue queue;
+    private final View rootView;
+    private final RequestQueue queue;
     private final PullRefreshLayout deviceRefreshLayout;
     private List<DeviceData> devices = new ArrayList<>();
     private int currentPage = 0;
-    private FastItemAdapter<DeviceData> devAdapter;
+    private final FastItemAdapter<DeviceData> devAdapter;
     private int pages[] = null;
-    private FindFiles findFiles;
+    private final FindFiles findFiles;
     private boolean refresh = false, morePagesRequested = false, devicesWereEmpty = true;
-    private FragmentInterface fragmentInterface;
-    private CardView deviceHolder;
-    private CardView filesHolder;
+    private final FragmentInterface fragmentInterface;
+    private final CardView deviceHolder;
+    private final CardView filesHolder;
     private final long ANIM_DURATION = 500;
-    private AppbarScroll appbarScroll;
+    private final AppbarScroll appbarScroll;
 
-    private BroadcastReceiver searchReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             devAdapter.filter(intent.getStringExtra(Constants.INTENT_SEARCH_QUERY));
         }
     };
-    private BroadcastReceiver backReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver backReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (filesHolder.getVisibility() == View.VISIBLE)
@@ -376,7 +376,7 @@ public class FindDevices {
     }
 
     private class ReadCache extends AsyncTask<Void, Void, List> {
-        File cacheFile;
+        final File cacheFile;
 
         ReadCache(File cacheFile) {
             this.cacheFile = cacheFile;

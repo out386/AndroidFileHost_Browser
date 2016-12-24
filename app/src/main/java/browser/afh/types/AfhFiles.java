@@ -21,11 +21,11 @@ import browser.afh.tools.Utils;
 
 public class AfhFiles
 {
-	public String filename;
-	public String url;
-	public String file_size;
-    public String hDate;
-	public int downloads;
+	public final String filename;
+	public final String url;
+	public final String file_size;
+    public final String hDate;
+	public final int downloads;
 	public AfhFiles(String f, String u, String s, String hDate, int downloads) {
 		filename = f;
 		url = u;

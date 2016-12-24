@@ -7,9 +7,9 @@ import java.util.List;
 
 public class Device {
     @SerializedName("MESSAGE")
-    public String message;
+    public final String message;
     @SerializedName("DATA")
-    public List<DeviceData> data;
+    public final List<DeviceData> data;
     public Device(String message, List<DeviceData> data) {
         this.message = message;
         this.data = data;
