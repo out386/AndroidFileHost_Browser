@@ -6,3 +6,4 @@ app/build/
 *.apk
 local.properties
 app/fabric.properties
+manifest.json

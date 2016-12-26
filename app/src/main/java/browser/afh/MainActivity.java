@@ -380,8 +380,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .start();
         }else{
             new AppUpdater(context)
-                    .setUpdateFrom(UpdateFrom.XML)
-                    .setUpdateXML(Constants.UPDATER_MANIFEST_URL)
+                    .setUpdateFrom(UpdateFrom.JSON)
+                    .setUpdateJSON(Constants.UPDATER_MANIFEST_URL)
                     .showEvery(5)
                     .showAppUpdated(false)
                     .setDisplay(Display.SNACKBAR)
