@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .build();
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.color.white)
+                .withHeaderBackground(R.color.colorPrimary)
                 .withProfileImagesVisible(false)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
