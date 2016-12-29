@@ -6,3 +6,7 @@ deployment:
     tag: /v.*/
     commands:
       - ./deploy.sh
+  priv_test:
+    branch: test
+    commands:
+      - ./test_deploy.sh
