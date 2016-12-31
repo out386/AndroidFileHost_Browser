@@ -35,9 +35,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.View;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,14 +71,15 @@ import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 
+import com.lapism.searchview.SearchView;
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     AppBarLayout appBarLayout;
     TextView headerTV;
     boolean isConnected;
     private Intent searchIntent;
-    private Menu mainMenu;
     private Context context;
     private Prefs prefs;
+    private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         }
         setContentView(R.layout.main_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final SearchView searchView = (SearchView) findViewById(R.id.searchView);
         setSupportActionBar(toolbar);
         assert toolbar != null;
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -117,9 +117,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .withCurrentProfileHiddenInList(true)
                 .build();
 
-        new DrawerBuilder()
+        drawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
                 .withAccountHeader(header)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
@@ -139,6 +138,23 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                             changeFragment(new MyPreferenceFragment());
                         }
                         return false;
+                    }
+                })
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        if (searchView != null && searchView.isSearchOpen())
+                            searchView.close(true);
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+
+                    }
+
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+
                     }
                 })
                 .build();
@@ -216,29 +232,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     })
                     .show();
         }
-    }
 
-
-    public void changeFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getFragmentManager();
-        if (fragment instanceof MainFragment)
-            showSearch(true);
-        else
-            showSearch(false);
-        fragmentManager.beginTransaction()
-                .replace(R.id.mainFrame, fragment)
-                .commit();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        mainMenu = menu;
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
-        searchView.setIconifiedByDefault(false);
-        searchView.setQueryHint(getResources().getString(R.string.search_hint));
+        searchView.setHint(getResources().getString(R.string.search_hint));
         searchView.setFocusable(false);
-        searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -246,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     Answers.getInstance().logSearch(new SearchEvent()
                             .putQuery(query));
                 }
+                searchView.close(true);
                 searchIntent = new Intent(Constants.INTENT_SEARCH);
                 searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, query);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
@@ -260,9 +257,26 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 return true;
             }
         });
-
-        return true;
+        searchView.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
+            @Override
+            public void onMenuClick() {
+                drawer.openDrawer();
+            }
+        });
     }
+
+
+    public void changeFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragment instanceof MainFragment)
+            showSearch(true);
+        else
+            showSearch(false);
+        fragmentManager.beginTransaction()
+                .replace(R.id.mainFrame, fragment)
+                .commit();
+    }
+
     @Override
     public void expand() {
         appBarLayout.setExpanded(true, true);
@@ -319,8 +333,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public void showSearch(boolean show) {
-        if (mainMenu != null)
-            mainMenu.findItem(R.id.search).setVisible(show);
+        findViewById(R.id.searchView).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     public void updatesCheck(boolean beta_tester){
