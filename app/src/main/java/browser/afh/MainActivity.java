@@ -26,12 +26,10 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
@@ -43,10 +41,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/*
-import com.afollestad.appthemeengine.ATE;
-import com.afollestad.appthemeengine.Config;
-*/
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.crashlytics.android.Crashlytics;
@@ -77,9 +71,7 @@ import de.psdev.licensesdialog.licenses.License;
 import de.psdev.licensesdialog.model.Notice;
 import io.fabric.sdk.android.Fabric;
 
-import static browser.afh.tools.Utils.getStringColor;
 import static browser.afh.tools.Utils.isPackageInstalled;
-import static browser.afh.tools.Utils.parseColor;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     AppBarLayout appBarLayout;
@@ -87,33 +79,15 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     boolean isConnected;
     private Intent searchIntent;
     private Menu mainMenu;
-    //private String colorPrimary,colorPrimaryDark,colorAccent;
     private Context context;
-    //private long updateTime = -1;
     private Prefs prefs;
 
-    @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //ATE.preApply(this, getATEKey());
         super.onCreate(savedInstanceState);
         context = this;
         prefs = new Prefs(context);
-        /*
-        pullThemeConfigs();
-        updateTime = System.currentTimeMillis();
-        ATE.config(context, null)
-                .activityTheme(R.style.AppTheme)
-                .coloredActionBar(true)
-                .primaryColor(parseColor(colorPrimary))
-                .autoGeneratePrimaryDark(true)
-                .primaryColorDark(parseColor(colorPrimaryDark))
-                .accentColor(parseColor(colorAccent))
-                .statusBarColor(parseColor(colorAccent))
-                .coloredStatusBar(true)
-                .lightStatusBarMode(Config.LIGHT_STATUS_BAR_AUTO)
-                .apply(this);
-        */
+
         if (!BuildConfig.DEBUG){
           Fabric.with(this, new Crashlytics());
         }
@@ -258,7 +232,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //ATE.themeOverflow(this, getATEKey());
         getMenuInflater().inflate(R.menu.menu, menu);
         mainMenu = menu;
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search));
@@ -329,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             }
         } catch(IllegalStateException e) {
             finish();
-            // As the onClick listener won't work if this happens,anyway.
+            // As the onClick listener won't work if this happens, anyway.
             // No point in keeping the blank activity up
         }
     }
@@ -349,40 +322,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (mainMenu != null)
             mainMenu.findItem(R.id.search).setVisible(show);
     }
-
-    /*
-    public void pullThemeConfigs(){
-        colorPrimary = prefs.get("color_primary", getStringColor(getResources(), R.color.colorPrimary));
-        colorPrimaryDark = prefs.get("color_primary_dark", getStringColor(getResources(), R.color.colorPrimaryDark));
-        colorAccent = prefs.get("color_accent", getStringColor(getResources(), R.color.colorAccent));
-
-    }
-
-
-    @Nullable
-    public String getATEKey() {
-        return null;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        ATE.postApply(this, getATEKey());
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ATE.invalidateActivity(this, updateTime, getATEKey());
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (isFinishing())
-            ATE.cleanup();
-    }
-    */
 
     public void updatesCheck(boolean beta_tester){
         if (!beta_tester){
