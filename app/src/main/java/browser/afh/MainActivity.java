@@ -63,10 +63,6 @@ import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
-import de.psdev.licensesdialog.LicensesDialog;
-import de.psdev.licensesdialog.licenses.GnuGeneralPublicLicense30;
-import de.psdev.licensesdialog.licenses.License;
-import de.psdev.licensesdialog.model.Notice;
 import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
@@ -99,13 +95,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
         updatesCheck(prefs.get("beta_tester",false));
-        final String name = "AFH Browser";
-        final String url = "https://out386.github.io/AndroidFileHost_Browser";
-        final License license = new GnuGeneralPublicLicense30();
-        final Notice notice = new Notice(name, url, getResources().getString(R.string.copyright_text), license);
-        final LicensesDialog licensesDialog = new LicensesDialog.Builder(context)
-                .setNotices(notice)
-                .build();
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.colorPrimary)
@@ -133,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         if (drawerItem.getIdentifier() == 0) {
                             changeFragment(new MainFragment());
                         } else if (drawerItem.getIdentifier() == 1) {
-                            licensesDialog.show();
+
                         } else if (drawerItem.getIdentifier() == 2) {
                             changeFragment(new MyPreferenceFragment());
                         }
