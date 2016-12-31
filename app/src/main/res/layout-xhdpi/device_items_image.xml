@@ -8,7 +8,8 @@
     android:orientation="horizontal"
     android:layout_marginRight="8dp"
     android:layout_marginLeft="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     card_view:cardElevation="1dp">
 
     <RelativeLayout
