@@ -3,10 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:background="?android:selectableItemBackground"
     android:orientation="horizontal"
-    android:layout_margin="8dp"
-    android:elevation="4dp">
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginTop="8dp"
+    card_view:cardElevation="1dp">
 
     <RelativeLayout
         android:layout_width="match_parent"

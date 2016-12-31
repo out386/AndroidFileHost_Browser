@@ -6,4 +6,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="text_gray">#FF888888</color>
     <color name="black">#111111</color>
+    <color name="list_card_background">#FFF9F9F9</color>
 </resources>
