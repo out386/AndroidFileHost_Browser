@@ -64,6 +64,7 @@ import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import io.fabric.sdk.android.Fabric;
+import you.love.afh.AboutActivity;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         if (drawerItem.getIdentifier() == 0) {
                             changeFragment(new MainFragment());
                         } else if (drawerItem.getIdentifier() == 1) {
-
+                            startActivity(new Intent(context, AboutActivity.class));
                         } else if (drawerItem.getIdentifier() == 2) {
                             changeFragment(new MyPreferenceFragment());
                         }

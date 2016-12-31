@@ -9,7 +9,7 @@
     <string name="drawer_title_settings">Settings</string>
     <string name="drawer_desc_home">The things!</string>
     <string name="drawer_desc_settings">Settings for AFH Browser</string>
-    <string name="drawer_title_libraries">About</string>
+    <string name="drawer_title_libraries">Credits</string>
     <string name="drawer_desc_libraries">Libraries used</string>
     <string name="bottom_dialog_warning_title">Error</string>
     <string name="bottom_dialog_warning_desc">The app needs internet connectivity to function, please make sure you\u0027re connected and try again.</string>
@@ -32,5 +32,17 @@
     <string name="download">Download</string>
     <string name="err_xda_labs_not_installed">XDA Labs not installed, redirecting to download page.</string>
     <string name="search_hint">Search devices...</string>
+    <string name="about_activity_title">About AfhBrowser</string>
+    <string name="about_activity_version_title">Version</string>
+    <string name="about_activity_licenses_title">Licenses</string>
+    <string name="about_activity_title_msfjarvis">Harsh Shandilya - Author</string>
+    <string name="about_activity_author_title_1">Harsh Shandilya</string>
+    <string name="about_activity_author_desc_1">India</string>
+    <string name="about_activity_github_title">Fork on GitHub</string>
+    <string name="about_activity_github_subtitle_msfjarvis">\@MSF-Jarvis</string>
+    <string name="about_activity_twitter_title">Twitter</string>
+    <string name="about_activity_twitter_subtitle_msfjarvis">\@MSF_Jarvis</string>
+    <string name="about_activity_github_subtitle_out386">\@out386</string>
+    <string name="about_activity_author_title_2">Ritayan Chakraborty</string>
 
 </resources>
