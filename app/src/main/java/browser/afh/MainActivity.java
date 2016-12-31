@@ -64,7 +64,7 @@ import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import io.fabric.sdk.android.Fabric;
-import you.love.afh.AboutActivity;
+import browser.afh.AboutActivity;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 

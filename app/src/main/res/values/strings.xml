@@ -35,14 +35,13 @@
     <string name="about_activity_title">About AfhBrowser</string>
     <string name="about_activity_version_title">Version</string>
     <string name="about_activity_licenses_title">Licenses</string>
-    <string name="about_activity_title_msfjarvis">Harsh Shandilya - Author</string>
-    <string name="about_activity_author_title_1">Harsh Shandilya</string>
-    <string name="about_activity_author_desc_1">India</string>
+    <string name="about_activity_author_title_1">Ritayan Chakraborty</string>
+    <string name="about_activity_author_desc">India</string>
     <string name="about_activity_github_title">Fork on GitHub</string>
-    <string name="about_activity_github_subtitle_msfjarvis">\@MSF-Jarvis</string>
+    <string name="about_activity_github_subtitle_1">\@out386</string>
     <string name="about_activity_twitter_title">Twitter</string>
-    <string name="about_activity_twitter_subtitle_msfjarvis">\@MSF_Jarvis</string>
-    <string name="about_activity_github_subtitle_out386">\@out386</string>
-    <string name="about_activity_author_title_2">Ritayan Chakraborty</string>
+    <string name="about_activity_twitter_subtitle_2">\@MSF_Jarvis</string>
+    <string name="about_activity_github_subtitle_2">\@MSF-Jarvis</string>
+    <string name="about_activity_author_title_2">Harsh Shandilya</string>
 
 </resources>

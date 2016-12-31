@@ -1,4 +1,4 @@
-package you.love.afh;
+package browser.afh;
 
 import android.content.Context;
 import android.content.Intent;
@@ -44,30 +44,53 @@ public class AboutActivity extends MaterialAboutActivity {
                 })
                 .build());
         MaterialAboutCard.Builder authorCardBuilder = new MaterialAboutCard.Builder();
-        authorCardBuilder.title(R.string.about_activity_title_msfjarvis);
+        authorCardBuilder.title(R.string.about_activity_author_title_1);
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_author_title_1)
-                .subText(R.string.about_activity_author_desc_1)
+                .subText(R.string.about_activity_author_desc)
                 .icon(R.drawable.ic_person_black_24px)
                 .build());
 
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_github_title)
-                .subText(R.string.about_activity_github_subtitle_msfjarvis)
+                .subText(R.string.about_activity_github_subtitle_1)
                 .icon(R.drawable.ic_github)
                 .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
                     @Override
                     public void onClick() {
                         Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://github.com/MSF-Jarvis"));
+                        i.setData(Uri.parse("https://github.com/out386/AndroidFileHost_Browser"));
                         startActivity(i);
                     }
                 })
                 .build());
 
-        authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
+        MaterialAboutCard.Builder author2CardBuilder = new MaterialAboutCard.Builder();
+        author2CardBuilder.title(R.string.about_activity_author_title_2);
+        author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
+                .text(R.string.about_activity_author_title_2)
+                .subText(R.string.about_activity_author_desc)
+                .icon(R.drawable.ic_person_black_24px)
+                .build());
+
+        author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
+                .text(R.string.about_activity_github_title)
+                .subText(R.string.about_activity_github_subtitle_2)
+                .icon(R.drawable.ic_github)
+                .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
+                    @Override
+                    public void onClick() {
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse("https://github.com/MSF-Jarvis/AndroidFileHost_Browser"));
+                        startActivity(i);
+                    }
+                })
+                .build());
+
+
+            author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_twitter_title)
-                .subText(R.string.about_activity_twitter_subtitle_msfjarvis)
+                .subText(R.string.about_activity_twitter_subtitle_2)
                 .icon(R.drawable.ic_twitter)
                 .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
                     @Override
@@ -78,30 +101,6 @@ public class AboutActivity extends MaterialAboutActivity {
                     }
                 })
                 .build());
-
-        MaterialAboutCard.Builder author2CardBuilder = new MaterialAboutCard.Builder();
-        author2CardBuilder.title(R.string.about_activity_author_title_2);
-        author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
-                .text(R.string.about_activity_author_title_1)
-                .subText(R.string.about_activity_author_desc_1)
-                .icon(R.drawable.ic_person_black_24px)
-                .build());
-
-        author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
-                .text(R.string.about_activity_github_title)
-                .subText(R.string.about_activity_github_subtitle_out386)
-                .icon(R.drawable.ic_github)
-                .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
-                    @Override
-                    public void onClick() {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://github.com/out386"));
-                        startActivity(i);
-                    }
-                })
-                .build());
-
-
         return new MaterialAboutList.Builder()
                 .addCard(appCardBuilder.build())
                 .addCard(authorCardBuilder.build())

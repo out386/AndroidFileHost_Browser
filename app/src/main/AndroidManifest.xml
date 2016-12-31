@@ -23,7 +23,7 @@
                 android:resource="@xml/shortcuts" />
             -->
         </activity>
-        <activity android:name="you.love.afh.AboutActivity"
+        <activity android:name=".AboutActivity"
             android:theme="@style/AppTheme"/>
 
         <service
