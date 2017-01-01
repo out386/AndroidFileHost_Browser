@@ -54,6 +54,7 @@ import browser.afh.adapters.AfhAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhFiles;
+import browser.afh.types.AfhDirs;
 
 class FindFiles {
     private final TextView mTextView;
@@ -117,7 +118,7 @@ class FindFiles {
                     public void onResponse(String response) {
                         Log.i(TAG, "onResponse: " + response);
                         json = response;
-                        List<String> fid = null;
+                        List<AfhDirs> fid = null;
                         try {
                             sv.setVisibility(View.GONE);
                             fid = parse();
@@ -154,18 +155,17 @@ class FindFiles {
         queue.add(stringRequest);
     }
 
-    private void queryDirs(List<String> did) {
+    private void queryDirs(List<AfhDirs> did) {
 
-        for (String url : did) {
-            Log.i(TAG, "queryDirs: did : " + did);
-            final String link = url;
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        for (final AfhDirs url : did) {
+            final String link = url.did;
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, link,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             Log.i(TAG, "onResponseDirs: " + response);
                             try {
-                                parseFiles(response);
+                                parseFiles(response, url.screenname);
                             } catch (Exception e) {
                                 pullRefreshLayout.setRefreshing(false);
                                 sv.setVisibility(View.VISIBLE);
@@ -191,15 +191,16 @@ class FindFiles {
 
     }
 
-    private List<String> parse() throws Exception {
+    private List<AfhDirs> parse() throws Exception {
         JSONObject afhJson;
         afhJson = new JSONObject(json);
         mTextView.setText("");
-        List<String> fid = new ArrayList<>();
+        List<AfhDirs> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
         for (int i = 0; i < data.length(); i++) {
-            Log.i(TAG, "parse: " + data.getJSONObject(i).getString(context.getString(R.string.flid_key)));
-            fid.add(String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key))));
+            String flid = String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key)));
+            String screenname = data.getJSONObject(i).getString("screenname");
+            fid.add(new AfhDirs(screenname, flid));
         }
         if (fid.size() == 0) {
             sv.setVisibility(View.VISIBLE);
@@ -221,7 +222,7 @@ class FindFiles {
 
     }
 
-    private void parseFiles(String Json) throws Exception {
+    private void parseFiles(String Json, String screenname) throws Exception {
         JSONObject fileJson = new JSONObject(Json);
 
         JSONObject data;
@@ -255,11 +256,10 @@ class FindFiles {
                     if (downloads >= 10) {
                         // Filtering out APK files as Google Play hates them
                         if (!name.endsWith(".apk") || !name.endsWith(".APK"))
-                            filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
+                            filesD.add(new AfhFiles(name, url, file_size, hDate, screenname, downloads));
                     }
                 } else {
-                    filesD.add(new AfhFiles(name, url, file_size, hDate, downloads));
-
+                    filesD.add(new AfhFiles(name, url, file_size, hDate, screenname, downloads));
                 }
             }
         }
@@ -268,9 +268,9 @@ class FindFiles {
             folders = data.getJSONArray("folders");
 
         if(folders != null) {
-            List<String> foldersD = new ArrayList<>();
+            List<AfhDirs> foldersD = new ArrayList<>();
             for (int i = 0; i < folders.length(); i++) {
-                foldersD.add("https://www.androidfilehost.com/api/?action=folder&flid=" + folders.getJSONObject(i).getString("flid"));
+                foldersD.add(new AfhDirs(screenname, "https://www.androidfilehost.com/api/?action=folder&flid=" + folders.getJSONObject(i).getString("flid")));
             }
             if(foldersD.size() > 0)
                 queryDirs(foldersD);

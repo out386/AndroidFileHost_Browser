@@ -89,7 +89,7 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                 public void onClick(View view) {
                     new MaterialDialog.Builder(context)
                             .title(R.string.file_dialog_title)
-                            .content(String.format(context.getString(R.string.file_dialog_content), p.filename,p.file_size,p.hDate, p.downloads))
+                            .content(String.format(context.getString(R.string.file_dialog_content), p.filename, p.file_size, p.hDate, p.screenname, p.downloads))
                             .positiveText(R.string.file_dialog_positive_button_label)
                             .neutralText(R.string.file_dialog_neutral_button_label)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {

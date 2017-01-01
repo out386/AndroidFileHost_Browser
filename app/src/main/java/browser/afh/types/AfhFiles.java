@@ -25,12 +25,14 @@ public class AfhFiles
 	public final String url;
 	public final String file_size;
     public final String hDate;
+    public final String screenname;
 	public final int downloads;
-	public AfhFiles(String f, String u, String s, String hDate, int downloads) {
+	public AfhFiles(String f, String u, String s, String hDate, String screenname, int downloads) {
 		filename = f;
 		url = u;
         this.hDate = hDate;
         this.downloads = downloads;
+        this.screenname = screenname;
 		file_size = Utils.sizeFormat(Integer.parseInt(s));
 	}
 }
