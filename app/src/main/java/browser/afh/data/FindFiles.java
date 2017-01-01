@@ -74,7 +74,7 @@ class FindFiles {
         this.queue = queue;
         context = rootView.getContext();
 
-        sdf = new SimpleDateFormat("yyyy/MM/dd \nHH:mm", Locale.getDefault());
+        sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
 
         mTextView = (TextView) rootView.findViewById(R.id.tv);
