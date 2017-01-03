@@ -20,6 +20,8 @@ package browser.afh;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -330,7 +332,42 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public void showSearch(boolean show) {
-        findViewById(R.id.searchView).setVisibility(show ? View.VISIBLE : View.GONE);
+        final SearchView search = (SearchView) findViewById(R.id.searchView);
+        if(show) {
+            search.setTranslationY(-search.getHeight());
+            search.setAlpha(0);
+            search.setVisibility(View.VISIBLE);
+            search.animate()
+                    .setDuration(Constants.ANIM_DURATION)
+                    .translationY(0)
+                    .alpha(1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            search.setVisibility(View.VISIBLE);
+
+                        }
+                    });
+
+        }
+        else {
+            search.setTranslationY(0);
+            search.setAlpha(1);
+            search.setVisibility(View.VISIBLE);
+            search.animate()
+                    .setDuration(Constants.ANIM_DURATION)
+                    .translationY(-search.getHeight())
+                    .alpha(0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            search.setVisibility(View.GONE);
+
+                        }
+                    });
+        }
     }
 
     public void updatesCheck(boolean beta_tester){

@@ -85,7 +85,6 @@ public class FindDevices {
     private final FragmentInterface fragmentInterface;
     private final CardView deviceHolder;
     private final CardView filesHolder;
-    private final long ANIM_DURATION = 500;
     private final AppbarScroll appbarScroll;
 
     private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
@@ -319,7 +318,7 @@ public class FindDevices {
         inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
 
         deviceHolder.animate()
-                .setDuration(ANIM_DURATION)
+                .setDuration(Constants.ANIM_DURATION)
                 .translationX(-deviceHolder.getWidth())
                 .alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -332,7 +331,7 @@ public class FindDevices {
                 });
         filesHolder.animate()
                 .translationX(0)
-                .setDuration(ANIM_DURATION)
+                .setDuration(Constants.ANIM_DURATION)
                 .alpha(1.0f)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -349,7 +348,7 @@ public class FindDevices {
         deviceHolder.setTranslationX(-deviceHolder.getWidth());
         deviceHolder.setVisibility(View.VISIBLE);
         filesHolder.animate()
-                .setDuration(ANIM_DURATION)
+                .setDuration(Constants.ANIM_DURATION)
                 .translationX(filesHolder.getWidth())
                 .alpha(0.0f)
                 .setListener(new AnimatorListenerAdapter() {
@@ -362,7 +361,7 @@ public class FindDevices {
                 });
         deviceHolder.animate()
                 .translationX(0)
-                .setDuration(ANIM_DURATION)
+                .setDuration(Constants.ANIM_DURATION)
                 .alpha(1.0f)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
