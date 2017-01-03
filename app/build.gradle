@@ -21,11 +21,11 @@ android {
     buildToolsVersion "25.0.0"
 
     defaultConfig {
-        applicationId "browser.afh"
+        applicationId "rom.stalker"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 6
-        versionName "0.6"
+        versionCode 7
+        versionName "1.0.0"
     }
 
     applicationVariants.all { variant ->
