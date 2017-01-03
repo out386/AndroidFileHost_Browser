@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
+                //.withActionBarDrawerToggle(true)
                 .withAccountHeader(header)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
@@ -264,12 +265,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (fragment instanceof MainFragment) {
             expand();
             showSearch(true);
-            drawer.setToolbar(this, null);
         }
         else {
             collapse();
             showSearch(false);
-            drawer.setToolbar(this, toolbar);
         }
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, fragment)
