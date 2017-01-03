@@ -33,6 +33,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -64,7 +65,6 @@ import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import io.fabric.sdk.android.Fabric;
-import browser.afh.AboutActivity;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Context context;
     private Prefs prefs;
     private Drawer drawer;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
           Fabric.with(this, new Crashlytics());
         }
         setContentView(R.layout.main_activity);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
         setSupportActionBar(toolbar);
         assert toolbar != null;
@@ -258,10 +259,16 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     public void changeFragment(Fragment fragment) {
         FragmentManager fragmentManager = getFragmentManager();
-        if (fragment instanceof MainFragment)
+        if (fragment instanceof MainFragment) {
+            expand();
             showSearch(true);
-        else
+            drawer.setToolbar(this, null);
+        }
+        else {
+            collapse();
             showSearch(false);
+            drawer.setToolbar(this, toolbar);
+        }
         fragmentManager.beginTransaction()
                 .replace(R.id.mainFrame, fragment)
                 .commit();
