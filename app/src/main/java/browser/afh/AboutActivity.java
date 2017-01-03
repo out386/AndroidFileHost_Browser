@@ -10,6 +10,7 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
+import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 
 import browser.afh.BuildConfig;
@@ -39,7 +40,11 @@ public class AboutActivity extends MaterialAboutActivity {
                     @Override
                     public void onClick() {
                         new LibsBuilder()
-                                .activity(context);
+                                .withFields(R.string.class.getFields())
+                                .withActivityTitle(getString(R.string.app_name))
+                                .withActivityTheme(R.style.AppTheme_MaterialAboutActivity)
+                                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                                .activity(AboutActivity.this);
                     }
                 })
                 .build());
