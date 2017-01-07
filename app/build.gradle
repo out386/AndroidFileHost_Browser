@@ -121,9 +121,3 @@ dependencies {
     }
     compile 'com.github.daniel-stoneuk:material-about-library:1.1.1'
 }
-
-tasks.whenTaskAdded { task ->
-    if (task.name.equals("lint")) {
-        task.enabled = false
-    }
-}
