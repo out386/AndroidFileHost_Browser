@@ -2,8 +2,6 @@ package browser.afh.tools;
 
 
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.Color;
 
 import java.text.DecimalFormat;
 
@@ -45,11 +43,4 @@ public class Utils {
         }
     }
 
-    public static String getStringColor(Resources resources, int key) {
-        return Integer.toHexString(resources.getColor(key));
-    }
-
-    public static int parseColor(String string){
-        return Color.parseColor(string);
-    }
 }

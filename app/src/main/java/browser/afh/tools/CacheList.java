@@ -30,23 +30,30 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
 
+import browser.afh.BuildConfig;
+
 public class CacheList {
     public static void write(List list, File file) {
+        boolean isDeleted = false;
         if (file.exists())
-            file.delete();
+            isDeleted = file.delete();
+            if (!isDeleted){
+                if (BuildConfig.DEBUG) Log.d(Constants.TAG,"Cachelist file found but deletion failed");
+            }
         ObjectOutputStream oos;
         try {
             oos = new ObjectOutputStream(new FileOutputStream(file));
             oos.writeObject(list);
             oos.close();
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     public static List read(File file) {
         List list = null;
         if (!file.exists()) {
-            Log.i(Constants.TAG, "read: File missing");
+            if (BuildConfig.DEBUG) Log.i(Constants.TAG, "read: File missing");
             return null;
         }
         try {
@@ -56,7 +63,8 @@ public class CacheList {
         } catch (IOException e) {
             Log.i(Constants.TAG, "read: " + e.toString());
         } catch (ClassNotFoundException e) {
-            file.delete();
+            boolean isDeleted = file.delete();
+            if (!isDeleted) if (BuildConfig.DEBUG) Log.d(Constants.TAG, "File deletion failed in function #read");
         }
         return list;
     }

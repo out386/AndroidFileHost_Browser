@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import hugo.weaving.DebugLog;
+
 public class ConnectionDetector {
     private final Context context;
 
@@ -16,6 +18,7 @@ public class ConnectionDetector {
         this.context = context;
     }
 
+    @DebugLog
     public boolean isConnectingToInternet() {
         if (networkConnectivity()) {
             try {

@@ -41,7 +41,7 @@ public class MainFragment extends Fragment {
         try {
             appbarScroll = (AppbarScroll) activity;
             fragmentInterface = (FragmentInterface) activity;
-        } catch (ClassCastException e) {
+        } catch (ClassCastException ignored) {
 
         }
     }

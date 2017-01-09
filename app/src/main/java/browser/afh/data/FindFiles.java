@@ -55,6 +55,7 @@ import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhFiles;
 import browser.afh.types.AfhDirs;
+import hugo.weaving.DebugLog;
 
 class FindFiles {
     private final TextView mTextView;
@@ -70,6 +71,7 @@ class FindFiles {
     private String savedID;
     private boolean sortByDate;
 
+    @DebugLog
     FindFiles(View rootView, RequestQueue queue) {
         this.queue = queue;
         context = rootView.getContext();
@@ -108,6 +110,7 @@ class FindFiles {
         fileList.setAdapter(adapter);
     }
 
+    @DebugLog
     void start(final String did) {
         savedID = did;
         String url = String.format(Constants.DID, did);
@@ -155,6 +158,7 @@ class FindFiles {
         queue.add(stringRequest);
     }
 
+    @DebugLog
     private void queryDirs(List<AfhDirs> did) {
 
         for (final AfhDirs url : did) {
@@ -191,6 +195,7 @@ class FindFiles {
 
     }
 
+    @DebugLog
     private List<AfhDirs> parse() throws Exception {
         JSONObject afhJson;
         afhJson = new JSONObject(json);
@@ -211,6 +216,7 @@ class FindFiles {
         return fid;
     }
 
+    @DebugLog
     private void print() {
         if(sortByDate) {
             Collections.sort(filesD, Comparators.byUploadDate);
@@ -222,6 +228,7 @@ class FindFiles {
 
     }
 
+    @DebugLog
     private void parseFiles(String Json, String screenname) throws Exception {
         JSONObject fileJson = new JSONObject(Json);
 

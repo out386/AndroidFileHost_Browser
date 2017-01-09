@@ -67,6 +67,7 @@ import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.types.Device;
 import browser.afh.types.DeviceData;
+import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -103,6 +104,7 @@ public class FindDevices {
         }
     };
 
+    @DebugLog
     public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll, final FragmentInterface fragmentInterface) {
         this.rootView = rootView;
         this.queue = queue;
@@ -206,6 +208,7 @@ public class FindDevices {
 
     }
 
+    @DebugLog
     public void registerReceiver() {
         IntentFilter search = new IntentFilter();
         search.addAction(Constants.INTENT_SEARCH);
@@ -215,10 +218,13 @@ public class FindDevices {
         LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(backReceiver, back);
     }
 
+    @DebugLog
     public void unregisterReceiver() {
         LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(searchReceiver);
         LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(backReceiver);
     }
+
+    @DebugLog
     public void findFirstDevice() {
 
         deviceRefreshLayout.setRefreshing(true);
@@ -234,6 +240,7 @@ public class FindDevices {
         }
     }
 
+    @DebugLog
     private void findDevices(final int pageNumber, final ApiInterface retro) {
         Log.i(TAG, "findDevices: Queueing page : " + pageNumber);
         Call<Device> call = retro.getDevices("devices", pageNumber, 100);
@@ -280,6 +287,7 @@ public class FindDevices {
         });
     }
 
+    @DebugLog
     private void displayDevices() {
         devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
@@ -309,6 +317,7 @@ public class FindDevices {
         return pages;
     }
 
+    @DebugLog
     private void animateShowFiles() {
         filesHolder.setTranslationX(filesHolder.getWidth());
         filesHolder.setAlpha(0.0f);
@@ -342,6 +351,7 @@ public class FindDevices {
                 });
     }
 
+    @DebugLog
     private void animateShowDevices() {
         Log.i(TAG, "animateShowDevices: ");
         deviceHolder.setAlpha(0.0f);
@@ -374,6 +384,7 @@ public class FindDevices {
         });
     }
 
+    @DebugLog
     private class ReadCache extends AsyncTask<Void, Void, List> {
         final File cacheFile;
 

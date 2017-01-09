@@ -66,6 +66,7 @@ import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
+import hugo.weaving.DebugLog;
 import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
@@ -301,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
+    @DebugLog
     public void reattach() {
         FragmentManager fragmentManager = getFragmentManager();
         Fragment current = fragmentManager.findFragmentById(R.id.mainFrame);
@@ -330,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
+    @DebugLog
     public void showSearch(boolean show) {
         final SearchView search = (SearchView) findViewById(R.id.searchView);
         if(show) {
@@ -369,6 +372,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         }
     }
 
+    @DebugLog
     public void updatesCheck(boolean beta_tester){
         if (!beta_tester){
             new AppUpdater(context)
