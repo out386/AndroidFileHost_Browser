@@ -11,7 +11,9 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
 import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.itemanimators.SlideDownAlphaAnimator;
 
 import browser.afh.BuildConfig;
 import browser.afh.R;
@@ -39,6 +41,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
                     @Override
                     public void onClick() {
+                        LibsConfiguration.getInstance().setItemAnimator(new SlideDownAlphaAnimator());
                         new LibsBuilder()
                                 .withFields(R.string.class.getFields())
                                 .withActivityTitle(getString(R.string.app_name))
