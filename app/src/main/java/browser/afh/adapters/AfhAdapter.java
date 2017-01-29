@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.StackingBehavior;
 
 import java.util.List;
 
@@ -89,6 +90,7 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                 public void onClick(View view) {
                     new MaterialDialog.Builder(context)
                             .title(p.filename)
+                            .stackingBehavior(StackingBehavior.ALWAYS)
                             .content(String.format(context.getString(R.string.file_dialog_content), p.file_size, p.hDate, p.screenname, p.downloads))
                             .positiveText(R.string.file_dialog_positive_button_label)
                             .neutralText(R.string.file_dialog_neutral_button_label)
