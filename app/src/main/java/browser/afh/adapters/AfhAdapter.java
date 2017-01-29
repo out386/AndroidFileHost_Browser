@@ -95,7 +95,22 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
                                 @Override
                                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    customTab(p.url);
+                                    try {
+                                        customTab(p.url);
+                                    } catch (ActivityNotFoundException exc){
+                                        new MaterialDialog.Builder(context)
+                                                .title("Huh?")
+                                                .content("No browser installed? ಠ_ಠ")
+                                                .neutralText("Yes I'm a fool")
+                                                .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                                    @Override
+                                                    public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which) {
+                                                        dialog.dismiss();
+                                                    }
+
+                                                })
+                                                .show();
+                                    }
                                     dialog.dismiss();
                                 }
                             })
