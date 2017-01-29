@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Context context;
     private Prefs prefs;
     private Drawer drawer;
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +91,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
           Fabric.with(this, new Crashlytics());
         }
         setContentView(R.layout.main_activity);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
         setSupportActionBar(toolbar);
-        assert toolbar != null;
+        assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
