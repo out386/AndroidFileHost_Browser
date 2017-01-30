@@ -26,19 +26,25 @@ public class Comparators {
     public static final Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
-            return -(f1.hDate.compareTo(f2.hDate));
+            if (f1 != null && f2 != null && f1.hDate != null && f2.hDate != null)
+                return -(f1.hDate.compareTo(f2.hDate));
+            return 0;
         }
     };
     public static final Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
-            return (f1.filename.compareToIgnoreCase(f2.filename));
+            if (f1 != null && f2 != null && f1.filename != null && f2.filename != null)
+                return (f1.filename.compareToIgnoreCase(f2.filename));
+            return 0;
         }
     };
     public static final Comparator <DeviceData> byManufacturer = new Comparator<DeviceData>() {
         @Override
         public int compare(DeviceData f1, DeviceData f2) {
-            return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
+            if (f1 != null && f2 != null && f1.manufacturer != null && f2.manufacturer != null)
+                return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
+            return 0;
         }
     };
 }
