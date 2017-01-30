@@ -64,7 +64,7 @@ import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import browser.afh.tools.Retrofit.ApiInterfaceDevices;
-import browser.afh.tools.Retrofit.RetroClientDevices;
+import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.types.Device;
 import browser.afh.types.DeviceData;
 import hugo.weaving.DebugLog;
@@ -228,7 +228,7 @@ public class FindDevices {
     public void findFirstDevice() {
 
         deviceRefreshLayout.setRefreshing(true);
-        ApiInterfaceDevices retro = RetroClientDevices.getRetrofit().create(ApiInterfaceDevices.class);
+        ApiInterfaceDevices retro = RetroClient.getRetrofit().create(ApiInterfaceDevices.class);
         if (!refresh) {
             File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
             new ReadCache(cacheFile).execute();

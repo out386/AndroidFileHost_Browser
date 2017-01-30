@@ -17,13 +17,15 @@ package browser.afh.tools.Retrofit;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.concurrent.TimeUnit;
+
 import browser.afh.tools.Constants;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetroClientDevices {
+public class RetroClient {
     private static Retrofit retrofit = null;
     private static final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
     public static Retrofit getRetrofit() {
@@ -31,6 +33,9 @@ public class RetroClientDevices {
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.addInterceptor(loggingInterceptor);
+            client.readTimeout(180, TimeUnit.SECONDS);
+            client.connectTimeout(180, TimeUnit.SECONDS);
+
             retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())

@@ -26,8 +26,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -53,9 +51,15 @@ import browser.afh.R;
 import browser.afh.adapters.AfhAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
+import browser.afh.tools.Retrofit.ApiInterfaceDevelopers;
+import browser.afh.tools.Retrofit.RetroClient;
+import browser.afh.types.AfhDevelopers;
+import browser.afh.types.AfhDevelopersList;
 import browser.afh.types.AfhFiles;
-import browser.afh.types.AfhDirs;
+import browser.afh.types.Device;
 import hugo.weaving.DebugLog;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
@@ -68,6 +72,7 @@ class FindFiles {
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
+    private ApiInterfaceDevelopers retro;
 
     @DebugLog
     FindFiles(View rootView, RequestQueue queue) {
@@ -77,6 +82,7 @@ class FindFiles {
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
 
+        retro = RetroClient.getRetrofit().create(ApiInterfaceDevelopers.class);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
 
@@ -109,7 +115,28 @@ class FindFiles {
     @DebugLog
     void start(final String did) {
         savedID = did;
-        String url = String.format(Constants.DID, did);
+        Call<AfhDevelopersList> call = retro.getDevelopers("developers", did, 100);
+        call.enqueue(new Callback<AfhDevelopersList>() {
+                         @Override
+                         public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
+                             Log.i(TAG, "onResponse: " + response.body().message);
+                             List<AfhDevelopers> fid = response.body().data;
+                             if (fid != null && fid.size() > 0) {
+                                 Log.i(TAG, "onResponse: NOT NULL : " + fid.get(0).screenname);
+                                 pullRefreshLayout.setRefreshing(false);
+                                 queryDirs(fid);
+                             } else
+                                 Log.i(TAG, "onResponse: Fid null");
+                         }
+            @Override
+            public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
+                Log.i(TAG, "onErrorResponse ");
+                start(did);
+        }
+    });
+
+
+        /*String url = String.format(Constants.DID, did);
         Log.i(TAG, "start: DID: " + did);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -145,14 +172,14 @@ class FindFiles {
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         stringRequest.setTag(Constants.VOLLEY_FILES_TAG);
-        queue.add(stringRequest);
+        queue.add(stringRequest);*/
     }
 
     @DebugLog
-    private void queryDirs(List<AfhDirs> did) {
+    private void queryDirs(final List<AfhDevelopers> did) {
 
-        for (final AfhDirs url : did) {
-            final String link = url.did;
+        for (final AfhDevelopers url : did) {
+            final String link = Constants.FLID + url.flid;
             StringRequest stringRequest = new StringRequest(Request.Method.GET, link,
                     new Response.Listener<String>() {
                         @Override
@@ -168,8 +195,8 @@ class FindFiles {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     pullRefreshLayout.setRefreshing(false);
-                    if (error.toString().contains("NoConnectionError"))
-                        return;
+                    if (! error.toString().contains("NoConnectionError"))
+                        queryDirs(did);
                     }
             });
 
@@ -182,15 +209,15 @@ class FindFiles {
     }
 
     @DebugLog
-    private List<AfhDirs> parse() throws Exception {
+    private List<AfhDevelopers> parse() throws Exception {
         JSONObject afhJson;
         afhJson = new JSONObject(json);
-        List<AfhDirs> fid = new ArrayList<>();
+        List<AfhDevelopers> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
         for (int i = 0; i < data.length(); i++) {
             String flid = String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key)));
             String screenname = data.getJSONObject(i).getString("screenname");
-            fid.add(new AfhDirs(screenname, flid));
+            fid.add(new AfhDevelopers(screenname, flid));
         }
         // The first list of available files is here
         pullRefreshLayout.setRefreshing(false);
@@ -256,9 +283,9 @@ class FindFiles {
             folders = data.getJSONArray("folders");
 
         if(folders != null) {
-            List<AfhDirs> foldersD = new ArrayList<>();
+            List<AfhDevelopers> foldersD = new ArrayList<>();
             for (int i = 0; i < folders.length(); i++) {
-                foldersD.add(new AfhDirs(screenname, "https://www.androidfilehost.com/api/?action=folder&flid=" + folders.getJSONObject(i).getString("flid")));
+                foldersD.add(new AfhDevelopers(screenname, folders.getJSONObject(i).getString("flid")));
             }
             if(foldersD.size() > 0)
                 queryDirs(foldersD);
