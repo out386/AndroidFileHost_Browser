@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">AfhBrowser</string>
-    <string name="json_parse_error">Json parse error : %s</string>
     <string name="flid_key">flid</string>
     <string name="sort">Sort by date, latest first</string>
     <string name="drawer_title_home">Home</string>
@@ -24,7 +23,6 @@
     <string name="unofficial_disclaimer_text">Neither this app nor its developers are affiliated to AndroidFileHost. All bug reports for this app should be submitted to us, and not to them.</string>
     <string name="unofficial_disclaimer_title">Disclaimer</string>
     <string name="copyright_text">Copyright 2016, Ritayan Chakraborty and Harsh Shandilya</string>
-    <string name="error_no_files_found">No files were found for this device.</string>
     <string name="search">Search</string>
     <string name="disclaimer_google_play_title">Important information</string>
     <string name="disclaimer_google_play_desc">Due to Google Play developer policies all APK files will be filtered out. Please download the XDA Labs version if you need to download APKs from AFH</string>

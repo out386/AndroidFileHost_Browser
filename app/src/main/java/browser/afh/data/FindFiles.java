@@ -58,8 +58,6 @@ import browser.afh.types.AfhDirs;
 import hugo.weaving.DebugLog;
 
 class FindFiles {
-    private final TextView mTextView;
-    private final ScrollView sv;
     private final PullRefreshLayout pullRefreshLayout;
     private final RequestQueue queue;
     private final Context context;
@@ -79,8 +77,6 @@ class FindFiles {
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
 
-        mTextView = (TextView) rootView.findViewById(R.id.tv);
-        sv = (ScrollView) rootView.findViewById(R.id.tvSv);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
 
@@ -123,17 +119,13 @@ class FindFiles {
                         json = response;
                         List<AfhDirs> fid = null;
                         try {
-                            sv.setVisibility(View.GONE);
                             fid = parse();
                         } catch (Exception e) {
                             Log.i(TAG, "onResponse: ERRORS! " + e.toString());
                             pullRefreshLayout.setRefreshing(false);
-                            sv.setVisibility(View.VISIBLE);
-                            mTextView.setText(String.format(context.getString(R.string.json_parse_error),  e.toString()));
                         }
                         if(fid != null && fid.size() > 0) {
                             Log.i(TAG, "onResponse: NOT NULL : " + fid.get(0));
-                            sv.setVisibility(View.GONE);
                             queryDirs(fid);
                         }
                         else Log.i(TAG, "onResponse: Fid null");
@@ -147,8 +139,6 @@ class FindFiles {
                     pullRefreshLayout.setRefreshing(false);
                     return;
                 }
-                sv.setVisibility(View.VISIBLE);
-                mTextView.setText(error.toString());
                 start(did);
             }
         });
@@ -172,8 +162,6 @@ class FindFiles {
                                 parseFiles(response, url.screenname);
                             } catch (Exception e) {
                                 pullRefreshLayout.setRefreshing(false);
-                                sv.setVisibility(View.VISIBLE);
-                                mTextView.setText(String.format("%s\n\n\n%s%s %s", mTextView.getText().toString(), context.getString(R.string.json_parse_error), link, e.toString()));
                             }
                         }
                     }, new Response.ErrorListener() {
@@ -182,9 +170,7 @@ class FindFiles {
                     pullRefreshLayout.setRefreshing(false);
                     if (error.toString().contains("NoConnectionError"))
                         return;
-                    sv.setVisibility(View.VISIBLE);
-                    mTextView.setText(String.format("%s\n\n\n%s  :   %s", mTextView.getText().toString(), link, error.toString()));
-                }
+                    }
             });
 
             stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
@@ -199,17 +185,12 @@ class FindFiles {
     private List<AfhDirs> parse() throws Exception {
         JSONObject afhJson;
         afhJson = new JSONObject(json);
-        mTextView.setText("");
         List<AfhDirs> fid = new ArrayList<>();
         JSONArray data = afhJson.getJSONArray("DATA");
         for (int i = 0; i < data.length(); i++) {
             String flid = String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key)));
             String screenname = data.getJSONObject(i).getString("screenname");
             fid.add(new AfhDirs(screenname, flid));
-        }
-        if (fid.size() == 0) {
-            sv.setVisibility(View.VISIBLE);
-            mTextView.setText(R.string.error_no_files_found);
         }
         // The first list of available files is here
         pullRefreshLayout.setRefreshing(false);
