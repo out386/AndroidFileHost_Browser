@@ -37,8 +37,4 @@ public class Prefs {
     public boolean get(String prefName, boolean defaultValue){
         return preferences.getBoolean(prefName, defaultValue);
     }
-
-    public String get(String prefName, String defaultValue){
-        return preferences.getString(prefName, defaultValue);
-    }
 }
