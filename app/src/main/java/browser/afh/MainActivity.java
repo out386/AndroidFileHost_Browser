@@ -60,6 +60,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import browser.afh.data.FindDevices;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.fragments.MainFragment;
@@ -86,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         super.onCreate(savedInstanceState);
         context = this;
         prefs = new Prefs(context);
+        int deviceID = getIntent().getIntExtra("device_id",0);
+        if (deviceID != 0){
+            Bundle bundle = new Bundle();
+            bundle.putInt("device_id",deviceID);
+        }
 
         if (!BuildConfig.DEBUG){
           Fabric.with(this, new Crashlytics());

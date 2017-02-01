@@ -22,6 +22,7 @@ import browser.afh.types.DeviceData;
  * This is a FastAdapter adapter implementation for the awesome Sticky-Headers lib by timehop
  * https://github.com/timehop/sticky-headers-recyclerview
  */
+
 public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecyclerHeadersAdapter, INameableAdapter {
     @Override
     public long getHeaderId(int position) {

@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.CardView;
@@ -199,6 +200,16 @@ public class FindDevices {
                 if (devices.size() > position)
                     findFiles.start(item.did);
                 return true;
+            }
+        });
+
+        devAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener<DeviceData>() {
+            @Override
+            public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
+                new Prefs(rootView.getContext()).put("device_id",item.did);
+                new Prefs(rootView.getContext()).put("device_name", item.manufacturer+item.device_name);
+                Snackbar.make(rootView,item.device_name+"added to shortcut",Snackbar.LENGTH_SHORT);
+                return false;
             }
         });
         deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
