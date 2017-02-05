@@ -17,22 +17,21 @@ package browser.afh.types;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.gson.annotations.SerializedName;
+
 import browser.afh.tools.Utils;
 
 public class AfhFiles
 {
-	public final String filename;
-	public final String url;
-	public final String file_size;
-    public final String hDate;
-    public final String screenname;
-	public final int downloads;
-	public AfhFiles(String f, String u, String s, String hDate, String screenname, int downloads) {
-		filename = f;
-		url = u;
-        this.hDate = hDate;
-        this.downloads = downloads;
-        this.screenname = screenname;
-		file_size = Utils.sizeFormat(Integer.parseInt(s));
-	}
+    @SerializedName("name")
+    public String name;
+    @SerializedName("url")
+    public String url;
+    @SerializedName("file_size")
+    public String file_size;
+    @SerializedName("upload_date")
+    public String upload_date;
+    @SerializedName("downloads")
+    public int downloads;
+    public String screenname;
 }

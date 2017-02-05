@@ -1,4 +1,4 @@
-package browser.afh.tools.Retrofit;
+package browser.afh.types;
 
 /*
  * This file is part of AFH Browser.
@@ -17,16 +17,23 @@ package browser.afh.tools.Retrofit;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import browser.afh.tools.Constants;
-import browser.afh.types.AfhDevelopersList;
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
+import com.google.gson.annotations.SerializedName;
 
-public interface ApiInterfaceDevelopers {
-    @GET(Constants.ENDPOINT)
-    Call<AfhDevelopersList> getDevelopers(
-            @Query("action") String action,
-            @Query("did") String page,
-            @Query("limit") int limit);
+
+public class AfhFolders
+{
+	@SerializedName("flid")
+	public final String flid;
+	@SerializedName("name")
+	public final String name;
+	@SerializedName("url")
+	public final String url;
+	public final String screenname;
+
+	public AfhFolders(String flid, String name, String url, String screenname) {
+		this.flid = flid;
+		this.name = name;
+		this.url = url;
+		this.screenname = screenname;
+	}
 }

@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
-import com.android.volley.RequestQueue;
 import com.baoyz.widget.PullRefreshLayout;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
@@ -63,7 +62,7 @@ import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
-import browser.afh.tools.Retrofit.ApiInterfaceDevices;
+import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.types.Device;
 import browser.afh.types.DeviceData;
@@ -75,7 +74,6 @@ public class FindDevices {
 
     private final String TAG = Constants.TAG;
     private final View rootView;
-    private final RequestQueue queue;
     private final PullRefreshLayout deviceRefreshLayout;
     private List<DeviceData> devices = new ArrayList<>();
     private int currentPage = 0;
@@ -105,9 +103,8 @@ public class FindDevices {
     };
 
     @DebugLog
-    public FindDevices(final View rootView, final RequestQueue queue, final AppbarScroll appbarScroll, final FragmentInterface fragmentInterface) {
+    public FindDevices(final View rootView, final AppbarScroll appbarScroll, final FragmentInterface fragmentInterface) {
         this.rootView = rootView;
-        this.queue = queue;
         this.fragmentInterface = fragmentInterface;
         this.appbarScroll = appbarScroll;
         deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
@@ -179,7 +176,7 @@ public class FindDevices {
                         || item.manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
             }
         });
-        findFiles = new FindFiles(rootView, queue);
+        findFiles = new FindFiles(rootView);
 
         deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
@@ -228,7 +225,7 @@ public class FindDevices {
     public void findFirstDevice() {
 
         deviceRefreshLayout.setRefreshing(true);
-        ApiInterfaceDevices retro = RetroClient.getRetrofit().create(ApiInterfaceDevices.class);
+        ApiInterface retro = RetroClient.getRetrofit().create(ApiInterface.class);
         if (!refresh) {
             File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
             new ReadCache(cacheFile).execute();
@@ -241,7 +238,7 @@ public class FindDevices {
     }
 
     @DebugLog
-    private void findDevices(final int pageNumber, final ApiInterfaceDevices retro) {
+    private void findDevices(final int pageNumber, final ApiInterface retro) {
         Log.i(TAG, "findDevices: Queueing page : " + pageNumber);
         Call<Device> call = retro.getDevices("devices", pageNumber, 100);
         call.enqueue(new Callback<Device>() {
@@ -402,7 +399,6 @@ public class FindDevices {
             if (output != null) {
                 devices = output;
                 devicesWereEmpty = false;
-                queue.start();
                 displayDevices();
             } else {
                 deviceRefreshLayout.setRefreshing(true);

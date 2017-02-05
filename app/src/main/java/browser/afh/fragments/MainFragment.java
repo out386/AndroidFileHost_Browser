@@ -28,7 +28,6 @@ import browser.afh.data.FindDevices;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.R;
-import browser.afh.tools.VolleySingleton;
 
 public class MainFragment extends Fragment {
     View rootView;
@@ -49,7 +48,7 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        findDevices = new FindDevices(rootView, VolleySingleton.getInstance(getActivity()).getRequestQueue(), appbarScroll, fragmentInterface);
+        findDevices = new FindDevices(rootView, appbarScroll, fragmentInterface);
         findDevices.findFirstDevice();
         return rootView;
     }

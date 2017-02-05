@@ -30,7 +30,7 @@ public class RetroClient {
     private static final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
     public static Retrofit getRetrofit() {
         if (retrofit == null) {
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.addInterceptor(loggingInterceptor);
             client.readTimeout(180, TimeUnit.SECONDS);

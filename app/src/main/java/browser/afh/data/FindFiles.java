@@ -20,23 +20,13 @@ package browser.afh.data;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.baoyz.widget.PullRefreshLayout;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,20 +41,20 @@ import browser.afh.R;
 import browser.afh.adapters.AfhAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
-import browser.afh.tools.Retrofit.ApiInterfaceDevelopers;
+import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
+import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevelopers;
 import browser.afh.types.AfhDevelopersList;
 import browser.afh.types.AfhFiles;
-import browser.afh.types.Device;
+import browser.afh.types.AfhFolderContentResponse;
+import browser.afh.types.AfhFolders;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
 
 class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
-    private final RequestQueue queue;
-    private final Context context;
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
     private String json = "";
@@ -72,20 +62,16 @@ class FindFiles {
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
-    private ApiInterfaceDevelopers retro;
+    private ApiInterface retro;
 
     @DebugLog
-    FindFiles(View rootView, RequestQueue queue) {
-        this.queue = queue;
-        context = rootView.getContext();
+    FindFiles(View rootView) {
 
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
-
-        retro = RetroClient.getRetrofit().create(ApiInterfaceDevelopers.class);
+        retro = RetroClient.getRetrofit().create(ApiInterface.class);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
-
 
         sortCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
@@ -104,11 +90,12 @@ class FindFiles {
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                filesD = new ArrayList<>();
+                filesD.clear();
+                adapter.notifyDataSetChanged();
                 start(savedID);
             }
         });
-        adapter = new AfhAdapter(context, R.layout.afh_items, filesD);
+        adapter = new AfhAdapter(rootView.getContext(), R.layout.afh_items, filesD);
         fileList.setAdapter(adapter);
     }
 
@@ -123,7 +110,6 @@ class FindFiles {
                              List<AfhDevelopers> fid = response.body().data;
                              if (fid != null && fid.size() > 0) {
                                  Log.i(TAG, "onResponse: NOT NULL : " + fid.get(0).screenname);
-                                 pullRefreshLayout.setRefreshing(false);
                                  queryDirs(fid);
                              } else
                                  Log.i(TAG, "onResponse: Fid null");
@@ -132,96 +118,64 @@ class FindFiles {
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
                 Log.i(TAG, "onErrorResponse ");
                 start(did);
-        }
-    });
-
-
-        /*String url = String.format(Constants.DID, did);
-        Log.i(TAG, "start: DID: " + did);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.i(TAG, "onResponse: " + response);
-                        json = response;
-                        List<AfhDirs> fid = null;
-                        try {
-                            fid = parse();
-                        } catch (Exception e) {
-                            Log.i(TAG, "onResponse: ERRORS! " + e.toString());
-                            pullRefreshLayout.setRefreshing(false);
-                        }
-                        if(fid != null && fid.size() > 0) {
-                            Log.i(TAG, "onResponse: NOT NULL : " + fid.get(0));
-                            queryDirs(fid);
-                        }
-                        else Log.i(TAG, "onResponse: Fid null");
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                if (error.toString().contains("NoConnectionError")) {
-                    Log.i(TAG, "onErrorResponse: No connection");
-                    pullRefreshLayout.setRefreshing(false);
-                    return;
-                }
-                start(did);
             }
         });
-
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        stringRequest.setTag(Constants.VOLLEY_FILES_TAG);
-        queue.add(stringRequest);*/
     }
 
     @DebugLog
     private void queryDirs(final List<AfhDevelopers> did) {
 
         for (final AfhDevelopers url : did) {
-            final String link = Constants.FLID + url.flid;
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, link,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.i(TAG, "onResponseDirs: " + response);
-                            try {
-                                parseFiles(response, url.screenname);
-                            } catch (Exception e) {
-                                pullRefreshLayout.setRefreshing(false);
+
+            Call<AfhFolderContentResponse> call = retro.getFolderContents("folder", url.flid, 100);
+            call.enqueue(new Callback<AfhFolderContentResponse>() {
+                @Override
+                public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
+                    Log.i(TAG, "onResponse: " + response.body().message);
+                    List<AfhFiles> filesList = response.body().data.files;
+                    List<AfhFolders> foldersList = response.body().data.folders;
+
+                    if (filesList != null && filesList.size() > 0) {
+                        Log.i(TAG, "onResponse: Files : " + filesList.get(0).name);
+                        pullRefreshLayout.setRefreshing(false);
+
+                        for (AfhFiles file : filesList) {
+                            file.screenname = url.screenname;
+                            file.file_size = Utils.sizeFormat(Integer.parseInt(file.file_size));
+                            file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
+
+                            if (BuildConfig.PLAY_COMPATIBLE) {
+                            /* Attempting to filter out private files, which typically get less than 10 downloads
+                             * This will also hide all newly uploaded files, sorry.
+                             * Getting complaints of pissed off devs having their private builds passed around.
+                             */
+                                if (file.downloads >= 10) {
+                                    // Filtering out APK files as Google Play hates them
+                                    if (!file.name.endsWith(".apk") || !file.name.endsWith(".APK"))
+                                        filesD.add(file);
+                                }
+                            } else {
+                                filesD.add(file);
                             }
                         }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    pullRefreshLayout.setRefreshing(false);
-                    if (! error.toString().contains("NoConnectionError"))
-                        queryDirs(did);
+                        print();
+                    } else
+                        Log.i(TAG, "onResponse: Files empty");
+                    if (foldersList != null && foldersList.size() > 0) {
+                        Log.i(TAG, "onResponse: Folder : " + foldersList.get(0).name);
+                        /*for (AfhFolders folder : foldersList) {
+                        }*/
                     }
+                }
+
+                @Override
+                public void onFailure(Call<AfhFolderContentResponse> call, Throwable t) {
+                    Log.i(TAG, "onErrorResponse ");
+                    pullRefreshLayout.setRefreshing(false);
+                }
             });
-
-            stringRequest.setRetryPolicy(new DefaultRetryPolicy(274000, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            stringRequest.setTag(Constants.VOLLEY_FILES_TAG);
-            queue.add(stringRequest);
-
         }
 
-    }
-
-    @DebugLog
-    private List<AfhDevelopers> parse() throws Exception {
-        JSONObject afhJson;
-        afhJson = new JSONObject(json);
-        List<AfhDevelopers> fid = new ArrayList<>();
-        JSONArray data = afhJson.getJSONArray("DATA");
-        for (int i = 0; i < data.length(); i++) {
-            String flid = String.format(Constants.FLID, data.getJSONObject(i).getString(context.getString(R.string.flid_key)));
-            String screenname = data.getJSONObject(i).getString("screenname");
-            fid.add(new AfhDevelopers(screenname, flid));
-        }
-        // The first list of available files is here
-        pullRefreshLayout.setRefreshing(false);
-        return fid;
     }
 
     @DebugLog
@@ -236,64 +190,7 @@ class FindFiles {
 
     }
 
-    @DebugLog
-    private void parseFiles(String Json, String screenname) throws Exception {
-        JSONObject fileJson = new JSONObject(Json);
-
-        JSONObject data;
-        if(fileJson.isNull("DATA"))
-            return;
-
-        // Data will be an Object, but if it is empty, it'll be an array
-        Object dataObj = fileJson.get("DATA");
-        if(! (dataObj instanceof JSONObject))
-            return;
-        data = (JSONObject) dataObj;
-
-        JSONArray files = null;
-        if(! data.isNull("files"))
-            files = data.getJSONArray("files");
-        if(files != null) {
-            for (int i = 0; i < files.length(); i++) {
-                JSONObject file = files.getJSONObject(i);
-                String name = file.getString("name");
-                String url = file.getString("url");
-                String upload_date = file.getString("upload_date");
-                String file_size = file.getString("file_size");
-                int downloads = file.getInt("downloads");
-                String hDate = sdf.format(new Date(Integer.parseInt(upload_date) * 1000L));
-
-                // Lets lock out our Play Store policy compatibility stuff
-                // into an easier to toggle system
-                if (BuildConfig.PLAY_COMPATIBLE) {
-                    // Attempting to filter out private files, which typically get less than 10 downloads
-                    // This will hide all newly uploaded files, which is not the objective.
-                    if (downloads >= 10) {
-                        // Filtering out APK files as Google Play hates them
-                        if (!name.endsWith(".apk") || !name.endsWith(".APK"))
-                            filesD.add(new AfhFiles(name, url, file_size, hDate, screenname, downloads));
-                    }
-                } else {
-                    filesD.add(new AfhFiles(name, url, file_size, hDate, screenname, downloads));
-                }
-            }
-        }
-        JSONArray folders = null;
-        if(! data.isNull("folders"))
-            folders = data.getJSONArray("folders");
-
-        if(folders != null) {
-            List<AfhDevelopers> foldersD = new ArrayList<>();
-            for (int i = 0; i < folders.length(); i++) {
-                foldersD.add(new AfhDevelopers(screenname, folders.getJSONObject(i).getString("flid")));
-            }
-            if(foldersD.size() > 0)
-                queryDirs(foldersD);
-        }
-        print();
-    }
     void reset() {
-        queue.cancelAll(Constants.VOLLEY_FILES_TAG);
         filesD.clear();
         print();
     }

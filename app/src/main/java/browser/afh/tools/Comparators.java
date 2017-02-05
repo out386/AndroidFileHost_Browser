@@ -26,16 +26,16 @@ public class Comparators {
     public static final Comparator <AfhFiles> byUploadDate = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
-            if (f1 != null && f2 != null && f1.hDate != null && f2.hDate != null)
-                return -(f1.hDate.compareTo(f2.hDate));
+            if (f1 != null && f2 != null && f1.upload_date != null && f2.upload_date != null)
+                return -(f1.upload_date.compareTo(f2.upload_date));
             return 0;
         }
     };
     public static final Comparator <AfhFiles> byFileName = new Comparator<AfhFiles>() {
         @Override
         public int compare(AfhFiles f1, AfhFiles f2) {
-            if (f1 != null && f2 != null && f1.filename != null && f2.filename != null)
-                return (f1.filename.compareToIgnoreCase(f2.filename));
+            if (f1 != null && f2 != null && f1.name != null && f2.name != null)
+                return (f1.name.compareToIgnoreCase(f2.name));
             return 0;
         }
     };

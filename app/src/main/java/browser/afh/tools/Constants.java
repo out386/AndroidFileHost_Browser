@@ -31,7 +31,6 @@ public class Constants {
     public static final int MIN_PAGES = 9;
     public static final long ANIM_DURATION = 500;
 
-    public static final String DID = "https://www.androidfilehost.com/api/?action=developers&did=%s&limit=100";
     public static final String FLID = "https://www.androidfilehost.com/api/?action=folder&flid=";
     public static final String TAG = "AFHBrowser";
 

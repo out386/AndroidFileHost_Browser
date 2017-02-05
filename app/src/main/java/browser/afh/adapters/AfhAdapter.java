@@ -61,7 +61,7 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         final AfhFiles p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
-            name.setText(p.filename);
+            name.setText(p.name);
             v.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
@@ -88,8 +88,8 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                 @Override
                 public void onClick(View view) {
                     new MaterialDialog.Builder(context)
-                            .title(p.filename)
-                            .content(String.format(context.getString(R.string.file_dialog_content), p.file_size, p.hDate, p.screenname, p.downloads))
+                            .title(p.name)
+                            .content(String.format(context.getString(R.string.file_dialog_content), p.file_size, p.upload_date, p.screenname, p.downloads))
                             .positiveText(R.string.file_dialog_positive_button_label)
                             .neutralText(R.string.file_dialog_neutral_button_label)
                             .onPositive(new MaterialDialog.SingleButtonCallback() {
