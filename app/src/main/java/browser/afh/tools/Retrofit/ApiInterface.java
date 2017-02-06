@@ -23,9 +23,13 @@ import browser.afh.types.AfhFolderContentResponse;
 import browser.afh.types.Device;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
+    @Headers({
+            "User-Agent: AFHBrowser"
+    })
     @GET(Constants.ENDPOINT)
     Call<AfhDevelopersList> getDevelopers(
             @Query("action") String action,
