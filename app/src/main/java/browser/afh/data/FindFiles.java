@@ -116,7 +116,7 @@ class FindFiles {
                          }
             @Override
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
-                Log.i(TAG, "onErrorResponse ");
+                Log.i(TAG, "onErrorResponse devs " + t.toString());
                 start(did);
             }
         });
@@ -170,8 +170,12 @@ class FindFiles {
 
                 @Override
                 public void onFailure(Call<AfhFolderContentResponse> call, Throwable t) {
-                    Log.i(TAG, "onErrorResponse ");
-                    pullRefreshLayout.setRefreshing(false);
+                    // AfhFolderContentResponse.DATA will be an Object, but if it is empty, it'll be an array
+                    String error = t.toString();
+                    if (!error.contains("Expected BEGIN_OBJECT but was BEGIN_ARRAY")) {
+                        Log.i(TAG, "onErrorResponse dirs " + t.toString());
+                        pullRefreshLayout.setRefreshing(false);
+                    }
                 }
             });
         }
