@@ -20,6 +20,7 @@ package browser.afh.tools.Retrofit;
 import java.util.concurrent.TimeUnit;
 
 import browser.afh.tools.Constants;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -28,13 +29,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class RetroClient {
     private static Retrofit retrofit = null;
     private static final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    private static Dispatcher dispatcher = new Dispatcher();
     public static Retrofit getRetrofit() {
         if (retrofit == null) {
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            dispatcher.setMaxRequests(30);
+            dispatcher.setMaxRequestsPerHost(30);
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.addInterceptor(loggingInterceptor);
-            client.readTimeout(180, TimeUnit.SECONDS);
-            client.connectTimeout(180, TimeUnit.SECONDS);
+            client.readTimeout(3, TimeUnit.MINUTES);
+            client.connectTimeout(3, TimeUnit.MINUTES);
+            client.dispatcher(dispatcher);
 
             retrofit = new Retrofit.Builder()
                     .baseUrl(Constants.BASE_URL)
