@@ -8,15 +8,10 @@ import browser.afh.tools.Constants;
 
 public class AfhDevelopers {
     @SerializedName("screenname")
-    public final String screenname;
+    public String screenname;
     @SerializedName("flid")
-    public final String flid;
-    public final String url;
+    public String flid;
+    @SerializedName("name")
+    public String name;
 
-    public AfhDevelopers(String screenname, String flid) {
-        this.screenname = screenname;
-        this.flid = flid;
-        Log.i(Constants.TAG, "AfhDevelopers: " + flid);
-        url = Constants.FLID + flid;
-    }
 }

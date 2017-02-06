@@ -48,7 +48,6 @@ import browser.afh.types.AfhDevelopers;
 import browser.afh.types.AfhDevelopersList;
 import browser.afh.types.AfhFiles;
 import browser.afh.types.AfhFolderContentResponse;
-import browser.afh.types.AfhFolders;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -133,7 +132,7 @@ class FindFiles {
                 public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
                     Log.i(TAG, "onResponse: " + response.body().message);
                     List<AfhFiles> filesList = response.body().data.files;
-                    List<AfhFolders> foldersList = response.body().data.folders;
+                    List<AfhDevelopers> foldersList = response.body().data.folders;
 
                     if (filesList != null && filesList.size() > 0) {
                         Log.i(TAG, "onResponse: Files : " + filesList.get(0).name);
@@ -161,10 +160,13 @@ class FindFiles {
                         print();
                     } else
                         Log.i(TAG, "onResponse: Files empty");
+
                     if (foldersList != null && foldersList.size() > 0) {
                         Log.i(TAG, "onResponse: Folder : " + foldersList.get(0).name);
-                        /*for (AfhFolders folder : foldersList) {
-                        }*/
+                        for (AfhDevelopers folder : foldersList) {
+                            folder.screenname = url.screenname;
+                        }
+                            queryDirs(foldersList);
                     }
                 }
 
