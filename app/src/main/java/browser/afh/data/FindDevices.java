@@ -201,7 +201,7 @@ public class FindDevices {
             @Override
             public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
                 new Prefs(rootView.getContext()).put("device_id", item.did);
-                new Prefs(rootView.getContext()).put("device_name", item.manufacturer+item.device_name);
+                new Prefs(rootView.getContext()).put("device_name", item.manufacturer + " " + item.device_name);
                 Snackbar.make(rootView,item.device_name+"added to shortcut",Snackbar.LENGTH_SHORT);
                 return false;
             }
