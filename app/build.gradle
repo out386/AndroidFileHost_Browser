@@ -49,12 +49,14 @@ android {
             minifyEnabled false
             shrinkResources false
             buildConfigField("boolean", "PLAY_COMPATIBLE", "false")
+            buildConfigField("boolean", "ANGRY_DEVS", "true")
         }
         debug {
             debuggable true
             minifyEnabled false
             shrinkResources false
             buildConfigField("boolean", "PLAY_COMPATIBLE", "false")
+            buildConfigField("boolean", "ANGRY_DEVS", "false")
         }
     }
     lintOptions {

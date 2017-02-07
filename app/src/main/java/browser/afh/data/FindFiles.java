@@ -137,18 +137,22 @@ class FindFiles {
                             file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
 
                             if (BuildConfig.PLAY_COMPATIBLE) {
-                            /* Attempting to filter out private files, which typically get less than 10 downloads
-                             * This will also hide all newly uploaded files, sorry.
-                             * Getting complaints of pissed off devs having their private builds passed around.
-                             */
-                                if (file.downloads >= 10) {
+                                if (file.name.endsWith(".apk") || file.name.endsWith(".APK")) {
                                     // Filtering out APK files as Google Play hates them
-                                    if (!file.name.endsWith(".apk") || !file.name.endsWith(".APK"))
-                                        filesD.add(file);
+                                    continue;
                                 }
-                            } else {
-                                filesD.add(file);
                             }
+
+                            if (BuildConfig.ANGRY_DEVS) {
+                                /* Attempting to filter out private files, which typically get less than 10 downloads
+                                * This will also hide all newly uploaded files, sorry.
+                                * Getting complaints of pissed off devs having their private builds passed around.
+                                */
+                                if (file.downloads < 10)
+                                    continue;
+                            }
+                            
+                            filesD.add(file);
                         }
                         print();
                     }
