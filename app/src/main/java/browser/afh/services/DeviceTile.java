@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.util.Log;
 import android.widget.Toast;
 
 import browser.afh.MainActivity;
 import browser.afh.R;
+import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 
 
@@ -26,8 +28,10 @@ public class DeviceTile extends TileService {
 
     @Override
     public void onClick(){
+        String e = new Prefs(getApplicationContext()).get("device_id", null);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("device_id",new Prefs(getApplicationContext()).get("device_id",0));
+        intent.putExtra("device_id", e);
+        Log.i(Constants.TAG, "onClick: device id " + e);
         startActivity(intent);
     }
 

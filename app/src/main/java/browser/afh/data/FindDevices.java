@@ -192,13 +192,7 @@ public class FindDevices {
         devAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceData>() {
             @Override
             public boolean onClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
-                animateShowFiles();
-                appbarScroll.expand();
-                appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
-                ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
-                // Just in case monkeys decide to tap around while the list is refreshing
-                if (devices.size() > position)
-                    findFiles.start(item.did);
+                showDevice(item.did, position);
                 return true;
             }
         });
@@ -206,7 +200,7 @@ public class FindDevices {
         devAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener<DeviceData>() {
             @Override
             public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
-                new Prefs(rootView.getContext()).put("device_id",item.did);
+                new Prefs(rootView.getContext()).put("device_id", item.did);
                 new Prefs(rootView.getContext()).put("device_name", item.manufacturer+item.device_name);
                 Snackbar.make(rootView,item.device_name+"added to shortcut",Snackbar.LENGTH_SHORT);
                 return false;
@@ -390,6 +384,20 @@ public class FindDevices {
                         fragmentInterface.showSearch(true);
             }
         });
+    }
+
+    public void showDevice(String did, int position) {
+        if (did == null) {
+            Log.i(TAG, "showDevice: Invalid device selected");
+            return;
+        }
+        animateShowFiles();
+        appbarScroll.expand();
+        appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
+        ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
+        // Just in case monkeys decide to tap around while the list is refreshing
+        if (devices.size() > position)
+            findFiles.start(did);
     }
 
     @DebugLog

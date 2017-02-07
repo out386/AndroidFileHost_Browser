@@ -38,6 +38,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -87,12 +88,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         super.onCreate(savedInstanceState);
         context = this;
         prefs = new Prefs(context);
-        int deviceID = getIntent().getIntExtra("device_id",0);
-        if (deviceID != 0){
-            Bundle bundle = new Bundle();
-            bundle.putInt("device_id",deviceID);
-        }
-
+        String deviceID = getIntent().getStringExtra("device_id");
         if (!BuildConfig.DEBUG){
           Fabric.with(this, new Crashlytics());
         }
@@ -118,7 +114,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         drawer = new DrawerBuilder()
                 .withActivity(this)
-                //.withActionBarDrawerToggle(true)
                 .withAccountHeader(header)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
@@ -166,26 +161,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             }
         }).start();
 
-        if (isConnected) {
-            new BottomDialog.Builder(context)
-                    .setTitle(R.string.bottom_dialog_warning_title)
-                    .setContent(R.string.bottom_dialog_warning_desc)
-                    .setPositiveText(R.string.bottom_dialog_positive_text)
-                    .setNegativeTextColorResource(R.color.colorAccent)
-                    .onPositive(new BottomDialog.ButtonCallback() {
-                                @SuppressLint("CommitPrefEdits")
-                                @Override
-                                public void onClick(@NonNull BottomDialog bottomDialog) {
-                                    bottomDialog.dismiss();
-                                    changeFragment(new MainFragment());
-                                    prefs.put(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
-                                }
-                            })
-                            .show();
-                } else {
-                    changeFragment(new MainFragment());
-                }
-
         final MaterialDialog.Builder useLabsVariantDialog = new MaterialDialog.Builder(context)
                 .title(R.string.disclaimer_google_play_title)
                 .content(R.string.disclaimer_google_play_desc)
@@ -232,6 +207,18 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     })
                     .show();
         }
+
+        if (deviceID != null){
+            Bundle bundle = new Bundle();
+            bundle.putString("device_id", deviceID);
+            Log.i(Constants.TAG, "onCreate: main: device id " + deviceID);
+            Fragment mainFragment = new MainFragment();
+            mainFragment.setArguments(bundle);
+            prepareChangeFragment(mainFragment);
+            return;
+        }
+
+        prepareChangeFragment(new MainFragment());
 
         searchView.setHint(getResources().getString(R.string.search_hint));
         searchView.setFocusable(false);
@@ -397,6 +384,28 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .start();
         }
 
+    }
+
+    public void prepareChangeFragment(final Fragment fragment) {
+        if (isConnected) {
+            new BottomDialog.Builder(context)
+                    .setTitle(R.string.bottom_dialog_warning_title)
+                    .setContent(R.string.bottom_dialog_warning_desc)
+                    .setPositiveText(R.string.bottom_dialog_positive_text)
+                    .setNegativeTextColorResource(R.color.colorAccent)
+                    .onPositive(new BottomDialog.ButtonCallback() {
+                        @SuppressLint("CommitPrefEdits")
+                        @Override
+                        public void onClick(@NonNull BottomDialog bottomDialog) {
+                            bottomDialog.dismiss();
+                            changeFragment(fragment);
+                            prefs.put(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
+                        }
+                    })
+                    .show();
+        } else {
+            changeFragment(fragment);
+        }
     }
 
     public static class MyPreferenceFragment extends PreferenceFragment

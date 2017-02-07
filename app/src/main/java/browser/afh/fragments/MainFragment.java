@@ -20,6 +20,7 @@ package browser.afh.fragments;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import browser.afh.data.FindDevices;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.R;
+import browser.afh.tools.Constants;
 
 public class MainFragment extends Fragment {
     View rootView;
@@ -48,7 +50,15 @@ public class MainFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.main_fragment, container, false);
+        Bundle bundle = getArguments();
+
         findDevices = new FindDevices(rootView, appbarScroll, fragmentInterface);
+
+        if (bundle != null) {
+            String did = bundle.getString("device_id", null);
+            Log.i(Constants.TAG, "onCreateView: Device started " + did);
+            findDevices.showDevice(did, -1);
+        } else Log.i(Constants.TAG, "onCreateView: Bundle null");
         findDevices.findFirstDevice();
         return rootView;
     }
