@@ -202,8 +202,8 @@ public class FindDevices {
             public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
                 new Prefs(rootView.getContext()).put("device_id", item.did);
                 new Prefs(rootView.getContext()).put("device_name", item.manufacturer + " " + item.device_name);
-                Snackbar.make(rootView,item.device_name+"added to shortcut",Snackbar.LENGTH_SHORT);
-                return false;
+                Snackbar.make(rootView, item.device_name + " added to QuickSettings", Snackbar.LENGTH_SHORT).show();
+                return true;
             }
         });
         deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
@@ -249,21 +249,17 @@ public class FindDevices {
         call.enqueue(new Callback<Device>() {
             @Override
             public void onResponse(Call<Device> call, retrofit2.Response<Device> response) {
-                Log.i(TAG, "onResponse: Page number : " + pageNumber);
                 currentPage++;
                 String message = response.body().message;
-                Log.i(TAG, "onResponseJson: " + message);
                 List<DeviceData> deviceDatas;
 
                 if (response.body().data == null) {
-                    Log.i(TAG, "NULL!");
                     return;
                 }
                 deviceDatas = response.body().data;
                 int size = devices.size();
                 if (deviceDatas != null)
                     devices.addAll(deviceDatas);
-                Log.i(TAG, "onResponseJson: in devices: " + devices.get(size == 0 ? 0 : size - 1).device_name + " " + devices.size() + "elements");
 
                 if (pages == null) {
                     pages = findDevicePageNumbers(message);
@@ -355,7 +351,6 @@ public class FindDevices {
 
     @DebugLog
     private void animateShowDevices() {
-        Log.i(TAG, "animateShowDevices: ");
         deviceHolder.setAlpha(0.0f);
         deviceHolder.setTranslationX(-deviceHolder.getWidth());
         deviceHolder.setVisibility(View.VISIBLE);

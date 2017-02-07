@@ -22,7 +22,6 @@ public class DeviceTile extends TileService {
         String e = new Prefs(getApplicationContext()).get("device_id", null);
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("device_id", e);
-        Log.i(Constants.TAG, "onClick: device id " + e);
         startActivityAndCollapse(intent);
 
 

@@ -56,9 +56,8 @@ public class MainFragment extends Fragment {
 
         if (bundle != null) {
             String did = bundle.getString("device_id", null);
-            Log.i(Constants.TAG, "onCreateView: Device started " + did);
             findDevices.showDevice(did, -1);
-        } else Log.i(Constants.TAG, "onCreateView: Bundle null");
+        }
         findDevices.findFirstDevice();
         return rootView;
     }

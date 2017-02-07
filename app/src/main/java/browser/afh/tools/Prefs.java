@@ -41,8 +41,4 @@ public class Prefs {
     public String get(String prefName, String defaultValue){
         return preferences.getString(prefName, defaultValue);
     }
-
-    public int get(String prefName, int defaultValue){
-        return preferences.getInt(prefName, defaultValue);
-    }
 }

@@ -211,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (deviceID != null){
             Bundle bundle = new Bundle();
             bundle.putString("device_id", deviceID);
-            Log.i(Constants.TAG, "onCreate: main: device id " + deviceID);
             Fragment mainFragment = new MainFragment();
             mainFragment.setArguments(bundle);
             prepareChangeFragment(mainFragment);

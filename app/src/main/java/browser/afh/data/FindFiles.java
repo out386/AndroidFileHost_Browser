@@ -56,7 +56,6 @@ class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
-    private String json = "";
     private List<AfhFiles> filesD = new ArrayList<>();
     private AfhAdapter adapter;
     private String savedID;
@@ -105,17 +104,13 @@ class FindFiles {
         call.enqueue(new Callback<AfhDevelopersList>() {
                          @Override
                          public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
-                             Log.i(TAG, "onResponse: " + response.body().message);
                              List<AfhDevelopers> fid = response.body().data;
                              if (fid != null && fid.size() > 0) {
-                                 Log.i(TAG, "onResponse: NOT NULL : " + fid.get(0).screenname);
                                  queryDirs(fid);
-                             } else
-                                 Log.i(TAG, "onResponse: Fid null");
+                             }
                          }
             @Override
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
-                Log.i(TAG, "onErrorResponse devs " + t.toString());
                 start(did);
             }
         });
@@ -130,12 +125,10 @@ class FindFiles {
             call.enqueue(new Callback<AfhFolderContentResponse>() {
                 @Override
                 public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
-                    Log.i(TAG, "onResponse: " + response.body().message);
                     List<AfhFiles> filesList = response.body().data.files;
                     List<AfhDevelopers> foldersList = response.body().data.folders;
 
                     if (filesList != null && filesList.size() > 0) {
-                        Log.i(TAG, "onResponse: Files : " + filesList.get(0).name);
                         pullRefreshLayout.setRefreshing(false);
 
                         for (AfhFiles file : filesList) {
@@ -158,11 +151,9 @@ class FindFiles {
                             }
                         }
                         print();
-                    } else
-                        Log.i(TAG, "onResponse: Files empty");
+                    }
 
                     if (foldersList != null && foldersList.size() > 0) {
-                        Log.i(TAG, "onResponse: Folder : " + foldersList.get(0).name);
                         for (AfhDevelopers folder : foldersList) {
                             folder.screenname = url.screenname;
                         }
