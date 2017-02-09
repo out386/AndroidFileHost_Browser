@@ -43,10 +43,11 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
     public final String device_name;
     @SerializedName("image")
     public String image;
-    public DeviceData(String did, String manufacturer, String device_name) {
+    public DeviceData(String did, String manufacturer, String device_name, String image) {
         this.did = did;
         this.manufacturer = manufacturer;
         this.device_name = device_name;
+        this.image = image;
     }
 
     @Override

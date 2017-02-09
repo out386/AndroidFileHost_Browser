@@ -42,6 +42,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.baoyz.widget.PullRefreshLayout;
+import com.google.gson.JsonSyntaxException;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItemAdapter;
@@ -50,7 +51,6 @@ import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
-import java.io.File;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +60,6 @@ import java.util.regex.Pattern;
 
 import browser.afh.R;
 import browser.afh.adapters.StickyHeaderAdapter;
-import browser.afh.tools.CacheList;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
@@ -82,7 +81,7 @@ public class FindDevices {
     private final FastItemAdapter<DeviceData> devAdapter;
     private int pages[] = null;
     private final FindFiles findFiles;
-    private boolean refresh = false, morePagesRequested = false, devicesWereEmpty = true;
+    private boolean morePagesRequested = false;
     private final FragmentInterface fragmentInterface;
     private final CardView deviceHolder;
     private final CardView filesHolder;
@@ -140,6 +139,7 @@ public class FindDevices {
         deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());
         devAdapter.withSelectable(true);
         devAdapter.withPositionBasedStateManagement(false);
+
         final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();
         final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
         deviceRecyclerView.addItemDecoration(decoration);
@@ -185,7 +185,6 @@ public class FindDevices {
             public void onRefresh() {
                 devices.clear();
                 currentPage = 0;
-                refresh = true;
                 findFirstDevice();
             }
         });
@@ -207,8 +206,8 @@ public class FindDevices {
                 return true;
             }
         });
-        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
 
+        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
     }
 
     @DebugLog
@@ -253,8 +252,12 @@ public class FindDevices {
                     return;
                 }
                 deviceDatas = response.body().data;
-                if (deviceDatas != null)
-                    devices.addAll(deviceDatas);
+                if (deviceDatas != null) {
+
+                    // Unless new objects are created and added, the RecyclerView's click listeners won't work
+                    for (DeviceData dd : deviceDatas)
+                        devices.add(new DeviceData(dd.did, dd.manufacturer, dd.device_name, dd.image));
+                }
 
                 if (pages == null) {
                     pages = findDevicePageNumbers(message);
@@ -286,9 +289,6 @@ public class FindDevices {
         devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
         Log.i(TAG, "parseDevices: " + devices.size());
-        if(devicesWereEmpty) {
-            fragmentInterface.reattach();
-        }
     }
 
     private int[] findDevicePageNumbers(String message) {
