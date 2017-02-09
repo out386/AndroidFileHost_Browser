@@ -371,6 +371,7 @@ public class FindDevices {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.VISIBLE);
                         findFiles.reset();
+                        findFiles.noFilesSnackbar.dismiss();
                         fragmentInterface.showSearch(true);
             }
         });
@@ -378,7 +379,7 @@ public class FindDevices {
 
     public void showDevice(String did, int position) {
         if (did == null) {
-            Log.i(TAG, "showDevice: Invalid device selected");
+            Snackbar.make(rootView, "Invalid device selected", Snackbar.LENGTH_INDEFINITE);
             return;
         }
         animateShowFiles();

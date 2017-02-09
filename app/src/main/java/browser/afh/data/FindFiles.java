@@ -63,15 +63,18 @@ class FindFiles {
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
-    private ApiInterface retro;
+    private RetroClient retrofitClient;
+    private ApiInterface retroApi;
     private final View rootView;
+    public Snackbar noFilesSnackbar;
 
     @DebugLog
     FindFiles(View rootView) {
         this.rootView = rootView;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
-        retro = new RetroClient().getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
+        retrofitClient = new RetroClient();
+        retroApi = retrofitClient.getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
 
@@ -104,7 +107,11 @@ class FindFiles {
     @DebugLog
     void start(final String did) {
         savedID = did;
-        Call<AfhDevelopersList> call = retro.getDevelopers("developers", did, 100);
+        noFilesSnackbar = Snackbar.make(rootView,
+                rootView.getContext().getResources().getString(R.string.files_list_no_files_text),
+                Snackbar.LENGTH_INDEFINITE);
+        
+        Call<AfhDevelopersList> call = retroApi.getDevelopers("developers", did, 100);
         call.enqueue(new Callback<AfhDevelopersList>() {
                          @Override
                          public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
@@ -113,15 +120,14 @@ class FindFiles {
                                  queryDirs(fid);
                              } else {
                                  pullRefreshLayout.setRefreshing(false);
-                                 Snackbar.make(rootView,
-                                         rootView.getContext().getResources().getString(R.string.files_list_no_files_text),
-                                         Snackbar.LENGTH_INDEFINITE)
-                                         .show();
+                                 noFilesSnackbar.show();
                              }
                          }
             @Override
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
-                if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException))
+                if (! (t instanceof UnknownHostException)
+                        && ! (t instanceof JsonSyntaxException)
+                        && ! t.toString().contains("Canceled"))
                     start(did);
             }
         });
@@ -132,7 +138,7 @@ class FindFiles {
 
         for (final AfhDevelopers url : did) {
 
-            Call<AfhFolderContentResponse> call = retro.getFolderContents("folder", url.flid, 100);
+            Call<AfhFolderContentResponse> call = retroApi.getFolderContents("folder", url.flid, 100);
             call.enqueue(new Callback<AfhFolderContentResponse>() {
                 @Override
                 public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
@@ -178,8 +184,12 @@ class FindFiles {
 
                 @Override
                 public void onFailure(Call<AfhFolderContentResponse> call, Throwable t) {
+
                     // AfhFolderContentResponse.DATA will be an Object, but if it is empty, it'll be an array
-                    if (! (t instanceof UnknownHostException) && ! (t instanceof IllegalStateException) && ! (t instanceof JsonSyntaxException)) {
+                    if (! (t instanceof UnknownHostException)
+                            && ! (t instanceof IllegalStateException)
+                            && ! (t instanceof JsonSyntaxException)
+                            && ! t.toString().contains("Canceled")) {
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
                         pullRefreshLayout.setRefreshing(false);
                     }
@@ -202,7 +212,9 @@ class FindFiles {
     }
 
     void reset() {
+        retrofitClient.dispatcher.cancelAll();
         filesD.clear();
+        adapter.clear();
         print();
     }
 }

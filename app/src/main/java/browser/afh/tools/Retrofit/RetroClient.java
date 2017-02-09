@@ -28,6 +28,7 @@ import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
+import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -38,10 +39,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroClient {
     private final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    public Dispatcher dispatcher;
     public Retrofit getRetrofit(final Context context, final boolean useOldCache) {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
-
+        dispatcher = new Dispatcher();
         OkHttpClient.Builder client = new OkHttpClient.Builder();
+        client.dispatcher(dispatcher);
         client.addInterceptor(loggingInterceptor);
         client.addInterceptor(getOfflineCacheInterceptor(context, useOldCache));
         client.addNetworkInterceptor(getShortTermCacheInterceptor());
