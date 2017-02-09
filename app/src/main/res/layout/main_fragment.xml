@@ -23,12 +23,14 @@
         <com.baoyz.widget.PullRefreshLayout
             android:id="@+id/deviceRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/list_card_background">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clickable="false">
+                android:clickable="false"
+                android:background="@color/list_card_background">
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/deviceList"
@@ -56,7 +58,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/list_card_background">
 
             <CheckBox
                 android:id="@+id/sortCB"
@@ -71,7 +74,8 @@
                 android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/sortCB">
+                android:layout_below="@id/sortCB"
+                android:background="@color/list_card_background">
 
                 <ListView
                     android:id="@+id/list"
