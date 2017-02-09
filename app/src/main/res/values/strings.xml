@@ -41,6 +41,6 @@
     <string name="about_activity_twitter_subtitle_2">\@MSF_Jarvis</string>
     <string name="about_activity_github_subtitle_2">\@MSF-Jarvis</string>
     <string name="about_activity_author_title_2">Harsh Shandilya</string>
-    <string name="tile_unavailable">No favourite device set, disabling tile.</string>
+    <string name="tile_unavailable">Long press a device name to activate the tile.</string>
 
 </resources>
