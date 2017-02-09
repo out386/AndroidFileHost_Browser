@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = this;
+        context = getApplicationContext();
         prefs = new Prefs(context);
         String deviceID = getIntent().getStringExtra("device_id");
         if (!BuildConfig.DEBUG){
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
+
         updatesCheck(prefs.get("beta_tester",false));
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 });
         boolean its_unofficial = prefs.get(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial){
-            new MaterialDialog.Builder(context)
+            new MaterialDialog.Builder(this)
                     .title(R.string.unofficial_disclaimer_title)
                     .content(R.string.unofficial_disclaimer_text)
                     .neutralText(R.string.file_dialog_neutral_button_label)
@@ -390,14 +391,14 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         @Override
         protected Void doInBackground(Void... v) {
-            isConnected = new ConnectionDetector(context).isConnectingToInternet();
+            isConnected = ConnectionDetector.isConnectingToInternet(context);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             if (!isConnected) {
-                new BottomDialog.Builder(context)
+                new BottomDialog.Builder(MainActivity.this)
                         .setTitle(R.string.bottom_dialog_warning_title)
                         .setContent(R.string.bottom_dialog_warning_desc)
                         .setPositiveText(R.string.bottom_dialog_positive_text)

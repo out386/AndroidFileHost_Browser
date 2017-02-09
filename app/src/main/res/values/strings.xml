@@ -10,8 +10,8 @@
     <string name="drawer_desc_settings">Settings for AFH Browser</string>
     <string name="drawer_title_info">Info</string>
     <string name="drawer_desc_info">About The App</string>
-    <string name="bottom_dialog_warning_title">Error</string>
-    <string name="bottom_dialog_warning_desc">The app needs internet connectivity to function, please make sure you\u0027re connected and try again.</string>
+    <string name="bottom_dialog_warning_title">Offline mode</string>
+    <string name="bottom_dialog_warning_desc">The app needs internet connectivity to function. You\'ll now see cached data. Go online to get updated data.</string>
     <string name="bottom_dialog_positive_text">OK</string>
     <string name="device_list_header_text">Select the device you want files for from the list.</string>
     <string name="files_list_header_text">Tap a file to download it. If the list stays blank for too long, then close the app and try again. It is a server side problem, and nothing can be done about it.</string>

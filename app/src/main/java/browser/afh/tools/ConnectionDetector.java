@@ -13,15 +13,10 @@ import java.net.URL;
 import hugo.weaving.DebugLog;
 
 public class ConnectionDetector {
-    private final Context context;
-
-    public ConnectionDetector(Context context) {
-        this.context = context;
-    }
 
     @DebugLog
-    public boolean isConnectingToInternet() {
-        if (networkConnectivity()) {
+    public static boolean isConnectingToInternet(Context context) {
+        if (networkConnectivity(context)) {
             try {
                 HttpURLConnection urlc = (HttpURLConnection) (new URL(
                         "https://www.androidfilehost.com").openConnection());
@@ -39,7 +34,7 @@ public class ConnectionDetector {
             return false;
     }
 
-    private boolean networkConnectivity() {
+    public static boolean networkConnectivity(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();

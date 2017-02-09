@@ -51,6 +51,7 @@ import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
 import java.io.File;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -230,12 +231,7 @@ public class FindDevices {
     public void findFirstDevice() {
 
         deviceRefreshLayout.setRefreshing(true);
-        ApiInterface retro = RetroClient.getRetrofit().create(ApiInterface.class);
-        if (!refresh) {
-            File cacheFile = new File(rootView.getContext().getCacheDir().toString() + "/devicelist");
-            new ReadCache(cacheFile).execute();
-            return;
-        }
+        ApiInterface retro = new RetroClient().getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
 
         for (int page = 1; page <= Constants.MIN_PAGES; page++) {
             findDevices(page, retro);
@@ -257,7 +253,6 @@ public class FindDevices {
                     return;
                 }
                 deviceDatas = response.body().data;
-                int size = devices.size();
                 if (deviceDatas != null)
                     devices.addAll(deviceDatas);
 
@@ -280,7 +275,8 @@ public class FindDevices {
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
                 Log.i(TAG, "onErrorResponse: " + t.toString());
-                findDevices(pageNumber, retro);
+                if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException))
+                    findDevices(pageNumber, retro);
             }
         });
     }
@@ -289,14 +285,6 @@ public class FindDevices {
     private void displayDevices() {
         devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                CacheList.write(devices, new File(rootView.getContext().getCacheDir().toString() + "/devicelist"));
-            }
-        }
-        );
-        t.start();
         Log.i(TAG, "parseDevices: " + devices.size());
         if(devicesWereEmpty) {
             fragmentInterface.reattach();
@@ -393,33 +381,6 @@ public class FindDevices {
         // Just in case monkeys decide to tap around while the list is refreshing
         if (devices.size() > position)
             findFiles.start(did);
-    }
-
-    @DebugLog
-    private class ReadCache extends AsyncTask<Void, Void, List> {
-        final File cacheFile;
-
-        ReadCache(File cacheFile) {
-            this.cacheFile = cacheFile;
-        }
-
-        @Override
-        public List doInBackground(Void... v) {
-            return CacheList.read(cacheFile);
-        }
-
-        @Override
-        protected void onPostExecute(List output) {
-            if (output != null) {
-                devices = output;
-                devicesWereEmpty = false;
-                displayDevices();
-            } else {
-                deviceRefreshLayout.setRefreshing(true);
-                refresh = true;
-                findFirstDevice();
-            }
-        }
     }
 
     public interface AppbarScroll {

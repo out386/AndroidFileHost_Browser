@@ -27,7 +27,9 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
+import com.google.gson.JsonSyntaxException;
 
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +69,7 @@ class FindFiles {
 
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
-        retro = RetroClient.getRetrofit().create(ApiInterface.class);
+        retro = new RetroClient().getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
 
@@ -111,7 +113,8 @@ class FindFiles {
                          }
             @Override
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
-                start(did);
+                if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException))
+                    start(did);
             }
         });
     }
@@ -168,8 +171,7 @@ class FindFiles {
                 @Override
                 public void onFailure(Call<AfhFolderContentResponse> call, Throwable t) {
                     // AfhFolderContentResponse.DATA will be an Object, but if it is empty, it'll be an array
-                    String error = t.toString();
-                    if (!error.contains("Expected BEGIN_OBJECT but was BEGIN_ARRAY")) {
+                    if (! (t instanceof UnknownHostException) && ! (t instanceof IllegalStateException) && ! (t instanceof JsonSyntaxException)) {
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
                         pullRefreshLayout.setRefreshing(false);
                     }
