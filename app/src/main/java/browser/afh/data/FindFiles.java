@@ -20,6 +20,7 @@ package browser.afh.data;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -63,10 +64,11 @@ class FindFiles {
     private String savedID;
     private boolean sortByDate;
     private ApiInterface retro;
+    private final View rootView;
 
     @DebugLog
     FindFiles(View rootView) {
-
+        this.rootView = rootView;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         retro = new RetroClient().getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
@@ -109,6 +111,12 @@ class FindFiles {
                              List<AfhDevelopers> fid = response.body().data;
                              if (fid != null && fid.size() > 0) {
                                  queryDirs(fid);
+                             } else {
+                                 pullRefreshLayout.setRefreshing(false);
+                                 Snackbar.make(rootView,
+                                         rootView.getContext().getResources().getString(R.string.files_list_no_files_text),
+                                         Snackbar.LENGTH_INDEFINITE)
+                                         .show();
                              }
                          }
             @Override

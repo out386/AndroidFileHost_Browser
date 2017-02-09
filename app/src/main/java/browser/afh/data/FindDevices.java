@@ -205,7 +205,11 @@ public class FindDevices {
             public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
                 new Prefs(rootView.getContext()).put("device_id", item.did);
                 new Prefs(rootView.getContext()).put("device_name", item.manufacturer + " " + item.device_name);
-                Snackbar.make(rootView, item.device_name + " added to QuickSettings", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(rootView,
+                        String.format(
+                                rootView.getContext().getResources().getString(R.string.device_list_add_qs_text),
+                                item.device_name),
+                        Snackbar.LENGTH_LONG).show();
                 return true;
             }
         });
