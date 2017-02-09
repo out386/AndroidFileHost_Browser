@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
@@ -77,7 +78,6 @@ import com.lapism.searchview.SearchView;
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     AppBarLayout appBarLayout;
     TextView headerTV;
-    boolean isConnected;
     private Intent searchIntent;
     private Context context;
     private Prefs prefs;
@@ -154,13 +154,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 })
                 .build();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                isConnected = new ConnectionDetector(context).isConnectingToInternet();
-            }
-        }).start();
-
         final MaterialDialog.Builder useLabsVariantDialog = new MaterialDialog.Builder(context)
                 .title(R.string.disclaimer_google_play_title)
                 .content(R.string.disclaimer_google_play_desc)
@@ -208,16 +201,18 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .show();
         }
 
+        new CheckConnectivity(context).execute();
+
         if (deviceID != null){
             Bundle bundle = new Bundle();
             bundle.putString("device_id", deviceID);
             Fragment mainFragment = new MainFragment();
             mainFragment.setArguments(bundle);
-            prepareChangeFragment(mainFragment);
+            changeFragment(mainFragment);
             return;
         }
 
-        prepareChangeFragment(new MainFragment());
+        changeFragment(new MainFragment());
 
         searchView.setHint(getResources().getString(R.string.search_hint));
         searchView.setFocusable(false);
@@ -385,25 +380,37 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     }
 
-    public void prepareChangeFragment(final Fragment fragment) {
-        if (isConnected) {
-            new BottomDialog.Builder(context)
-                    .setTitle(R.string.bottom_dialog_warning_title)
-                    .setContent(R.string.bottom_dialog_warning_desc)
-                    .setPositiveText(R.string.bottom_dialog_positive_text)
-                    .setNegativeTextColorResource(R.color.colorAccent)
-                    .onPositive(new BottomDialog.ButtonCallback() {
-                        @SuppressLint("CommitPrefEdits")
-                        @Override
-                        public void onClick(@NonNull BottomDialog bottomDialog) {
-                            bottomDialog.dismiss();
-                            changeFragment(fragment);
-                            prefs.put(Constants.PREF_ASSERT_DATA_COSTS_KEY, true);
-                        }
-                    })
-                    .show();
-        } else {
-            changeFragment(fragment);
+    public class CheckConnectivity extends AsyncTask <Void, Void, Void> {
+        boolean isConnected;
+        Context context;
+
+        CheckConnectivity(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(Void... v) {
+            isConnected = new ConnectionDetector(context).isConnectingToInternet();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (!isConnected) {
+                new BottomDialog.Builder(context)
+                        .setTitle(R.string.bottom_dialog_warning_title)
+                        .setContent(R.string.bottom_dialog_warning_desc)
+                        .setPositiveText(R.string.bottom_dialog_positive_text)
+                        .setNegativeTextColorResource(R.color.colorAccent)
+                        .onPositive(new BottomDialog.ButtonCallback() {
+                            @SuppressLint("CommitPrefEdits")
+                            @Override
+                            public void onClick(@NonNull BottomDialog bottomDialog) {
+                                bottomDialog.dismiss();
+                            }
+                        })
+                        .show();
+            }
         }
     }
 

@@ -34,7 +34,6 @@ public class Constants {
     public static final String FLID = "https://www.androidfilehost.com/api/?action=folder&flid=";
     public static final String TAG = "AFHBrowser";
 
-    public static final String PREF_ASSERT_DATA_COSTS_KEY = "idgaf_for_data_costs_i_eez_reech";
     public static final String PREF_ASSERT_UNOFFICIAL_CLIENT = "its_unofficial";
 
     public static final String INTENT_SEARCH = "rom.stalker.INTENT_SEARCH";

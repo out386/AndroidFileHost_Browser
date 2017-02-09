@@ -4,6 +4,7 @@ package browser.afh.tools;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -26,16 +27,16 @@ public class ConnectionDetector {
                         "https://www.androidfilehost.com").openConnection());
                 urlc.setRequestProperty("User-Agent", "AFHBrowser");
                 urlc.setRequestProperty("Connection", "close");
-                urlc.setConnectTimeout(3000);
-                urlc.setReadTimeout(4000);
+                urlc.setConnectTimeout(30000);
+                urlc.setReadTimeout(10000);
                 urlc.connect();
-                return (urlc.getResponseCode() == 200);
+                return urlc.getResponseCode() == 200;
             } catch (IOException e) {
-                return (false);
+                Log.d(Constants.TAG, "isConnectingToInternet: " + e.toString());
+                return false;
             }
         } else
             return false;
-
     }
 
     private boolean networkConnectivity() {
