@@ -184,7 +184,10 @@ public class FindDevices {
             @Override
             public void onRefresh() {
                 devices.clear();
+                devAdapter.clear();
                 currentPage = 0;
+                morePagesRequested = false;
+                pages = null;
                 findFirstDevice();
             }
         });
