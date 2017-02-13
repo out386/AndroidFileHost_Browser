@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import browser.afh.BuildConfig;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import okhttp3.Cache;
@@ -38,65 +39,83 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroClient {
-    private final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    public Dispatcher dispatcher;
-    public Retrofit getRetrofit(final Context context, final boolean useOldCache) {
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
-        dispatcher = new Dispatcher();
+    private static final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+    private static Dispatcher dispatcher;
+    private static Retrofit retrofitForceCache;
+    private static Retrofit retrofitNoForceCache;
+
+    public static Retrofit getRetrofit(final Context context, final boolean useOldCache) {
+        if (useOldCache && retrofitForceCache != null)
+            return retrofitForceCache;
+        else if (!useOldCache && retrofitNoForceCache != null)
+            return retrofitNoForceCache;
+
+        if (!BuildConfig.DEBUG)
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+        else
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+
+        if (dispatcher == null)
+            dispatcher = new Dispatcher();
+
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         client.dispatcher(dispatcher);
         client.addInterceptor(loggingInterceptor);
         client.addInterceptor(getOfflineCacheInterceptor(context, useOldCache));
-        client.addNetworkInterceptor(getShortTermCacheInterceptor());
+        client.addNetworkInterceptor(removeHeaders());
         client.cache(getCache(context));
         client.readTimeout(180, TimeUnit.SECONDS);
         client.connectTimeout(180, TimeUnit.SECONDS);
 
-        return new Retrofit.Builder()
+        if (useOldCache) {
+            retrofitForceCache = new Retrofit.Builder()
+                    .baseUrl(Constants.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+            return retrofitForceCache;
+        }
+        retrofitNoForceCache = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())
                 .build();
+        return retrofitNoForceCache;
     }
 
-    private Cache getCache(Context context) {
+    private static Cache getCache(Context context) {
         Cache cache = null;
         try {
-            cache = new Cache(new File(context.getCacheDir(), "retrofit-cache"), 5 * 1024 * 1024);
+            cache = new Cache(new File(context.getCacheDir(), "retrofit-cache"), 20 * 1024 * 1024);
         } catch (Exception e) {
             Log.i(Constants.TAG, "getCache: " + e.toString());
         }
         return cache;
     }
 
-    private Interceptor getShortTermCacheInterceptor() {
+    private static Interceptor removeHeaders() {
         return new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Response response = chain.proceed(chain.request());
-
-                        CacheControl cacheControl = new CacheControl.Builder()
-                        .maxAge(10, TimeUnit.MINUTES)
-                        .build();
                 return response.newBuilder()
-                        .header("cache-control", cacheControl.toString())
                         .removeHeader("pragma")
+                        .removeHeader("cache-control")
                         .build();
-                }
+            }
         };
     }
 
-    private Interceptor getOfflineCacheInterceptor(final Context context, final boolean useOldCache) {
+    private static Interceptor getOfflineCacheInterceptor(final Context context, final boolean useOldCache) {
         return new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Request request = chain.request();
 
-                // Always use cache if loading the devices list
                 // Avoiding isConnectingToInternet to prevent thread troubles
-                if (useOldCache || ! ConnectionDetector.networkConnectivity(context)) {
+                if (useOldCache || !ConnectionDetector.networkConnectivity(context)) {
                     CacheControl cacheControl = new CacheControl.Builder()
-                            .maxStale(7, TimeUnit.DAYS)
+                            .maxStale(30, TimeUnit.DAYS)
                             .build();
 
                     request = request.newBuilder()
@@ -106,5 +125,10 @@ public class RetroClient {
                 return chain.proceed(request);
             }
         };
+    }
+
+    public static void cancelRequests() {
+        if (dispatcher != null)
+            dispatcher.cancelAll();
     }
 }

@@ -27,7 +27,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -86,6 +85,7 @@ public class FindDevices {
     private final CardView deviceHolder;
     private final CardView filesHolder;
     private final AppbarScroll appbarScroll;
+    private ApiInterface retro;
 
     private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
         @Override
@@ -148,7 +148,7 @@ public class FindDevices {
         materialScrollBar.addIndicator(new AlphabetIndicator(rootView.getContext()), true);
 
         /* Needed to prevent PullRefreshLayout from refreshing every time someone
-         * tries to scroll down. The fast scrollbar needs RecyclerView to be a child
+         * tries to scroll up. The fast scrollbar needs RecyclerView to be a child
          * of a RelativeLayout. PullRefreshLayout needs a scrollable child. That makes this
          * workaround necessary.
          */
@@ -178,6 +178,9 @@ public class FindDevices {
                         || item.manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
             }
         });
+
+        retro = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
+
         findFiles = new FindFiles(rootView);
 
         deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
@@ -188,6 +191,7 @@ public class FindDevices {
                 currentPage = 0;
                 morePagesRequested = false;
                 pages = null;
+                retro = RetroClient.getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
                 findFirstDevice();
             }
         });
@@ -235,9 +239,7 @@ public class FindDevices {
 
     @DebugLog
     public void findFirstDevice() {
-
         deviceRefreshLayout.setRefreshing(true);
-        ApiInterface retro = new RetroClient().getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
 
         for (int page = 1; page <= Constants.MIN_PAGES; page++) {
             findDevices(page, retro);
@@ -295,6 +297,7 @@ public class FindDevices {
     private void displayDevices() {
         devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
+        retro = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
         Log.i(TAG, "parseDevices: " + devices.size());
     }
 

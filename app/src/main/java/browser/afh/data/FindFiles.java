@@ -63,18 +63,16 @@ class FindFiles {
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
-    private RetroClient retrofitClient;
     private ApiInterface retroApi;
     private final View rootView;
-    public Snackbar noFilesSnackbar;
+    Snackbar noFilesSnackbar;
 
     @DebugLog
-    FindFiles(View rootView) {
+    FindFiles(final View rootView) {
         this.rootView = rootView;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
-        retrofitClient = new RetroClient();
-        retroApi = retrofitClient.getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
+        retroApi = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
 
@@ -97,6 +95,7 @@ class FindFiles {
             public void onRefresh() {
                 filesD.clear();
                 adapter.notifyDataSetChanged();
+                retroApi = RetroClient.getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
                 start(savedID);
             }
         });
@@ -212,7 +211,8 @@ class FindFiles {
     }
 
     void reset() {
-        retrofitClient.dispatcher.cancelAll();
+        RetroClient.cancelRequests();
+        retroApi = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
         filesD.clear();
         adapter.clear();
         print();
