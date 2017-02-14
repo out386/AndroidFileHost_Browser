@@ -72,7 +72,7 @@ class FindFiles {
         this.rootView = rootView;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
-        retroApi = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
+        retroApi = RetroClient.getApi(rootView.getContext(), true);
         ListView fileList = (ListView) rootView.findViewById(R.id.list);
         CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
 
@@ -95,7 +95,7 @@ class FindFiles {
             public void onRefresh() {
                 filesD.clear();
                 adapter.notifyDataSetChanged();
-                retroApi = RetroClient.getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
+                retroApi = RetroClient.getApi(rootView.getContext(), false);
                 start(savedID);
             }
         });
@@ -207,14 +207,12 @@ class FindFiles {
         }
         Log.i(TAG, "New Files: Data changed : " + filesD.size() + " items");
         adapter.notifyDataSetChanged();
-
     }
 
     void reset() {
         RetroClient.cancelRequests();
-        retroApi = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
+        retroApi = RetroClient.getApi(rootView.getContext(), true);
         filesD.clear();
         adapter.clear();
-        print();
     }
 }

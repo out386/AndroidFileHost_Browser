@@ -34,11 +34,8 @@ public class DeviceTile extends TileService {
         String label = new Prefs(getApplicationContext()).get("device_name", null);
 
         if (label == null) {
-            tile.setState(Tile.STATE_UNAVAILABLE);
-            Toast.makeText(this, getApplicationContext().getString(R.string.tile_unavailable), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.tile_unavailable), Toast.LENGTH_SHORT).show();
         } else {
-            if (tile.getState() == Tile.STATE_UNAVAILABLE)
-                tile.setState(Tile.STATE_ACTIVE);
             tile.setLabel(label);
             tile.updateTile();
         }

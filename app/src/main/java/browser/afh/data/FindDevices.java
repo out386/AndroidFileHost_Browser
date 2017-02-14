@@ -174,12 +174,12 @@ public class FindDevices {
             @Override
             public boolean filter(DeviceData item, CharSequence constraint) {
 
-                return ! (item.device_name.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase())
+                return ! (item.device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
                         || item.manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
             }
         });
 
-        retro = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
+        retro = RetroClient.getApi(rootView.getContext(), true);
 
         findFiles = new FindFiles(rootView);
 
@@ -191,7 +191,7 @@ public class FindDevices {
                 currentPage = 0;
                 morePagesRequested = false;
                 pages = null;
-                retro = RetroClient.getRetrofit(rootView.getContext(), false).create(ApiInterface.class);
+                retro = RetroClient.getApi(rootView.getContext(), false);
                 findFirstDevice();
             }
         });
@@ -297,7 +297,7 @@ public class FindDevices {
     private void displayDevices() {
         devAdapter.add(devices);
         deviceRefreshLayout.setRefreshing(false);
-        retro = RetroClient.getRetrofit(rootView.getContext(), true).create(ApiInterface.class);
+        retro = RetroClient.getApi(rootView.getContext(), true);
         Log.i(TAG, "parseDevices: " + devices.size());
     }
 
@@ -314,7 +314,7 @@ public class FindDevices {
     }
 
     @DebugLog
-    private void animateShowFiles() {
+    private void animateShowFiles(final String did, final int position) {
         filesHolder.setTranslationX(filesHolder.getWidth());
         filesHolder.setAlpha(0.0f);
         filesHolder.setVisibility(View.VISIBLE);
@@ -343,6 +343,10 @@ public class FindDevices {
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
                         filesHolder.setVisibility(View.VISIBLE);
+
+                        // Just in case monkeys decide to tap around while the list is refreshing
+                        if (devices.size() > position)
+                            findFiles.start(did);
                     }
                 });
     }
@@ -385,13 +389,10 @@ public class FindDevices {
             Snackbar.make(rootView, "Invalid device selected", Snackbar.LENGTH_INDEFINITE);
             return;
         }
-        animateShowFiles();
+        animateShowFiles(did, position);
         appbarScroll.expand();
         appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
         ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
-        // Just in case monkeys decide to tap around while the list is refreshing
-        if (devices.size() > position)
-            findFiles.start(did);
     }
 
     public interface AppbarScroll {

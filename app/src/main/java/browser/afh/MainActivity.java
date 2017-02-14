@@ -35,11 +35,8 @@ import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,15 +76,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     AppBarLayout appBarLayout;
     TextView headerTV;
     private Intent searchIntent;
-    private Context context;
     private Prefs prefs;
     private Drawer drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getApplicationContext();
-        prefs = new Prefs(context);
+        prefs = new Prefs(getApplicationContext());
         String deviceID = getIntent().getStringExtra("device_id");
         if (!BuildConfig.DEBUG){
           Fabric.with(this, new Crashlytics());
@@ -129,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         if (drawerItem.getIdentifier() == 0) {
                             changeFragment(new MainFragment());
                         } else if (drawerItem.getIdentifier() == 1) {
-                            startActivity(new Intent(context, AboutActivity.class));
+                            startActivity(new Intent(getApplicationContext(), AboutActivity.class));
                         } else if (drawerItem.getIdentifier() == 2) {
                             changeFragment(new MyPreferenceFragment());
                         }
@@ -155,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 })
                 .build();
 
-        final MaterialDialog.Builder useLabsVariantDialog = new MaterialDialog.Builder(context)
+        final MaterialDialog.Builder useLabsVariantDialog = new MaterialDialog.Builder(getApplicationContext())
                 .title(R.string.disclaimer_google_play_title)
                 .content(R.string.disclaimer_google_play_desc)
                 .negativeText(R.string.ok)
@@ -173,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         if (isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())){
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_APP_PAGE_LINK)));
                         } else {
-                            Toast.makeText(context, R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_DOWNLOAD_PAGE)));
                         }
 
@@ -202,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .show();
         }
 
-        new CheckConnectivity(context).execute();
+        new CheckConnectivity(getApplicationContext()).execute();
 
         if (deviceID != null){
             Bundle bundle = new Bundle();
@@ -362,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     @DebugLog
     public void updatesCheck(boolean beta_tester){
         if (!beta_tester){
-            new AppUpdater(context)
+            new AppUpdater(getApplicationContext())
                     .setUpdateFrom(UpdateFrom.GITHUB)
                     .setGitHubUserAndRepo("out386","AndroidFileHost_Browser")
                     .showEvery(5)
@@ -370,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .setDisplay(Display.SNACKBAR)
                     .start();
         }else{
-            new AppUpdater(context)
+            new AppUpdater(getApplicationContext())
                     .setUpdateFrom(UpdateFrom.JSON)
                     .setUpdateJSON(Constants.UPDATER_MANIFEST_URL)
                     .showEvery(5)

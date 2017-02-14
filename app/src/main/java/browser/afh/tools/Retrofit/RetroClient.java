@@ -40,11 +40,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroClient {
     private static final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-    private static Dispatcher dispatcher;
+    private static final Dispatcher dispatcher = new Dispatcher();
     private static Retrofit retrofitForceCache;
     private static Retrofit retrofitNoForceCache;
+    private static ApiInterface apiForceCache;
+    private static ApiInterface apiNoForceCache;
+    private static Cache cache;
+    private static Interceptor removeHeadersInterceptor;
 
-    public static Retrofit getRetrofit(final Context context, final boolean useOldCache) {
+    private static Retrofit getRetrofit(final Context context, final boolean useOldCache) {
         if (useOldCache && retrofitForceCache != null)
             return retrofitForceCache;
         else if (!useOldCache && retrofitNoForceCache != null)
@@ -54,9 +58,6 @@ public class RetroClient {
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         else
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
-        if (dispatcher == null)
-            dispatcher = new Dispatcher();
 
         OkHttpClient.Builder client = new OkHttpClient.Builder();
         client.dispatcher(dispatcher);
@@ -84,7 +85,9 @@ public class RetroClient {
     }
 
     private static Cache getCache(Context context) {
-        Cache cache = null;
+        if (cache != null)
+            return cache;
+
         try {
             cache = new Cache(new File(context.getCacheDir(), "retrofit-cache"), 20 * 1024 * 1024);
         } catch (Exception e) {
@@ -94,16 +97,19 @@ public class RetroClient {
     }
 
     private static Interceptor removeHeaders() {
-        return new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Response response = chain.proceed(chain.request());
-                return response.newBuilder()
-                        .removeHeader("pragma")
-                        .removeHeader("cache-control")
-                        .build();
-            }
-        };
+        if (removeHeadersInterceptor == null) {
+            removeHeadersInterceptor = new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Response response = chain.proceed(chain.request());
+                    return response.newBuilder()
+                            .removeHeader("pragma")
+                            .removeHeader("cache-control")
+                            .build();
+                }
+            };
+        }
+        return removeHeadersInterceptor;
     }
 
     private static Interceptor getOfflineCacheInterceptor(final Context context, final boolean useOldCache) {
@@ -128,7 +134,18 @@ public class RetroClient {
     }
 
     public static void cancelRequests() {
-        if (dispatcher != null)
-            dispatcher.cancelAll();
+        dispatcher.cancelAll();
+    }
+
+    public static ApiInterface getApi(Context context, boolean useOldCache) {
+        if (useOldCache) {
+            if (apiForceCache == null)
+                apiForceCache = getRetrofit(context, true).create(ApiInterface.class);
+            return apiForceCache;
+        }
+
+        if (apiNoForceCache == null)
+            apiNoForceCache = getRetrofit(context, false).create(ApiInterface.class);
+        return apiNoForceCache;
     }
 }
