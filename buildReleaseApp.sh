@@ -2,6 +2,7 @@
 
 echo "Configuring..."
 source configure.sh
+./notifyCommit.sh
 
 echo "Building..."
 ./gradlew clean assembleRelease
