@@ -22,10 +22,6 @@
         <activity android:name=".AboutActivity"
             android:theme="@style/AppTheme.MaterialAboutActivity"/>
 
-        <service
-            android:name=".customtabs.KeepAliveService"
-            android:exported="false" />
-
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="d4b4d39862cc5f6b9b9948f06419b8ba9dd93407" />

@@ -5,12 +5,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
-import android.util.Log;
 import android.widget.Toast;
 
 import browser.afh.MainActivity;
 import browser.afh.R;
-import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 
 
@@ -29,12 +27,13 @@ public class DeviceTile extends TileService {
          * but trying to avoid reading from  sharedprefs every time the user opens QS
          */
 
-        
         final Tile tile = getQsTile();
         String label = new Prefs(getApplicationContext()).get("device_name", null);
 
         if (label == null) {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.tile_unavailable), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),
+                    getApplicationContext().getString(R.string.tile_unavailable),
+                    Toast.LENGTH_SHORT).show();
         } else {
             tile.setLabel(label);
             tile.updateTile();

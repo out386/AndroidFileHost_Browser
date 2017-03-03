@@ -44,5 +44,8 @@
     <string name="about_activity_github_subtitle_2">\@MSF-Jarvis</string>
     <string name="about_activity_author_title_2">Harsh Shandilya</string>
     <string name="tile_unavailable">Long press a device name to activate the tile.</string>
+    <string name="no_browser_dialog_title">Huh?</string>
+    <string name="no_browser_dialog_content">No browser installed? ಠ_ಠ</string>
+    <string name="no_browser_dialog_assert">Yes I\'m a fool</string>
 
 </resources>

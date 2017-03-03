@@ -50,6 +50,7 @@ import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.enums.Display;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
 import com.github.javiersantos.bottomdialogs.BottomDialog;
+import com.lapism.searchview.SearchView;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -70,7 +71,6 @@ import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 
-import com.lapism.searchview.SearchView;
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
     AppBarLayout appBarLayout;
     TextView headerTV;
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
 
-        updatesCheck(prefs.get("beta_tester",false));
+        updatesCheck();
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(R.color.colorPrimary)
@@ -112,10 +112,22 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .withActivity(this)
                 .withAccountHeader(header)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home).withIdentifier(0).withDescription(R.string.drawer_desc_home),
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_info).withIcon(R.drawable.ic_info).withIdentifier(1).withDescription(R.string.drawer_desc_info).withSelectable(false),
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_home)
+                                .withIcon(R.drawable.ic_home)
+                                .withIdentifier(0)
+                                .withDescription(R.string.drawer_desc_home),
+                        new PrimaryDrawerItem()
+                                .withName(R.string.drawer_title_info)
+                                .withIcon(R.drawable.ic_info)
+                                .withIdentifier(1)
+                                .withDescription(R.string.drawer_desc_info)
+                                .withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings).withIdentifier(2).withDescription(R.string.drawer_desc_settings)
+                        new PrimaryDrawerItem()
+                                .withName(R.string.drawer_title_settings)
+                                .withIcon(R.drawable.ic_settings)
+                                .withIdentifier(2)
+                                .withDescription(R.string.drawer_desc_settings)
                 )
                 .withCloseOnClick(true)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -355,28 +367,17 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @DebugLog
-    public void updatesCheck(boolean beta_tester){
-        if (!beta_tester){
-            new AppUpdater(getApplicationContext())
-                    .setUpdateFrom(UpdateFrom.GITHUB)
-                    .setGitHubUserAndRepo("out386","AndroidFileHost_Browser")
-                    .showEvery(5)
-                    .showAppUpdated(false)
-                    .setDisplay(Display.SNACKBAR)
-                    .start();
-        }else{
-            new AppUpdater(getApplicationContext())
-                    .setUpdateFrom(UpdateFrom.JSON)
-                    .setUpdateJSON(Constants.UPDATER_MANIFEST_URL)
-                    .showEvery(5)
-                    .showAppUpdated(false)
-                    .setDisplay(Display.SNACKBAR)
-                    .start();
-        }
-
+    public void updatesCheck(){
+        new AppUpdater(getApplicationContext())
+                .setUpdateFrom(UpdateFrom.GITHUB)
+                .setGitHubUserAndRepo("out386","AndroidFileHost_Browser")
+                .showEvery(5)
+                .showAppUpdated(false)
+                .setDisplay(Display.SNACKBAR)
+                .start();
     }
 
-    public class CheckConnectivity extends AsyncTask <Void, Void, Void> {
+    private class CheckConnectivity extends AsyncTask <Void, Void, Void> {
         boolean isConnected;
         Context context;
 

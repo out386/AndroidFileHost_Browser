@@ -24,16 +24,6 @@ public class Prefs {
         editor.apply();
     }
 
-    public void put(String prefName, int data){
-        editor.putInt(prefName, data);
-        editor.apply();
-    }
-
-    public void put(String prefName, float data){
-        editor.putFloat(prefName, data);
-        editor.apply();
-    }
-
     public boolean get(String prefName, boolean defaultValue){
         return preferences.getBoolean(prefName, defaultValue);
     }

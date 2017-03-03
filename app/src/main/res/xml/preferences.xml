@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:title="Beta Updates"
-        android:defaultValue="false"
-        android:summary="Enable to get per-commit builds of the app. Stuff can break. You get to keep all pieces."
-        android:key="beta_testing" />
-    <CheckBoxPreference
         android:title="Device images"
         android:defaultValue="true"
         android:summary="Display images for available devices"

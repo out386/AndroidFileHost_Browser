@@ -41,7 +41,7 @@ import browser.afh.types.AfhFiles;
 
 public class AfhAdapter extends ArrayAdapter<AfhFiles>
 {
-    public final Context context;
+    private final Context context;
     public AfhAdapter(Context context, int resource,List<AfhFiles> items) {
         super(context,resource,items);
         this.context = context;
@@ -53,8 +53,9 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.launchUrl(context, Uri.parse(Url));
     }
+    @NonNull
     @Override
-    public View getView(int position, final View convertView, ViewGroup parent) {
+    public View getView(int position, final View convertView, @NonNull ViewGroup parent) {
         View v = convertView;
         if(v == null)
             v= LayoutInflater.from(getContext()).inflate(R.layout.afh_items, null);
@@ -69,9 +70,9 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                       customTab(p.url);
                     } catch (ActivityNotFoundException exc){
                     new MaterialDialog.Builder(context)
-                            .title("Huh?")
-                            .content("No browser installed? ಠ_ಠ")
-                            .neutralText("Yes I'm a fool")
+                            .title(R.string.no_browser_dialog_title)
+                            .content(R.string.no_browser_dialog_content)
+                            .neutralText(R.string.no_browser_dialog_assert)
                             .onNeutral(new MaterialDialog.SingleButtonCallback() {
                                @Override
                                public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which) {
@@ -99,9 +100,9 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
                                         customTab(p.url);
                                     } catch (ActivityNotFoundException exc){
                                         new MaterialDialog.Builder(context)
-                                                .title("Huh?")
-                                                .content("No browser installed? ಠ_ಠ")
-                                                .neutralText("Yes I'm a fool")
+                                                .title(R.string.no_browser_dialog_title)
+                                                .content(R.string.no_browser_dialog_content)
+                                                .neutralText(R.string.no_browser_dialog_assert)
                                                 .onNeutral(new MaterialDialog.SingleButtonCallback() {
                                                     @Override
                                                     public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which) {

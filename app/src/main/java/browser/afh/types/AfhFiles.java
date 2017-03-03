@@ -19,8 +19,6 @@ package browser.afh.types;
 
 import com.google.gson.annotations.SerializedName;
 
-import browser.afh.tools.Utils;
-
 public class AfhFiles
 {
     @SerializedName("name")

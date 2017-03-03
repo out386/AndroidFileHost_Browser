@@ -55,13 +55,6 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
         }
     }
 
-    /**
-     * REQUIRED FOR THE FastAdapter. Set order to < 0 to tell the FastAdapter he can ignore this one.
-     **/
-
-    /**
-     * @return
-     */
     @Override
     public int getOrder() {
         return -100;
