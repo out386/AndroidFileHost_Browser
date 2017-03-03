@@ -72,7 +72,7 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
             Glide
                     .with(context)
                     .load(image)
-                    .placeholder(R.drawable.device_image_placeholder)
+                    .placeholder(R.drawable.ic_device_placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(viewHolder.dImage);

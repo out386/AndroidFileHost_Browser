@@ -7,16 +7,12 @@ import android.net.Uri;
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutActionItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
-import com.danielstone.materialaboutlibrary.model.MaterialAboutItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator;
-
-import browser.afh.BuildConfig;
-import browser.afh.R;
 
 public class AboutActivity extends MaterialAboutActivity {
     Context context;
@@ -33,11 +29,11 @@ public class AboutActivity extends MaterialAboutActivity {
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_version_title)
                 .subText(BuildConfig.VERSION_NAME)
-                .icon(R.drawable.ic_info_black_24px)
+                .icon(R.drawable.ic_info)
                 .build());
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_licenses_title)
-                .icon(R.drawable.ic_licenses_black_24px)
+                .icon(R.drawable.ic_licenses)
                 .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
                     @Override
                     public void onClick() {
@@ -56,7 +52,7 @@ public class AboutActivity extends MaterialAboutActivity {
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_author_title_1)
                 .subText(R.string.about_activity_author_desc)
-                .icon(R.drawable.ic_person_black_24px)
+                .icon(R.drawable.ic_person)
                 .build());
 
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
@@ -78,7 +74,7 @@ public class AboutActivity extends MaterialAboutActivity {
         author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_author_title_2)
                 .subText(R.string.about_activity_author_desc)
-                .icon(R.drawable.ic_person_black_24px)
+                .icon(R.drawable.ic_person)
                 .build());
 
         author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()

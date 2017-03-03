@@ -28,7 +28,7 @@
             android:maxWidth="70dp"
             android:paddingLeft="20dp"
             android:paddingStart="20dp"
-            tools:src="@drawable/device_image_placeholder" />
+            tools:src="@drawable/ic_device_placeholder" />
 
         <TextView
             android:id="@+id/mName"

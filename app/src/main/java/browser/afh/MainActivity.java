@@ -59,7 +59,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
-import browser.afh.data.FindDevices;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.fragments.MainFragment;
@@ -113,10 +112,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .withActivity(this)
                 .withAccountHeader(header)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home_black_24px).withIdentifier(0).withDescription(R.string.drawer_desc_home),
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_info).withIcon(R.drawable.ic_info_black_24px).withIdentifier(1).withDescription(R.string.drawer_desc_info).withSelectable(false),
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_home).withIcon(R.drawable.ic_home).withIdentifier(0).withDescription(R.string.drawer_desc_home),
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_info).withIcon(R.drawable.ic_info).withIdentifier(1).withDescription(R.string.drawer_desc_info).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings_black_24px).withIdentifier(2).withDescription(R.string.drawer_desc_settings)
+                        new PrimaryDrawerItem().withName(R.string.drawer_title_settings).withIcon(R.drawable.ic_settings).withIdentifier(2).withDescription(R.string.drawer_desc_settings)
                 )
                 .withCloseOnClick(true)
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
