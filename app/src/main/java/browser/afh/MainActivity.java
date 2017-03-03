@@ -23,13 +23,18 @@ package browser.afh;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
@@ -59,6 +64,8 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+
+import java.util.Collections;
 
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
@@ -95,6 +102,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
+        if (prefs.get("device_id", 0) != 0 && Build.VERSION.SDK_INT >= 25)
+            addLauncherShortcut();
 
         updatesCheck();
         AccountHeader header = new AccountHeaderBuilder()
@@ -419,5 +428,23 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
         }
+    }
+    @TargetApi(25)
+    private void addLauncherShortcut() {
+        ShortcutManager sM = getSystemService(ShortcutManager.class);
+        sM.removeAllDynamicShortcuts();
+
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.putExtra("device_id", prefs.get("device_id",0));
+
+        ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "shortcut1")
+                .setIntent(intent)
+                .setLongLabel(prefs.get("device_name","..."))
+                .setShortLabel(prefs.get("device_name","..."))
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_device_placeholder))
+                .build();
+
+        sM.setDynamicShortcuts(Collections.singletonList(shortcut));
     }
 }
