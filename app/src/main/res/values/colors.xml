@@ -7,4 +7,7 @@
     <color name="text_gray">#FF888888</color>
     <color name="black">#111111</color>
     <color name="list_card_background">#FFF9F9F9</color>
+    <color name="window_background_color">#FFFFFFFF</color>
+    <color name="text_color">#111111</color>
+    <color name="cardview_background_color">#FFFFFF</color>
 </resources>

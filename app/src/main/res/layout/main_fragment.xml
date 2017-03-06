@@ -15,7 +15,7 @@
         android:layout_marginBottom="3dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:background="@color/white"
+        android:background="@color/cardview_background_color"
         android:orientation="vertical"
         android:paddingBottom="1dp"
         android:paddingTop="1dp">
@@ -36,7 +36,7 @@
                     android:id="@+id/deviceList"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/list_card_background"
+                    android:background="@color/cardview_background_color"
                     android:divider="@null"
                     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
             </RelativeLayout>
@@ -50,7 +50,7 @@
         android:layout_marginBottom="3dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:background="@color/list_card_background"
+        android:background="@color/cardview_background_color"
         android:orientation="vertical"
         android:paddingBottom="1dp"
         android:paddingTop="1dp"
@@ -59,7 +59,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/list_card_background">
+            android:background="@color/cardview_background_color">
 
             <CheckBox
                 android:id="@+id/sortCB"
@@ -84,7 +84,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/sortCB"
-                    android:background="@color/list_card_background"
+                    android:background="@color/cardview_background_color"
                     android:divider="@null" />
             </com.baoyz.widget.PullRefreshLayout>
         </RelativeLayout>
