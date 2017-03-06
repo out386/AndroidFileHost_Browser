@@ -10,4 +10,5 @@
     <color name="window_background_color">#FFFFFFFF</color>
     <color name="text_color">#111111</color>
     <color name="cardview_background_color">#FFFFFF</color>
+    <color name="icon_tint">#000000</color>
 </resources>
