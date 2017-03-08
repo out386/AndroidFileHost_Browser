@@ -20,7 +20,7 @@ version_name=v$(cat app/build.gradle | grep "versionName" | cut -d '"' -f2)
     --name "AFH_Browser_$version_name.apk"  \
     --file app/build/outputs/apk/afh-browser_beta_*.apk
 
-tg_message="A new release $version_name was just made for AFHBrowser. Here's the (apk)[https://github.com/out386/AndroidFileHost_Browser/releases/download/$version_name/AFH_Browser_$version_name.apk]"
+tg_message="A new release $version_name was just made for AFHBrowser. [Here's the apk](https://github.com/out386/AndroidFileHost_Browser/releases/download/$version_name/AFH_Browser_$version_name.apk)"
 
 # Notify via Telegram
 curl -F chat_id="$tg_out_id" -F parse_mode="markdown" -F text="$tg_message" "https://api.telegram.org/bot$tg_bot_key/sendMessage"
