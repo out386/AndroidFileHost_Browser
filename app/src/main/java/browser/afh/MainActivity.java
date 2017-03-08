@@ -394,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         @Override
         protected void onPostExecute(Void aVoid) {
             if (!isConnected) {
-                new BottomDialog.Builder(context)
+                new BottomDialog.Builder(MainActivity.this)
                         .setTitle(R.string.bottom_dialog_warning_title)
                         .setContent(R.string.bottom_dialog_warning_desc)
                         .setPositiveText(R.string.bottom_dialog_positive_text)
