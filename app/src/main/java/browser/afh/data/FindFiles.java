@@ -28,6 +28,8 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
+import com.crashlytics.android.Crashlytics;
+import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.google.gson.JsonSyntaxException;
 
 import java.net.UnknownHostException;
@@ -106,20 +108,38 @@ class FindFiles {
     @DebugLog
     void start(final String did) {
         savedID = did;
-        noFilesSnackbar = Snackbar.make(rootView,
-                rootView.getContext().getResources().getString(R.string.files_list_no_files_text),
-                Snackbar.LENGTH_INDEFINITE);
+        if (Utils.findSuitableParent(rootView) != null) {
+            noFilesSnackbar = Snackbar.make(rootView,
+                    rootView.getContext().getResources().getString(R.string.files_list_no_files_text),
+                    Snackbar.LENGTH_INDEFINITE);
+        }
         
         Call<AfhDevelopersList> call = retroApi.getDevelopers("developers", did, 100);
         call.enqueue(new Callback<AfhDevelopersList>() {
                          @Override
                          public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
-                             List<AfhDevelopers> fid = response.body().data;
+                             List<AfhDevelopers> fid = null;
+                             try {
+                                 fid = response.body().data;
+                             } catch (Exception e) {
+                                 //try-catch needed to log with Fabric
+                                 Crashlytics.log("did : " + did);
+                                 Crashlytics.logException(e);
+                                 Crashlytics.log("did : " + did);
+                                 new BottomDialog.Builder(rootView.getContext())
+                                         .setTitle("Uh oh.")
+                                         .setContent("Sorry, something went wrong. This will be reported on the next app launch, so please restart the app now, and it\'ll be fixed soon.")
+                                         .setPositiveText(R.string.bottom_dialog_positive_text)
+                                         .show();
+                                 return;
+                             }
+
                              if (fid != null && fid.size() > 0) {
                                  queryDirs(fid);
                              } else {
                                  pullRefreshLayout.setRefreshing(false);
-                                 noFilesSnackbar.show();
+                                 if (noFilesSnackbar != null)
+                                     noFilesSnackbar.show();
                              }
                          }
             @Override
@@ -141,16 +161,33 @@ class FindFiles {
             call.enqueue(new Callback<AfhFolderContentResponse>() {
                 @Override
                 public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
-                    List<AfhFiles> filesList = response.body().data.files;
-                    List<AfhDevelopers> foldersList = response.body().data.folders;
+                    List<AfhFiles> filesList = null;
+                    List<AfhDevelopers> foldersList = null;
+                    try {
+                        filesList = response.body().data.files;
+                        foldersList = response.body().data.folders;
+                    } catch (Exception e) {
+                        Crashlytics.logException(e);
+                        Crashlytics.log("flid : " + url.flid);
+                    }
 
                     if (filesList != null && filesList.size() > 0) {
                         pullRefreshLayout.setRefreshing(false);
 
                         for (AfhFiles file : filesList) {
                             file.screenname = url.screenname;
-                            file.file_size = Utils.sizeFormat(Integer.parseInt(file.file_size));
-                            file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
+
+                            try {
+                                file.file_size = Utils.sizeFormat(Integer.parseInt(file.file_size));
+                                file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
+                            } catch (Exception e) {
+                                Crashlytics.logException(e);
+                                Crashlytics.log("flid : " + url.flid);
+                                Crashlytics.log("name : " + file.name);
+                                Crashlytics.log("file_size : " + file.file_size);
+                                Crashlytics.log("upload_date : " + file.upload_date);
+                                return;
+                            }
 
                             if (BuildConfig.PLAY_COMPATIBLE) {
                                 if (file.name.endsWith(".apk") || file.name.endsWith(".APK")) {

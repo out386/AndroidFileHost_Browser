@@ -82,12 +82,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_activity);
+
         prefs = new Prefs(getApplicationContext());
         String deviceID = getIntent().getStringExtra("device_id");
         if (!BuildConfig.DEBUG){
           Fabric.with(this, new Crashlytics());
         }
-        setContentView(R.layout.main_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
         setSupportActionBar(toolbar);
@@ -393,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         @Override
         protected void onPostExecute(Void aVoid) {
             if (!isConnected) {
-                new BottomDialog.Builder(MainActivity.this)
+                new BottomDialog.Builder(context)
                         .setTitle(R.string.bottom_dialog_warning_title)
                         .setContent(R.string.bottom_dialog_warning_desc)
                         .setPositiveText(R.string.bottom_dialog_positive_text)
