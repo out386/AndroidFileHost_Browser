@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
-        if (prefs.get("device_id", 0) != 0 && Build.VERSION.SDK_INT >= 25)
+        if (prefs.get("device_id", null) != null && Build.VERSION.SDK_INT >= 25)
             addLauncherShortcut();
 
         updatesCheck();
@@ -205,13 +205,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             dialog.dismiss();
-                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true);
+                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
                         }
                     })
                     .dismissListener(new DialogInterface.OnDismissListener() {
                         @Override
                         public void onDismiss(DialogInterface dialogInterface) {
-                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT,true);
+                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
                             if (BuildConfig.PLAY_COMPATIBLE) useLabsVariantDialog.show();
                         }
                     })
@@ -436,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
-        intent.putExtra("device_id", prefs.get("device_id",0));
+        intent.putExtra("device_id", prefs.get("device_id", null));
 
         ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "shortcut1")
                 .setIntent(intent)
