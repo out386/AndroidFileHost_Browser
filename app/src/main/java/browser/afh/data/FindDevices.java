@@ -83,6 +83,7 @@ public class FindDevices {
     private boolean morePagesRequested = false;
     private FragmentInterface fragmentInterface;
     private AppbarScroll appbarScroll;
+    private HSShortutInterface hsShortutInterface;
     private final CardView deviceHolder;
     private final CardView filesHolder;
     private ApiInterface retro;
@@ -109,6 +110,7 @@ public class FindDevices {
         try {
             this.fragmentInterface = (FragmentInterface) activity;
             this.appbarScroll = (AppbarScroll) activity;
+            this.hsShortutInterface = (HSShortutInterface) activity;
         } catch (ClassCastException ignored) {}
 
         deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
@@ -212,6 +214,8 @@ public class FindDevices {
             public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
                 new Prefs(rootView.getContext()).put("device_id", item.did);
                 new Prefs(rootView.getContext()).put("device_name", item.manufacturer + " " + item.device_name);
+                if (item.did != null && item.device_name != null)
+                    hsShortutInterface.setShortcut(item.did, item.manufacturer, item.device_name);
                 Snackbar.make(rootView,
                         String.format(
                                 rootView.getContext().getResources().getString(R.string.device_list_add_qs_text),
@@ -410,4 +414,8 @@ public class FindDevices {
         void showSearch(boolean show);
     }
 
+    //Home screen shortcut for favourite device
+    public interface HSShortutInterface {
+        void setShortcut(String did, String manufacturer, String deviceName);
+    }
 }

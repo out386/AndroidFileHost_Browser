@@ -69,6 +69,7 @@ import java.util.Collections;
 
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
+import browser.afh.data.FindDevices.HSShortutInterface;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
@@ -78,7 +79,7 @@ import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 
-public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface {
+public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface, HSShortutInterface {
     AppBarLayout appBarLayout;
     TextView headerTV;
     private Intent searchIntent;
@@ -103,8 +104,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
-        if (prefs.get("device_id", null) != null && Build.VERSION.SDK_INT >= 25)
-            addLauncherShortcut();
 
         updatesCheck();
         AccountHeader header = new AccountHeaderBuilder()
@@ -357,6 +356,29 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         }
     }
 
+    @Override
+    public void setShortcut(String did, String manufacturer, String deviceName) {
+        //Home screen shortcut for favourite device
+
+        if (Build.VERSION.SDK_INT < 23)
+            return;
+        ShortcutManager sM = getSystemService(ShortcutManager.class);
+        sM.removeAllDynamicShortcuts();
+
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.putExtra("device_id", did);
+
+        ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "shortcut1")
+                .setIntent(intent)
+                .setLongLabel(manufacturer + " " + deviceName)
+                .setShortLabel(deviceName)
+                .setIcon(Icon.createWithResource(this, R.drawable.ic_device_placeholder))
+                .build();
+
+        sM.setDynamicShortcuts(Collections.singletonList(shortcut));
+    }
+
     @DebugLog
     public void updatesCheck(){
         new AppUpdater(this)
@@ -410,23 +432,5 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
         }
-    }
-    @TargetApi(25)
-    private void addLauncherShortcut() {
-        ShortcutManager sM = getSystemService(ShortcutManager.class);
-        sM.removeAllDynamicShortcuts();
-
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.setAction(Intent.ACTION_VIEW);
-        intent.putExtra("device_id", prefs.get("device_id", null));
-
-        ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "shortcut1")
-                .setIntent(intent)
-                .setLongLabel(prefs.get("device_name","..."))
-                .setShortLabel(prefs.get("device_name","..."))
-                .setIcon(Icon.createWithResource(this, R.drawable.ic_device_placeholder))
-                .build();
-
-        sM.setDynamicShortcuts(Collections.singletonList(shortcut));
     }
 }
