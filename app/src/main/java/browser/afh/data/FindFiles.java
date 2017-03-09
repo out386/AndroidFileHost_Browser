@@ -126,11 +126,9 @@ class FindFiles {
                                  Crashlytics.log("did : " + did);
                                  Crashlytics.logException(e);
                                  Crashlytics.log("did : " + did);
-                                 new BottomDialog.Builder(rootView.getContext())
-                                         .setTitle("Uh oh.")
-                                         .setContent("Sorry, something went wrong. This will be reported on the next app launch, so please restart the app now, and it\'ll be fixed soon.")
-                                         .setPositiveText(R.string.bottom_dialog_positive_text)
-                                         .show();
+
+                                 if (noFilesSnackbar != null)
+                                     noFilesSnackbar.show();
                                  return;
                              }
 
@@ -186,7 +184,6 @@ class FindFiles {
                                 Crashlytics.log("name : " + file.name);
                                 Crashlytics.log("file_size : " + file.file_size);
                                 Crashlytics.log("upload_date : " + file.upload_date);
-                                return;
                             }
 
                             if (BuildConfig.PLAY_COMPATIBLE) {
