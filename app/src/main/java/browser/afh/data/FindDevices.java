@@ -81,10 +81,10 @@ public class FindDevices {
     private int pages[] = null;
     private final FindFiles findFiles;
     private boolean morePagesRequested = false;
-    private final FragmentInterface fragmentInterface;
+    private FragmentInterface fragmentInterface;
+    private AppbarScroll appbarScroll;
     private final CardView deviceHolder;
     private final CardView filesHolder;
-    private final AppbarScroll appbarScroll;
     private ApiInterface retro;
 
     private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
@@ -104,10 +104,13 @@ public class FindDevices {
     };
 
     @DebugLog
-    public FindDevices(final View rootView, final AppbarScroll appbarScroll, final FragmentInterface fragmentInterface) {
+    public FindDevices(final View rootView, Activity activity) {
         this.rootView = rootView;
-        this.fragmentInterface = fragmentInterface;
-        this.appbarScroll = appbarScroll;
+        try {
+            this.fragmentInterface = (FragmentInterface) activity;
+            this.appbarScroll = (AppbarScroll) activity;
+        } catch (ClassCastException ignored) {}
+
         deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
         filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
@@ -403,7 +406,6 @@ public class FindDevices {
     }
 
     public interface FragmentInterface {
-        void reattach();
         void onSuperBack();
         void showSearch(boolean show);
     }

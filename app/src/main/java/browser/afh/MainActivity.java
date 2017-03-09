@@ -306,25 +306,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
-    @DebugLog
-    public void reattach() {
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment current = fragmentManager.findFragmentById(R.id.mainFrame);
-        try {
-            if (current instanceof MainFragment) {
-                fragmentManager.beginTransaction()
-                        .detach(current)
-                        .attach(current)
-                        .commit();
-                changeFragment(current);
-            }
-        } catch(IllegalStateException e) {
-            finish();
-            // As the onClick listener won't work if this happens, anyway.
-            // No point in keeping the blank activity up
-        }
-    }
-    @Override
     public void onSuperBack() {
         super.onBackPressed();
     }

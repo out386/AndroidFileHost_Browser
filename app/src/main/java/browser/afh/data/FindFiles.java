@@ -118,7 +118,7 @@ class FindFiles {
         call.enqueue(new Callback<AfhDevelopersList>() {
                          @Override
                          public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
-                             List<AfhDevelopers> fid = null;
+                             List<AfhDevelopers> fid;
                              try {
                                  fid = response.body().data;
                              } catch (Exception e) {

@@ -33,18 +33,12 @@ import browser.afh.tools.Constants;
 
 public class MainFragment extends Fragment {
     View rootView;
-    AppbarScroll appbarScroll;
-    FragmentInterface fragmentInterface;
+    Activity activity;
     private FindDevices findDevices;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            appbarScroll = (AppbarScroll) activity;
-            fragmentInterface = (FragmentInterface) activity;
-        } catch (ClassCastException ignored) {
-
-        }
+        this.activity = activity;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,7 +46,7 @@ public class MainFragment extends Fragment {
         rootView = inflater.inflate(R.layout.main_fragment, container, false);
         Bundle bundle = getArguments();
 
-        findDevices = new FindDevices(rootView, appbarScroll, fragmentInterface);
+        findDevices = new FindDevices(rootView, activity);
 
         if (bundle != null) {
             String did = bundle.getString("device_id", null);
