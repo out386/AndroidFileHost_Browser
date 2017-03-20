@@ -66,7 +66,7 @@ class FindFiles {
     private boolean sortByDate;
     private ApiInterface retroApi;
     private final View rootView;
-    private Snackbar noFilesSnackbar;
+    private Snackbar messageSnackbar;
 
     @DebugLog
     FindFiles(final View rootView) {
@@ -107,11 +107,6 @@ class FindFiles {
     @DebugLog
     void start(final String did) {
         savedID = did;
-        if (Utils.findSuitableParent(rootView) != null) {
-            noFilesSnackbar = Snackbar.make(rootView,
-                    rootView.getContext().getResources().getString(R.string.files_list_no_files_text),
-                    Snackbar.LENGTH_INDEFINITE);
-        }
         
         Call<AfhDevelopersList> call = retroApi.getDevelopers("developers", did, 100);
         call.enqueue(new Callback<AfhDevelopersList>() {
@@ -129,16 +124,16 @@ class FindFiles {
 
                         // Files might exist, we just didn't get a list of them.
                         // Should probably retry, though.
-                        if (noFilesSnackbar != null)
-                            noFilesSnackbar.show();
+                        makeMessageSnackbar(R.string.files_list_no_files_text);
+                        showMessageSnackbar();
                         return;
                     }
                     if (fid != null && fid.size() > 0) {
                         queryDirs(fid);
                     } else {
                         pullRefreshLayout.setRefreshing(false);
-                        if (noFilesSnackbar != null)
-                            noFilesSnackbar.show();
+                        makeMessageSnackbar(R.string.files_list_no_files_text);
+                        showMessageSnackbar();
                     }
                 }
                 else if(response.code() == 502){
@@ -152,7 +147,8 @@ class FindFiles {
                         Crashlytics.log("did : " + did);
                     }
                     call.clone().enqueue(this);
-                    //  TO-DO: Use a Snackbar, tell user.
+                    makeMessageSnackbar(R.string.files_list_502_text);
+                    showMessageSnackbar();
                 }
                 else {
                     try {
@@ -169,7 +165,8 @@ class FindFiles {
             @Override
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
                 if (t instanceof UnknownHostException) {
-                    // TO-DO: Put in a ListView header and say that there's no cache.
+                    makeMessageSnackbar(R.string.files_list_no_cache_text);
+                    showMessageSnackbar();
                     pullRefreshLayout.setRefreshing(false);
                     return;
                 }
@@ -283,7 +280,8 @@ class FindFiles {
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
                     }
                     else if (t instanceof UnknownHostException) {
-                        // TO-DO: Put in a ListView header and say that there's no cache.
+                        makeMessageSnackbar(R.string.files_list_no_cache_text);
+                        showMessageSnackbar();
                     }
                 }
             });
@@ -311,8 +309,19 @@ class FindFiles {
         adapter.clear();
     }
 
-    void dismissNoFilesSnackbar() {
-        if (noFilesSnackbar != null)
-            noFilesSnackbar.dismiss();
+    void dismissMessageSnackbar() {
+        if (messageSnackbar != null)
+            messageSnackbar.dismiss();
+    }
+
+    private void makeMessageSnackbar(int message) {
+        if (Utils.findSuitableParent(rootView) != null) {
+            messageSnackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE);
+        }
+    }
+
+    private void showMessageSnackbar() {
+        if (messageSnackbar != null)
+            messageSnackbar.show();
     }
 }

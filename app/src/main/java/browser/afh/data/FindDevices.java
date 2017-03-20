@@ -403,7 +403,7 @@ public class FindDevices {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.VISIBLE);
                         findFiles.reset();
-                        findFiles.dismissNoFilesSnackbar();
+                        findFiles.dismissMessageSnackbar();
                         fragmentInterface.showSearch(true);
             }
         });
