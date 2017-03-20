@@ -24,6 +24,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
@@ -218,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .show();
         }
 
-        new CheckConnectivity(getApplicationContext()).execute();
+        new CheckConnectivity(this).execute();
 
         if (deviceID != null){
             Bundle bundle = new Bundle();
@@ -360,7 +361,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     public void setShortcut(String did, String manufacturer, String deviceName) {
         //Home screen shortcut for favourite device
 
-        if (Build.VERSION.SDK_INT < 23)
+        if (Build.VERSION.SDK_INT < 25)
             return;
         ShortcutManager sM = getSystemService(ShortcutManager.class);
         sM.removeAllDynamicShortcuts();
@@ -406,8 +407,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (!isConnected) {
-                new BottomDialog.Builder(MainActivity.this)
+            if (!isConnected && !((Activity) context).isFinishing()) {
+                new BottomDialog.Builder(context)
                         .setTitle(R.string.bottom_dialog_warning_title)
                         .setContent(R.string.bottom_dialog_warning_desc)
                         .setPositiveText(R.string.bottom_dialog_positive_text)

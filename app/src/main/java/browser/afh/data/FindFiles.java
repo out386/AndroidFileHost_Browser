@@ -29,7 +29,6 @@ import android.widget.ListView;
 
 import com.baoyz.widget.PullRefreshLayout;
 import com.crashlytics.android.Crashlytics;
-import com.github.javiersantos.bottomdialogs.BottomDialog;
 import com.google.gson.JsonSyntaxException;
 
 import java.net.UnknownHostException;
@@ -67,7 +66,7 @@ class FindFiles {
     private boolean sortByDate;
     private ApiInterface retroApi;
     private final View rootView;
-    Snackbar noFilesSnackbar;
+    private Snackbar noFilesSnackbar;
 
     @DebugLog
     FindFiles(final View rootView) {
@@ -116,34 +115,63 @@ class FindFiles {
         
         Call<AfhDevelopersList> call = retroApi.getDevelopers("developers", did, 100);
         call.enqueue(new Callback<AfhDevelopersList>() {
-                         @Override
-                         public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
-                             List<AfhDevelopers> fid;
-                             try {
-                                 fid = response.body().data;
-                             } catch (Exception e) {
-                                 //try-catch needed to log with Fabric
-                                 Crashlytics.log("did : " + did);
-                                 Crashlytics.logException(e);
-                                 Crashlytics.log("did : " + did);
+            @Override
+            public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
+                List<AfhDevelopers> fid;
+                if (response.isSuccessful()) {
+                    try {
+                        fid = response.body().data;
+                    } catch (Exception e) {
+                        //try-catch needed to log with Fabric
+                        Crashlytics.log("did : " + did);
+                        Crashlytics.logException(e);
+                        Crashlytics.log("did : " + did);
 
-                                 if (noFilesSnackbar != null)
-                                     noFilesSnackbar.show();
-                                 return;
-                             }
-
-                             if (fid != null && fid.size() > 0) {
-                                 queryDirs(fid);
-                             } else {
-                                 pullRefreshLayout.setRefreshing(false);
-                                 if (noFilesSnackbar != null)
-                                     noFilesSnackbar.show();
-                             }
-                         }
+                        // Files might exist, we just didn't get a list of them.
+                        // Should probably retry, though.
+                        if (noFilesSnackbar != null)
+                            noFilesSnackbar.show();
+                        return;
+                    }
+                    if (fid != null && fid.size() > 0) {
+                        queryDirs(fid);
+                    } else {
+                        pullRefreshLayout.setRefreshing(false);
+                        if (noFilesSnackbar != null)
+                            noFilesSnackbar.show();
+                    }
+                }
+                else if(response.code() == 502){
+                    // Keeps happening for some devices, suspected for files, too. Re-queuing probably won't help, though.
+                    // Let's get to know if it happens to files, too.
+                    try {
+                        throw new IllegalArgumentException();
+                    } catch (Exception e) {
+                        // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
+                        Crashlytics.logException(e);
+                        Crashlytics.log("did : " + did);
+                    }
+                }
+                else {
+                    try {
+                        // Crashlytics sure loves getting stuff thrown at it.
+                        throw new IllegalArgumentException();
+                    } catch (Exception e) {
+                        // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
+                        Crashlytics.logException(e);
+                        Crashlytics.log("Error code : " + response.code());
+                        Crashlytics.log("did : " + did);
+                    }
+                }
+            }
             @Override
             public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
-                if (! (t instanceof UnknownHostException)
-                        && ! (t instanceof JsonSyntaxException)
+                if (t instanceof UnknownHostException) {
+                    // TO-DO: Put in a ListView header and say that there's no cache.
+                    pullRefreshLayout.setRefreshing(false);
+                    return;
+                }
+                if (! (t instanceof JsonSyntaxException)
                         && ! t.toString().contains("Canceled"))
                     start(did);
             }
@@ -161,70 +189,99 @@ class FindFiles {
                 public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
                     List<AfhFiles> filesList = null;
                     List<AfhDevelopers> foldersList = null;
-                    try {
-                        filesList = response.body().data.files;
-                        foldersList = response.body().data.folders;
-                    } catch (Exception e) {
-                        Crashlytics.logException(e);
-                        Crashlytics.log("flid : " + url.flid);
-                    }
+                    if (response.isSuccessful()) {
+                        try {
+                            filesList = response.body().data.files;
+                            foldersList = response.body().data.folders;
+                        } catch (Exception e) {
+                            Crashlytics.logException(e);
+                            Crashlytics.log("flid : " + url.flid);
+                        }
 
-                    if (filesList != null && filesList.size() > 0) {
-                        pullRefreshLayout.setRefreshing(false);
+                        if (filesList != null && filesList.size() > 0) {
+                            pullRefreshLayout.setRefreshing(false);
 
-                        for (AfhFiles file : filesList) {
-                            file.screenname = url.screenname;
+                            for (AfhFiles file : filesList) {
+                                file.screenname = url.screenname;
 
-                            try {
-                                file.file_size = Utils.sizeFormat(Integer.parseInt(file.file_size));
-                                file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
-                            } catch (Exception e) {
-                                Crashlytics.logException(e);
-                                Crashlytics.log("flid : " + url.flid);
-                                Crashlytics.log("name : " + file.name);
-                                Crashlytics.log("file_size : " + file.file_size);
-                                Crashlytics.log("upload_date : " + file.upload_date);
-                            }
-
-                            if (BuildConfig.PLAY_COMPATIBLE) {
-                                if (file.name.endsWith(".apk") || file.name.endsWith(".APK")) {
-                                    // Filtering out APK files as Google Play hates them
-                                    continue;
+                                try {
+                                    file.file_size = Utils.sizeFormat(Integer.parseInt(file.file_size));
+                                    file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
+                                } catch (Exception e) {
+                                    Crashlytics.logException(e);
+                                    Crashlytics.log("flid : " + url.flid);
+                                    Crashlytics.log("name : " + file.name);
+                                    Crashlytics.log("file_size : " + file.file_size);
+                                    Crashlytics.log("upload_date : " + file.upload_date);
                                 }
-                            }
 
-                            if (BuildConfig.ANGRY_DEVS) {
+                                if (BuildConfig.PLAY_COMPATIBLE) {
+                                    if (file.name.endsWith(".apk") || file.name.endsWith(".APK")) {
+                                        // Filtering out APK files as Google Play hates them
+                                        // But but but...!
+                                        continue;
+                                    }
+                                }
+
+                                if (BuildConfig.ANGRY_DEVS) {
                                 /* Attempting to filter out private files, which typically get less than 10 downloads
                                 * This will also hide all newly uploaded files, sorry.
                                 * Getting complaints of pissed off devs having their private builds passed around.
                                 */
-                                if (file.downloads < 10)
-                                    continue;
-                            }
-                            
-                            filesD.add(file);
-                        }
-                        print();
-                    }
+                                    if (file.downloads < 10)
+                                        continue;
+                                }
 
-                    if (foldersList != null && foldersList.size() > 0) {
-                        for (AfhDevelopers folder : foldersList) {
-                            folder.screenname = url.screenname;
+                                filesD.add(file);
+                            }
+                            print();
                         }
+
+                        if (foldersList != null && foldersList.size() > 0) {
+                            for (AfhDevelopers folder : foldersList) {
+                                folder.screenname = url.screenname;
+                            }
                             queryDirs(foldersList);
+                        }
+                    }
+                    else if (response.code() == 502) {
+                        // Keeps happening for some devices, suspected for files, too. Re-queuing probably won't help, though.
+                        // Let's get to know if it happens to files, too.
+                        try {
+                            throw new IllegalArgumentException();
+                        } catch (Exception e) {
+                            // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
+                            Crashlytics.logException(e);
+                            Crashlytics.log("flid : " + url.flid);
+                        }
+                        // TO-DO: queue again.
+                    }
+                    else {
+                        try {
+                            // Crashlytics sure loves getting stuff thrown at it.
+                            throw new IllegalArgumentException();
+                        } catch (Exception e) {
+                            // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
+                            Crashlytics.logException(e);
+                            Crashlytics.log("Error code : " + response.code());
+                            Crashlytics.log("flid : " + url.flid);
+                        }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AfhFolderContentResponse> call, Throwable t) {
 
+                    pullRefreshLayout.setRefreshing(false);
                     // AfhFolderContentResponse.DATA will be an Object, but if it is empty, it'll be an array
                     if (! (t instanceof UnknownHostException)
                             && ! (t instanceof IllegalStateException)
                             && ! (t instanceof JsonSyntaxException)
                             && ! t.toString().contains("Canceled")) {
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
-                        pullRefreshLayout.setRefreshing(false);
+                    }
+                    else if (t instanceof UnknownHostException) {
+                        // TO-DO: Put in a ListView header and say that there's no cache.
                     }
                 }
             });
@@ -239,7 +296,9 @@ class FindFiles {
         } else {
             Collections.sort(filesD, Comparators.byFileName);
         }
-        Log.i(TAG, "New Files: Data changed : " + filesD.size() + " items");
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "New Files: Data changed : " + filesD.size() + " items");
+        }
         adapter.notifyDataSetChanged();
     }
 
@@ -248,5 +307,10 @@ class FindFiles {
         retroApi = RetroClient.getApi(rootView.getContext(), true);
         filesD.clear();
         adapter.clear();
+    }
+
+    void dismissNoFilesSnackbar() {
+        if (noFilesSnackbar != null)
+            noFilesSnackbar.dismiss();
     }
 }

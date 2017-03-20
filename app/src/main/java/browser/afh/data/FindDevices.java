@@ -41,6 +41,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
 import com.baoyz.widget.PullRefreshLayout;
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonSyntaxException;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
@@ -261,41 +262,58 @@ public class FindDevices {
             @Override
             public void onResponse(Call<Device> call, retrofit2.Response<Device> response) {
                 currentPage++;
-                String message = response.body().message;
-                List<DeviceData> deviceDatas;
+                if (response.isSuccessful()) {
+                    String message = null;
 
-                if (response.body().data == null) {
-                    return;
-                }
-                deviceDatas = response.body().data;
-                if (deviceDatas != null) {
+                    // Should check if response is null here, but we want to get stack traces
+                    // if something else goes wrong, as the server specs are still a mystery.
+                    try {
+                        message = response.body().message;
+                    } catch (NullPointerException e) {
+                        Crashlytics.logException(e);
+                        Crashlytics.log("Page number : " + pageNumber);
+                        // No point in proceeding if response.body is null
+                        deviceRefreshLayout.setRefreshing(false);
+                        return;
+                    }
 
+                    if (response.body().data == null) {
+                        deviceRefreshLayout.setRefreshing(false);
+                        return;
+                    }
+
+                    List<DeviceData> deviceDatas = response.body().data;
                     // Unless new objects are created and added, the RecyclerView's click listeners won't work
                     for (DeviceData dd : deviceDatas)
                         devices.add(new DeviceData(dd.did, dd.manufacturer, dd.device_name, dd.image));
-                }
 
-                if (pages == null) {
-                    pages = findDevicePageNumbers(message);
-                } else {
-                    if (currentPage >= pages[3]) {
-                        Collections.sort(devices, Comparators.byManufacturer);
-                        displayDevices();
+                    if (pages == null) {
+                        pages = findDevicePageNumbers(message);
                     } else {
-                        if (!morePagesRequested) {
-                            morePagesRequested = true;
-                            for (int newPages = Constants.MIN_PAGES + 1; newPages <= pages[3]; newPages++)
-                                findDevices(newPages, retro);
+                        if (currentPage >= pages[3]) {
+                            Collections.sort(devices, Comparators.byManufacturer);
+                            displayDevices();
+                        } else {
+                            if (!morePagesRequested) {
+                                morePagesRequested = true;
+                                for (int newPages = Constants.MIN_PAGES + 1; newPages <= pages[3]; newPages++)
+                                    findDevices(newPages, retro);
+                            }
                         }
                     }
+                }
+                else if (response.code() == 502) {
+                    // Keeps happening for some devices, re-queuing probably won't help, though
+                    findDevices(pageNumber, retro);
                 }
             }
 
             @Override
             public void onFailure(Call<Device> call, Throwable t) {
-                Log.i(TAG, "onErrorResponse: " + t.toString());
-                if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException))
+                if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException)) {
+                    Log.i(TAG, "onErrorResponse: " + t.toString());
                     findDevices(pageNumber, retro);
+                }
             }
         });
     }
@@ -385,7 +403,7 @@ public class FindDevices {
                         super.onAnimationEnd(animation);
                         deviceHolder.setVisibility(View.VISIBLE);
                         findFiles.reset();
-                        findFiles.noFilesSnackbar.dismiss();
+                        findFiles.dismissNoFilesSnackbar();
                         fragmentInterface.showSearch(true);
             }
         });
