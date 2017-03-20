@@ -143,8 +143,10 @@ class FindFiles {
                         throw new IllegalArgumentException();
                     } catch (Exception e) {
                         // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
-                        Crashlytics.logException(e);
-                        Crashlytics.log("did : " + did);
+                        if (! BuildConfig.DEBUG) {
+                            Crashlytics.logException(e);
+                            Crashlytics.log("did : " + did);
+                        }
                     }
                     call.clone().enqueue(this);
                     makeMessageSnackbar(R.string.files_list_502_text);
@@ -250,8 +252,10 @@ class FindFiles {
                             throw new IllegalArgumentException();
                         } catch (Exception e) {
                             // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
-                            Crashlytics.logException(e);
-                            Crashlytics.log("flid : " + url.flid);
+                            if (! BuildConfig.DEBUG) {
+                                Crashlytics.logException(e);
+                                Crashlytics.log("flid : " + url.flid);
+                            }
                         }
                         call.clone().enqueue(this);
                     }
