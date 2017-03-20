@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AfhBrowser</string>
+    <string name="app_name">AFHBrowser</string>
     <string name="flid_key">flid</string>
     <string name="sort">Sort by date, latest first</string>
     <string name="drawer_title_home">Home</string>
