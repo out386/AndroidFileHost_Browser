@@ -151,6 +151,8 @@ class FindFiles {
                         Crashlytics.logException(e);
                         Crashlytics.log("did : " + did);
                     }
+                    call.clone().enqueue(this);
+                    //  TO-DO: Use a Snackbar, tell user.
                 }
                 else {
                     try {
@@ -173,7 +175,7 @@ class FindFiles {
                 }
                 if (! (t instanceof JsonSyntaxException)
                         && ! t.toString().contains("Canceled"))
-                    start(did);
+                    call.clone().enqueue(this);
             }
         });
     }
@@ -254,7 +256,7 @@ class FindFiles {
                             Crashlytics.logException(e);
                             Crashlytics.log("flid : " + url.flid);
                         }
-                        // TO-DO: queue again.
+                        call.clone().enqueue(this);
                     }
                     else {
                         try {

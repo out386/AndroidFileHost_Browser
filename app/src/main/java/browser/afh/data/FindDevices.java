@@ -304,7 +304,7 @@ public class FindDevices {
                 }
                 else if (response.code() == 502) {
                     // Keeps happening for some devices, re-queuing probably won't help, though
-                    findDevices(pageNumber, retro);
+                    call.clone().enqueue(this);
                 }
             }
 
@@ -312,7 +312,7 @@ public class FindDevices {
             public void onFailure(Call<Device> call, Throwable t) {
                 if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException)) {
                     Log.i(TAG, "onErrorResponse: " + t.toString());
-                    findDevices(pageNumber, retro);
+                    call.clone().enqueue(this);
                 }
             }
         });
