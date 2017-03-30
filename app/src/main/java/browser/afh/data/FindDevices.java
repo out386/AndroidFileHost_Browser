@@ -46,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItemAdapter;
-import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter;
+import com.mikepenz.fastadapter.adapters.GenericItemAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
@@ -65,8 +65,8 @@ import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
-import browser.afh.types.Device;
-import browser.afh.types.DeviceData;
+import browser.afh.types.AfhDevice;
+import browser.afh.types.DeviceItem;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,9 +76,10 @@ public class FindDevices {
     private final String TAG = Constants.TAG;
     private final View rootView;
     private final PullRefreshLayout deviceRefreshLayout;
-    private List<DeviceData> devices = new ArrayList<>();
+    private List<AfhDevice.Data> devices = new ArrayList<>();
     private int currentPage = 0;
-    private final FastItemAdapter<DeviceData> devAdapter;
+    private final GenericItemAdapter<AfhDevice.Data, DeviceItem> devAdapter;
+    private FastAdapter<DeviceItem> fastAdapter;
     private int pages[] = null;
     private final FindFiles findFiles;
     private boolean morePagesRequested = false;
@@ -118,21 +119,22 @@ public class FindDevices {
         filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
 
-        devAdapter = new FastItemAdapter<>();
+        fastAdapter = new FastAdapter<>();
+        devAdapter = new GenericItemAdapter<>(DeviceItem.class, AfhDevice.Data.class);
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
         final Prefs prefs = new Prefs(rootView.getContext());
         deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
-        devAdapter.withOnCreateViewHolderListener(new FastAdapter.OnCreateViewHolderListener() {
+        fastAdapter.withOnCreateViewHolderListener(new FastAdapter.OnCreateViewHolderListener() {
             // Required for the images toggle
             @Override
-            public DeviceData.ViewHolder onPreCreateViewHolder(ViewGroup parent, int type) {
+            public DeviceItem.ViewHolder onPreCreateViewHolder(ViewGroup parent, int type) {
                 int deviceLayoutRes;
                 if (prefs.get("device_image", true))
                     deviceLayoutRes = R.layout.device_items_image;
                 else
                     deviceLayoutRes = R.layout.device_items_no_image;
-                return devAdapter.getTypeInstance(type).getViewHolder(
+                return fastAdapter.getTypeInstance(type).getViewHolder(
                         LayoutInflater.from(rootView.getContext()).inflate(deviceLayoutRes, parent, false)
                 );
             }
@@ -143,8 +145,8 @@ public class FindDevices {
         });
 
         deviceRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        devAdapter.withSelectable(true);
-        devAdapter.withPositionBasedStateManagement(false);
+        fastAdapter.withSelectable(true);
+        fastAdapter.withPositionBasedStateManagement(false);
 
         final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();
         final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
@@ -176,12 +178,12 @@ public class FindDevices {
             }
         });
 
-        devAdapter.withFilterPredicate(new IItemAdapter.Predicate<DeviceData>() {
+        devAdapter.withFilterPredicate(new IItemAdapter.Predicate<DeviceItem>() {
             @Override
-            public boolean filter(DeviceData item, CharSequence constraint) {
+            public boolean filter(DeviceItem item, CharSequence constraint) {
 
-                return ! (item.device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
-                        || item.manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
+                return ! (item.getModel().device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
+                        || item.getModel().manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
             }
         });
 
@@ -202,31 +204,34 @@ public class FindDevices {
             }
         });
 
-        devAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceData>() {
+        fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceItem>() {
             @Override
-            public boolean onClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
-                showDevice(item.did, position);
+            public boolean onClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
+                showDevice(item.getModel().did, position);
                 return true;
             }
         });
 
-        devAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener<DeviceData>() {
+        fastAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener<DeviceItem>() {
             @Override
-            public boolean onLongClick(View v, IAdapter<DeviceData> adapter, DeviceData item, int position) {
-                new Prefs(rootView.getContext()).put("device_id", item.did);
-                new Prefs(rootView.getContext()).put("device_name", item.manufacturer + " " + item.device_name);
-                if (item.did != null && item.device_name != null)
-                    hsShortutInterface.setShortcut(item.did, item.manufacturer, item.device_name);
+            public boolean onLongClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
+                AfhDevice.Data model = item.getModel();
+                new Prefs(rootView.getContext()).put("device_id", model.did);
+                new Prefs(rootView.getContext()).put("device_name", model.manufacturer + " " + model.device_name);
+                if (model.did != null && model.device_name != null)
+                    hsShortutInterface.setShortcut(model.did, model.manufacturer, model.device_name);
+
                 Snackbar.make(rootView,
                         String.format(
                                 rootView.getContext().getResources().getString(R.string.device_list_add_qs_text),
-                                item.device_name),
+                                model.device_name),
                         Snackbar.LENGTH_LONG).show();
+
                 return true;
             }
         });
 
-        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter));
+        deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter.wrap(fastAdapter)));
     }
 
     @DebugLog
@@ -257,10 +262,10 @@ public class FindDevices {
     @DebugLog
     private void findDevices(final int pageNumber, final ApiInterface retro) {
         Log.i(TAG, "findDevices: Queueing page : " + pageNumber);
-        Call<Device> call = retro.getDevices("devices", pageNumber, 100);
-        call.enqueue(new Callback<Device>() {
+        Call<AfhDevice> call = retro.getDevices("devices", pageNumber, 100);
+        call.enqueue(new Callback<AfhDevice>() {
             @Override
-            public void onResponse(Call<Device> call, retrofit2.Response<Device> response) {
+            public void onResponse(Call<AfhDevice> call, retrofit2.Response<AfhDevice> response) {
                 currentPage++;
                 if (response.isSuccessful()) {
                     String message = null;
@@ -282,10 +287,11 @@ public class FindDevices {
                         return;
                     }
 
-                    List<DeviceData> deviceDatas = response.body().data;
+                    List<AfhDevice.Data> deviceDatas = response.body().data;
                     // Unless new objects are created and added, the RecyclerView's click listeners won't work
-                    for (DeviceData dd : deviceDatas)
-                        devices.add(new DeviceData(dd.did, dd.manufacturer, dd.device_name, dd.image));
+                    /*for (AfhDevice.Data dd : deviceDatas)
+                        devices.add(new AfhDevice.Data(dd.did, dd.manufacturer, dd.device_name, dd.image));*/
+                    devices.addAll(deviceDatas);
 
                     if (pages == null) {
                         pages = findDevicePageNumbers(message);
@@ -309,7 +315,7 @@ public class FindDevices {
             }
 
             @Override
-            public void onFailure(Call<Device> call, Throwable t) {
+            public void onFailure(Call<AfhDevice> call, Throwable t) {
                 if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException)) {
                     Log.i(TAG, "onErrorResponse: " + t.toString());
                     call.clone().enqueue(this);
@@ -320,7 +326,7 @@ public class FindDevices {
 
     @DebugLog
     private void displayDevices() {
-        devAdapter.add(devices);
+        devAdapter.addModel(devices);
         deviceRefreshLayout.setRefreshing(false);
         retro = RetroClient.getApi(rootView.getContext(), true);
         Log.i(TAG, "parseDevices: " + devices.size());

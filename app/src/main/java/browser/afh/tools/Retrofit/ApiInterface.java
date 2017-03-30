@@ -20,7 +20,7 @@ package browser.afh.tools.Retrofit;
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhDevelopersList;
 import browser.afh.types.AfhFolderContentResponse;
-import browser.afh.types.Device;
+import browser.afh.types.AfhDevice;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -37,7 +37,7 @@ public interface ApiInterface {
             @Query("limit") int limit);
 
     @GET(Constants.ENDPOINT)
-    Call<Device> getDevices(
+    Call<AfhDevice> getDevices(
             @Query("action") String action,
             @Query("page") int page,
             @Query("limit") int limit);

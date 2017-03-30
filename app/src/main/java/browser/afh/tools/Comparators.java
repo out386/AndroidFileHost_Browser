@@ -2,8 +2,8 @@ package browser.afh.tools;
 
 import java.util.Comparator;
 
+import browser.afh.types.AfhDevice;
 import browser.afh.types.AfhFiles;
-import browser.afh.types.DeviceData;
 
 /*
  * This file is part of AFH Browser.
@@ -39,9 +39,9 @@ public class Comparators {
             return 0;
         }
     };
-    public static final Comparator <DeviceData> byManufacturer = new Comparator<DeviceData>() {
+    public static final Comparator <AfhDevice.Data> byManufacturer = new Comparator<AfhDevice.Data>() {
         @Override
-        public int compare(DeviceData f1, DeviceData f2) {
+        public int compare(AfhDevice.Data f1, AfhDevice.Data f2) {
             if (f1 != null && f2 != null && f1.manufacturer != null && f2.manufacturer != null)
                 return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
             return 0;

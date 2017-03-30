@@ -24,8 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.annotations.SerializedName;
-import com.mikepenz.fastadapter.items.AbstractItem;
+import com.mikepenz.fastadapter.items.GenericAbstractItem;
 import com.mikepenz.fastadapter.utils.ViewHolderFactory;
 
 import java.io.Serializable;
@@ -33,21 +32,11 @@ import java.util.List;
 
 import browser.afh.R;
 
-public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> implements Serializable {
+public class DeviceItem extends GenericAbstractItem<AfhDevice.Data, DeviceItem, DeviceItem.ViewHolder> implements Serializable {
     private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
-    @SerializedName("did")
-    public final String did;
-    @SerializedName("manufacturer")
-    public final String manufacturer;
-    @SerializedName("device_name")
-    public final String device_name;
-    @SerializedName("image")
-    public String image;
-    public DeviceData(String did, String manufacturer, String device_name, String image) {
-        this.did = did;
-        this.manufacturer = manufacturer;
-        this.device_name = device_name;
-        this.image = image;
+
+    public DeviceItem(AfhDevice.Data device) {
+        super(device);
     }
 
     @Override
@@ -64,14 +53,14 @@ public class DeviceData extends AbstractItem<DeviceData, DeviceData.ViewHolder> 
     @Override
     public void bindView(ViewHolder viewHolder, List payloads) {
         super.bindView(viewHolder, payloads);
-        viewHolder.mName.setText(manufacturer);
-        viewHolder.dName.setText(device_name);
+        viewHolder.mName.setText(getModel().manufacturer);
+        viewHolder.dName.setText(getModel().device_name);
 
         if (viewHolder.dImage != null) {
             Context context = viewHolder.dImage.getContext();
             Glide
                     .with(context)
-                    .load(image)
+                    .load(getModel().image)
                     .placeholder(R.drawable.ic_device_placeholder)
                     .crossFade()
                     .fitCenter()
