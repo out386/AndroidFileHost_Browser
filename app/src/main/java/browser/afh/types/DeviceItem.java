@@ -32,10 +32,10 @@ import java.util.List;
 
 import browser.afh.R;
 
-public class DeviceItem extends GenericAbstractItem<AfhDevice.Data, DeviceItem, DeviceItem.ViewHolder> implements Serializable {
+public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceItem, DeviceItem.ViewHolder> implements Serializable {
     private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
 
-    public DeviceItem(AfhDevice.Data device) {
+    public DeviceItem(AfhDevices.Device device) {
         super(device);
     }
 
@@ -51,7 +51,7 @@ public class DeviceItem extends GenericAbstractItem<AfhDevice.Data, DeviceItem, 
 
 
     @Override
-    public void bindView(ViewHolder viewHolder, List payloads) {
+    public void bindView(ViewHolder viewHolder, List<Object> payloads) {
         super.bindView(viewHolder, payloads);
         viewHolder.mName.setText(getModel().manufacturer);
         viewHolder.dName.setText(getModel().device_name);

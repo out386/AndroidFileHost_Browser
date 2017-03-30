@@ -37,12 +37,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.List;
 
 import browser.afh.R;
-import browser.afh.types.AfhFiles;
+import browser.afh.types.AfhFolders.Files;
 
-public class AfhAdapter extends ArrayAdapter<AfhFiles>
+public class AfhAdapter extends ArrayAdapter<Files>
 {
     private final Context context;
-    public AfhAdapter(Context context, int resource,List<AfhFiles> items) {
+    public AfhAdapter(Context context, int resource, List<Files> items) {
         super(context,resource,items);
         this.context = context;
     }
@@ -59,7 +59,7 @@ public class AfhAdapter extends ArrayAdapter<AfhFiles>
         View v = convertView;
         if(v == null)
             v= LayoutInflater.from(getContext()).inflate(R.layout.afh_items, null);
-        final AfhFiles p = getItem(position);
+        final Files p = getItem(position);
         if(p != null) {
             TextView name = (TextView) v.findViewById(R.id.rname);
             name.setText(p.name);

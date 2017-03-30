@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class AfhDevice {
+public class AfhDevices {
     @SerializedName("MESSAGE")
     public final String message;
     @SerializedName("DATA")
-    public final List<Data> data;
-    public AfhDevice(String message, List<Data> data) {
+    public final List<Device> data;
+    public AfhDevices(String message, List<Device> data) {
         this.message = message;
         this.data = data;
     }
 
-    public class Data {
+    public class Device {
         @SerializedName("did")
         public String did;
         @SerializedName("manufacturer")

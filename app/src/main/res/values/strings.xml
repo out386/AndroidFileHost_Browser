@@ -33,7 +33,7 @@
     <string name="ok">OK</string>
     <string name="download">Download</string>
     <string name="err_xda_labs_not_installed">XDA Labs not installed, redirecting to download page.</string>
-    <string name="search_hint">Search devices...</string>
+    <string name="search_hint">Search devices…</string>
     <string name="about_activity_title">About AfhBrowser</string>
     <string name="about_activity_version_title">Version</string>
     <string name="about_activity_licenses_title">Licenses</string>

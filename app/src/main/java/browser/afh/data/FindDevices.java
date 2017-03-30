@@ -65,7 +65,7 @@ import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
-import browser.afh.types.AfhDevice;
+import browser.afh.types.AfhDevices;
 import browser.afh.types.DeviceItem;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
@@ -76,9 +76,9 @@ public class FindDevices {
     private final String TAG = Constants.TAG;
     private final View rootView;
     private final PullRefreshLayout deviceRefreshLayout;
-    private List<AfhDevice.Data> devices = new ArrayList<>();
+    private List<AfhDevices.Device> devices = new ArrayList<>();
     private int currentPage = 0;
-    private final GenericItemAdapter<AfhDevice.Data, DeviceItem> devAdapter;
+    private final GenericItemAdapter<AfhDevices.Device, DeviceItem> devAdapter;
     private FastAdapter<DeviceItem> fastAdapter;
     private int pages[] = null;
     private final FindFiles findFiles;
@@ -120,7 +120,7 @@ public class FindDevices {
         deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
 
         fastAdapter = new FastAdapter<>();
-        devAdapter = new GenericItemAdapter<>(DeviceItem.class, AfhDevice.Data.class);
+        devAdapter = new GenericItemAdapter<>(DeviceItem.class, AfhDevices.Device.class);
         final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
         final Prefs prefs = new Prefs(rootView.getContext());
         deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
@@ -215,7 +215,7 @@ public class FindDevices {
         fastAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener<DeviceItem>() {
             @Override
             public boolean onLongClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
-                AfhDevice.Data model = item.getModel();
+                AfhDevices.Device model = item.getModel();
                 new Prefs(rootView.getContext()).put("device_id", model.did);
                 new Prefs(rootView.getContext()).put("device_name", model.manufacturer + " " + model.device_name);
                 if (model.did != null && model.device_name != null)
@@ -262,10 +262,10 @@ public class FindDevices {
     @DebugLog
     private void findDevices(final int pageNumber, final ApiInterface retro) {
         Log.i(TAG, "findDevices: Queueing page : " + pageNumber);
-        Call<AfhDevice> call = retro.getDevices("devices", pageNumber, 100);
-        call.enqueue(new Callback<AfhDevice>() {
+        Call<AfhDevices> call = retro.getDevices("devices", pageNumber, 100);
+        call.enqueue(new Callback<AfhDevices>() {
             @Override
-            public void onResponse(Call<AfhDevice> call, retrofit2.Response<AfhDevice> response) {
+            public void onResponse(Call<AfhDevices> call, retrofit2.Response<AfhDevices> response) {
                 currentPage++;
                 if (response.isSuccessful()) {
                     String message = null;
@@ -287,10 +287,7 @@ public class FindDevices {
                         return;
                     }
 
-                    List<AfhDevice.Data> deviceDatas = response.body().data;
-                    // Unless new objects are created and added, the RecyclerView's click listeners won't work
-                    /*for (AfhDevice.Data dd : deviceDatas)
-                        devices.add(new AfhDevice.Data(dd.did, dd.manufacturer, dd.device_name, dd.image));*/
+                    List<AfhDevices.Device> deviceDatas = response.body().data;
                     devices.addAll(deviceDatas);
 
                     if (pages == null) {
@@ -315,7 +312,7 @@ public class FindDevices {
             }
 
             @Override
-            public void onFailure(Call<AfhDevice> call, Throwable t) {
+            public void onFailure(Call<AfhDevices> call, Throwable t) {
                 if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException)) {
                     Log.i(TAG, "onErrorResponse: " + t.toString());
                     call.clone().enqueue(this);

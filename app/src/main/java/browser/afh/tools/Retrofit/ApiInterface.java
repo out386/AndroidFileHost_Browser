@@ -18,9 +18,9 @@ package browser.afh.tools.Retrofit;
  */
 
 import browser.afh.tools.Constants;
-import browser.afh.types.AfhDevelopersList;
-import browser.afh.types.AfhFolderContentResponse;
-import browser.afh.types.AfhDevice;
+import browser.afh.types.AfhDevices;
+import browser.afh.types.AfhDevelopers;
+import browser.afh.types.AfhFolders;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
@@ -31,19 +31,19 @@ public interface ApiInterface {
             "User-Agent: AFHBrowser"
     })
     @GET(Constants.ENDPOINT)
-    Call<AfhDevelopersList> getDevelopers(
+    Call<AfhDevelopers> getDevelopers(
             @Query("action") String action,
             @Query("did") String page,
             @Query("limit") int limit);
 
     @GET(Constants.ENDPOINT)
-    Call<AfhDevice> getDevices(
+    Call<AfhDevices> getDevices(
             @Query("action") String action,
             @Query("page") int page,
             @Query("limit") int limit);
 
     @GET(Constants.ENDPOINT)
-    Call<AfhFolderContentResponse> getFolderContents(
+    Call<AfhFolders> getFolderContents(
             @Query("action") String action,
             @Query("flid") String flid,
             @Query("limit") int limit);

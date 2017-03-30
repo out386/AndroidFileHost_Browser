@@ -49,9 +49,8 @@ import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevelopers;
-import browser.afh.types.AfhDevelopersList;
-import browser.afh.types.AfhFiles;
-import browser.afh.types.AfhFolderContentResponse;
+import browser.afh.types.AfhFolders.Files;
+import browser.afh.types.AfhFolders;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -60,7 +59,7 @@ class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
-    private List<AfhFiles> filesD = new ArrayList<>();
+    private List<Files> filesD = new ArrayList<>();
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
@@ -108,11 +107,11 @@ class FindFiles {
     void start(final String did) {
         savedID = did;
         
-        Call<AfhDevelopersList> call = retroApi.getDevelopers("developers", did, 100);
-        call.enqueue(new Callback<AfhDevelopersList>() {
+        Call<AfhDevelopers> call = retroApi.getDevelopers("developers", did, 100);
+        call.enqueue(new Callback<AfhDevelopers>() {
             @Override
-            public void onResponse(Call<AfhDevelopersList> call, retrofit2.Response<AfhDevelopersList> response) {
-                List<AfhDevelopers> fid;
+            public void onResponse(Call<AfhDevelopers> call, retrofit2.Response<AfhDevelopers> response) {
+                List<AfhDevelopers.Developer> fid;
                 if (response.isSuccessful()) {
                     try {
                         fid = response.body().data;
@@ -165,7 +164,7 @@ class FindFiles {
                 }
             }
             @Override
-            public void onFailure(Call<AfhDevelopersList> call, Throwable t) {
+            public void onFailure(Call<AfhDevelopers> call, Throwable t) {
                 if (t instanceof UnknownHostException) {
                     makeMessageSnackbar(R.string.files_list_no_cache_text);
                     showMessageSnackbar();
@@ -180,16 +179,16 @@ class FindFiles {
     }
 
     @DebugLog
-    private void queryDirs(final List<AfhDevelopers> did) {
+    private void queryDirs(final List<AfhDevelopers.Developer> did) {
 
-        for (final AfhDevelopers url : did) {
+        for (final AfhDevelopers.Developer url : did) {
 
-            Call<AfhFolderContentResponse> call = retroApi.getFolderContents("folder", url.flid, 100);
-            call.enqueue(new Callback<AfhFolderContentResponse>() {
+            Call<AfhFolders> call = retroApi.getFolderContents("folder", url.flid, 100);
+            call.enqueue(new Callback<AfhFolders>() {
                 @Override
-                public void onResponse(Call<AfhFolderContentResponse> call, retrofit2.Response<AfhFolderContentResponse> response) {
-                    List<AfhFiles> filesList = null;
-                    List<AfhDevelopers> foldersList = null;
+                public void onResponse(Call<AfhFolders> call, retrofit2.Response<AfhFolders> response) {
+                    List<Files> filesList = null;
+                    List<AfhDevelopers.Developer> foldersList = null;
                     if (response.isSuccessful()) {
                         try {
                             filesList = response.body().data.files;
@@ -202,7 +201,7 @@ class FindFiles {
                         if (filesList != null && filesList.size() > 0) {
                             pullRefreshLayout.setRefreshing(false);
 
-                            for (AfhFiles file : filesList) {
+                            for (Files file : filesList) {
                                 file.screenname = url.screenname;
 
                                 try {
@@ -239,7 +238,7 @@ class FindFiles {
                         }
 
                         if (foldersList != null && foldersList.size() > 0) {
-                            for (AfhDevelopers folder : foldersList) {
+                            for (AfhDevelopers.Developer folder : foldersList) {
                                 folder.screenname = url.screenname;
                             }
                             queryDirs(foldersList);
@@ -273,10 +272,10 @@ class FindFiles {
                 }
 
                 @Override
-                public void onFailure(Call<AfhFolderContentResponse> call, Throwable t) {
+                public void onFailure(Call<AfhFolders> call, Throwable t) {
 
                     pullRefreshLayout.setRefreshing(false);
-                    // AfhFolderContentResponse.DATA will be an Object, but if it is empty, it'll be an array
+                    // AfhFolders.DATA will be an Object, but if it is empty, it'll be an array
                     if (! (t instanceof UnknownHostException)
                             && ! (t instanceof IllegalStateException)
                             && ! (t instanceof JsonSyntaxException)
@@ -301,7 +300,7 @@ class FindFiles {
             Collections.sort(filesD, Comparators.byFileName);
         }
         if (BuildConfig.DEBUG) {
-            Log.i(TAG, "New Files: Data changed : " + filesD.size() + " items");
+            Log.i(TAG, "New Files: Device changed : " + filesD.size() + " items");
         }
         adapter.notifyDataSetChanged();
     }

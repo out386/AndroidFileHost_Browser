@@ -15,7 +15,7 @@ import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator;
 
 public class AboutActivity extends MaterialAboutActivity {
-    Context context;
+    private Context context;
 
     @Override
     protected MaterialAboutList getMaterialAboutList() {
