@@ -8,13 +8,13 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginRight="8dp"
         android:layout_marginLeft="8dp"
         android:foreground="?android:attr/selectableItemBackground"
         android:background="@color/white"
-        card_view:cardElevation="2dp">
+        card_view:cardElevation="1dp">
         <TextView
             android:id="@+id/rname"
             android:layout_width="match_parent"
@@ -24,6 +24,6 @@
             android:paddingTop="15dp"
             android:paddingBottom="20dp"
             android:textSize="16sp"
-            android:textColor="@color/text_color"/>
+            android:textColor="@color/dark_text_color"/>
     </android.support.v7.widget.CardView>
 </LinearLayout>
