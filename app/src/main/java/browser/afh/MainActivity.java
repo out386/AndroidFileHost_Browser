@@ -282,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     public void expand() {
         appBarLayout.setExpanded(true, true);
     }
+
     @Override
     public void collapse() {
         appBarLayout.setExpanded(false, true);
