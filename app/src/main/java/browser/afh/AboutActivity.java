@@ -1,6 +1,22 @@
+/*
+ * This file is part of AFH Browser.
+ *
+ * AFH Browser is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AFH Browser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package browser.afh;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -10,16 +26,14 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
 import com.mikepenz.aboutlibraries.Libs;
-import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.mikepenz.aboutlibraries.LibsBuilder;
+import com.mikepenz.aboutlibraries.LibsConfiguration;
 import com.mikepenz.itemanimators.SlideDownAlphaAnimator;
 
 public class AboutActivity extends MaterialAboutActivity {
-    private Context context;
 
     @Override
     protected MaterialAboutList getMaterialAboutList() {
-        context = getApplicationContext();
         MaterialAboutCard.Builder appCardBuilder = new MaterialAboutCard.Builder();
         appCardBuilder.title(getString(R.string.app_name));
         appCardBuilder.addItem(new MaterialAboutTitleItem.Builder()
@@ -63,7 +77,7 @@ public class AboutActivity extends MaterialAboutActivity {
                     @Override
                     public void onClick() {
                         Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://github.com/out386/AndroidFileHost_Browser"));
+                        i.setData(Uri.parse("https://github.com/out386/"));
                         startActivity(i);
                     }
                 })
@@ -85,7 +99,7 @@ public class AboutActivity extends MaterialAboutActivity {
                     @Override
                     public void onClick() {
                         Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://github.com/MSF-Jarvis/AndroidFileHost_Browser"));
+                        i.setData(Uri.parse("https://github.com/MSF-Jarvis/"));
                         startActivity(i);
                     }
                 })

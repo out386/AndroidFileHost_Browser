@@ -1,10 +1,3 @@
-package browser.afh.tools;
-
-import java.util.Comparator;
-
-import browser.afh.types.AfhDevices;
-import browser.afh.types.AfhFolders.Files;
-
 /*
  * This file is part of AFH Browser.
  *
@@ -21,6 +14,13 @@ import browser.afh.types.AfhFolders.Files;
  * You should have received a copy of the GNU General Public License
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package browser.afh.tools;
+
+import java.util.Comparator;
+
+import browser.afh.types.AfhDevices;
+import browser.afh.types.AfhFolders.Files;
 
 public class Comparators {
     public static final Comparator <Files> byUploadDate = new Comparator<Files>() {

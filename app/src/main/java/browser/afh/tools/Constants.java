@@ -1,8 +1,3 @@
-package browser.afh.tools;
-
-/*
- * Copyright (C) 2016 Harsh Shandilya (MSF-Jarvis)
- */
 /*
  * This file is part of AFH Browser.
  *
@@ -19,6 +14,8 @@ package browser.afh.tools;
  * You should have received a copy of the GNU General Public License
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package browser.afh.tools;
 
 public class Constants {
     public static final String BASE_URL = "https://www.androidfilehost.com/";

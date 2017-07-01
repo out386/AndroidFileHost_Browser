@@ -1,6 +1,6 @@
-package browser.afh.tools.Retrofit;
-
 /*
+ * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
+ *
  * This file is part of AFH Browser.
  *
  * AFH Browser is free software: you can redistribute it and/or modify
@@ -16,6 +16,8 @@ package browser.afh.tools.Retrofit;
  * You should have received a copy of the GNU General Public License
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package browser.afh.tools.Retrofit;
 
 import android.content.Context;
 import android.util.Log;

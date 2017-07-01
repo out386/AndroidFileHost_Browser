@@ -1,5 +1,3 @@
-package browser.afh.tools.Retrofit;
-
 /*
  * This file is part of AFH Browser.
  *
@@ -16,6 +14,8 @@ package browser.afh.tools.Retrofit;
  * You should have received a copy of the GNU General Public License
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package browser.afh.tools.Retrofit;
 
 import browser.afh.tools.Constants;
 import browser.afh.types.AfhDevices;

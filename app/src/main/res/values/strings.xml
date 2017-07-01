@@ -2,7 +2,6 @@
 <resources>
 
     <string name="app_name">AFHBrowser</string>
-    <string name="flid_key">flid</string>
     <string name="sort">Sort by date, latest first</string>
     <string name="drawer_title_home">Home</string>
     <string name="drawer_title_settings">Settings</string>
@@ -13,21 +12,16 @@
     <string name="bottom_dialog_warning_title">Offline mode</string>
     <string name="bottom_dialog_warning_desc">The app needs internet connectivity to function. You\'ll now see cached data. Go online to get updated data.</string>
     <string name="bottom_dialog_positive_text">OK</string>
-    <string name="device_list_header_text">Select the device you want files for from the list.</string>
     <string name="files_list_no_files_text">There are no files for this device</string>
     <string name="files_list_no_cache_text">There is no cache for this device. Connect to the internet to get files.</string>
     <string name="files_list_502_text">Server error. Trying again, but it might be impossible to show files.</string>
     <string name="device_list_add_qs_text">%s added to Quick Settings and home screen</string>
     <string name="files_list_header_text">Displaying old, cached files. Pull down if you want to refresh files, and do something else for a few minutes.</string>
-    <string name="file_loading_wait">Working. This could take ages.</string>
-    <string name="file_dialog_title">File</string>
     <string name="file_dialog_content" formatted="false">Size : %s\n\nUpload Date : %s\n\nDeveloper : %s\n\nDownloads : %d</string>
     <string name="file_dialog_positive_button_label">Open</string>
     <string name="file_dialog_neutral_button_label">OK</string>
     <string name="unofficial_disclaimer_text">Neither this app nor its developers are affiliated to AndroidFileHost. All bug reports for this app should be submitted to us, and not to them.</string>
     <string name="unofficial_disclaimer_title">Disclaimer</string>
-    <string name="copyright_text">Copyright 2016, Ritayan Chakraborty and Harsh Shandilya</string>
-    <string name="search">Search</string>
     <string name="disclaimer_google_play_title">Important information</string>
     <string name="disclaimer_google_play_desc">Due to Google Play developer policies all APK files will be filtered out. Please download the XDA Labs version if you need to download APKs from AFH</string>
     <string name="ok">OK</string>

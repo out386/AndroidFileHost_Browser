@@ -1,9 +1,6 @@
-package browser.afh;
-
 /*
- * Copyright (C) 2016 Harsh Shandilya (MSF-Jarvis) and Ritayan Chakraborty (out386)
- */
-/*
+ * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
+ *
  * This file is part of AFH Browser.
  *
  * AFH Browser is free software: you can redistribute it and/or modify
@@ -20,10 +17,11 @@ package browser.afh;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+package browser.afh;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;

@@ -1,6 +1,6 @@
-package browser.afh.fragments;
-
 /*
+ * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
+ *
  * This file is part of AFH Browser.
  *
  * AFH Browser is free software: you can redistribute it and/or modify
@@ -17,19 +17,17 @@ package browser.afh.fragments;
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
+package browser.afh.fragments;
+
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import browser.afh.data.FindDevices;
-import browser.afh.data.FindDevices.AppbarScroll;
-import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.R;
-import browser.afh.tools.Constants;
+import browser.afh.data.FindDevices;
 
 public class MainFragment extends Fragment {
     View rootView;

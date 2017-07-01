@@ -1,5 +1,3 @@
-package browser.afh.types;
-
 /*
  * This file is part of AFH Browser.
  *
@@ -16,6 +14,8 @@ package browser.afh.types;
  * You should have received a copy of the GNU General Public License
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package browser.afh.types;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

@@ -1,9 +1,6 @@
-package browser.afh.adapters;
-
 /*
  * Copyright (C) 2016 Ritayan Chakraborty (out386) and Harsh Shandilya (MSF-Jarvis)
- */
-/*
+ *
  * This file is part of AFH Browser.
  *
  * AFH Browser is free software: you can redistribute it and/or modify
@@ -19,6 +16,8 @@ package browser.afh.adapters;
  * You should have received a copy of the GNU General Public License
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
+
+package browser.afh.adapters;
 
 import android.content.Context;
 import android.content.ActivityNotFoundException;
