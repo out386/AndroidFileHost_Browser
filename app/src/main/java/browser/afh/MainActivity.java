@@ -76,7 +76,8 @@ import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.data.FindDevices.HSShortutInterface;
 import browser.afh.fragments.FilesFragment;
-import browser.afh.fragments.MainFragment;
+import browser.afh.fragments.DevicesFragment;
+import browser.afh.fragments.SettingsFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
@@ -174,13 +175,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                             return false;
 
                         if (index == 0) {
-                            changeFragment(new MainFragment());
+                            changeFragment(new DevicesFragment());
                             drawerPositions.add(index);
                         } else if (index == 1) {
                             // Not adding drawerPositions here because index == 1 is another activity
                             startActivity(new Intent(getApplicationContext(), AboutActivity.class));
                         } else if (index == 2) {
-                            changeFragment(new MyPreferenceFragment());
+                            changeFragment(new SettingsFragment());
                             drawerPositions.add(index);
                         }
                         return false;
@@ -257,13 +258,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (deviceID != null) {
             Bundle bundle = new Bundle();
             bundle.putString(Constants.EXTRA_DEVICE_ID, deviceID);
-            Fragment mainFragment = new MainFragment();
+            Fragment mainFragment = new DevicesFragment();
             mainFragment.setArguments(bundle);
             changeFragment(mainFragment);
             return;
         }
 
-        changeFragment(new MainFragment());
+        changeFragment(new DevicesFragment());
 
         searchView.setHint(getResources().getString(R.string.search_hint));
         searchView.setFocusable(false);
@@ -305,7 +306,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (snackbar != null)
             snackbar.dismiss();
 
-        if (fragment instanceof MainFragment) {
+        if (fragment instanceof DevicesFragment) {
             setText(null);
             showSearch(true, true);
             appBarLayout.setExpanded(true, true);
@@ -365,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (snackbar != null)
             snackbar.dismiss();
         int size = drawerPositions.size();
-        
+
         if (size > 1) {
             long pos = drawerPositions.get(size - 2);
             drawerPositions.remove(size - 1);
@@ -482,14 +483,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         })
                         .show();
             }
-        }
-    }
-
-    public static class MyPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(final Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
         }
     }
 

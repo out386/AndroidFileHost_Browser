@@ -31,7 +31,7 @@ import browser.afh.R;
 import browser.afh.data.FindDevices;
 import browser.afh.tools.Constants;
 
-public class MainFragment extends Fragment {
+public class DevicesFragment extends Fragment {
     View rootView;
     Activity activity;
     private FindDevices findDevices;
