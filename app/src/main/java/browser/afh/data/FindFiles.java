@@ -223,7 +223,7 @@ class FindFiles {
                                     }
                                 }
 
-                                if (BuildConfig.ANGRY_DEVS) {
+                                if (BuildConfig.PLAY_COMPATIBLE) {
                                 /* Attempting to filter out private files, which typically get less than 10 downloads
                                 * This will also hide all newly uploaded files, sorry.
                                 * Getting complaints of pissed off devs having their private builds passed around.
