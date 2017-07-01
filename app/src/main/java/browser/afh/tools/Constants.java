@@ -32,13 +32,17 @@ public class Constants {
 
     public static final String PREF_ASSERT_UNOFFICIAL_CLIENT = "its_unofficial";
 
-    public static final String INTENT_SEARCH = "rom.stalker.INTENT_SEARCH";
-    public static final String INTENT_SEARCH_QUERY = "rom.stalker.INTENT_SEARCH_QUERY";
-    public static final String INTENT_BACK = "rom.stalker.INTENT_BACK";
+    public static final String INTENT_SEARCH = "search";
+    public static final String INTENT_BACK = "back";
+    public static final String INTENT_SNACKBAR = "snackbar";
 
     // This is to let users know that the Play Store version is tied down
     public static final String XDA_LABS_PACKAGE_NAME = "com.xda.labs";
     public static final String XDA_LABS_APP_PAGE_LINK = "https://labs.xda-developers.com/store/apps/rom.stalker";
     public static final String XDA_LABS_DOWNLOAD_PAGE = "https://www.xda-developers.com/xda-labs/";
+
+    public static final String EXTRA_SEARCH_QUERY = "searchQuery";
+    public static final String EXTRA_DEVICE_ID = "deviceID";
+    public static final String EXTRA_SNACKBAR_MESSAGE = "snackbarMessage";
 
 }

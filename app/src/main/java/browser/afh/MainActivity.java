@@ -24,10 +24,12 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
@@ -38,10 +40,12 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,11 +68,14 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.data.FindDevices.HSShortutInterface;
+import browser.afh.fragments.FilesFragment;
 import browser.afh.fragments.MainFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
@@ -84,6 +91,22 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Intent searchIntent;
     private Prefs prefs;
     private Drawer drawer;
+    private Snackbar snackbar;
+    private FrameLayout frame;
+    private List<Long> drawerPositions = new ArrayList<>();
+
+    private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (frame == null)
+                return;
+            int message = intent.getIntExtra(Constants.EXTRA_SNACKBAR_MESSAGE, -1);
+            if (message > -1) {
+                snackbar = Snackbar.make(frame, getResources().getString(message), Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         setContentView(R.layout.main_activity);
 
         prefs = new Prefs(getApplicationContext());
-        String deviceID = getIntent().getStringExtra("device_id");
-        if (!BuildConfig.DEBUG){
+        String deviceID = getIntent().getStringExtra(Constants.EXTRA_DEVICE_ID);
+        if (!BuildConfig.DEBUG) {
             // This will crash the app if a debug build tries to use Crashlytics.log
             Fabric.with(this, new Crashlytics());
         }
@@ -103,6 +126,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
+
+        frame = (FrameLayout) findViewById(R.id.mainFrame);
+        IntentFilter snackbarMakeFilter = new IntentFilter(Constants.INTENT_SNACKBAR);
+        LocalBroadcastManager.getInstance(this).registerReceiver(snackbarMakeReceiver, snackbarMakeFilter);
 
         updatesCheck();
         AccountHeader header = new AccountHeaderBuilder()
@@ -141,12 +168,20 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem.getIdentifier() == 0) {
+                        long index = drawerItem.getIdentifier();
+
+                        if (drawerPositions.size() > 0 && index == drawerPositions.get(drawerPositions.size() - 1))
+                            return false;
+
+                        if (index == 0) {
                             changeFragment(new MainFragment());
-                        } else if (drawerItem.getIdentifier() == 1) {
+                            drawerPositions.add(index);
+                        } else if (index == 1) {
+                            // Not adding drawerPositions here because index == 1 is another activity
                             startActivity(new Intent(getApplicationContext(), AboutActivity.class));
-                        } else if (drawerItem.getIdentifier() == 2) {
+                        } else if (index == 2) {
                             changeFragment(new MyPreferenceFragment());
+                            drawerPositions.add(index);
                         }
                         return false;
                     }
@@ -185,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
-                        if (isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())){
+                        if (isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())) {
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_APP_PAGE_LINK)));
                         } else {
                             Toast.makeText(getApplicationContext(), R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
@@ -195,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     }
                 });
         boolean its_unofficial = prefs.get(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
-        if (!its_unofficial){
+        if (!its_unofficial) {
             new MaterialDialog.Builder(this)
                     .title(R.string.unofficial_disclaimer_title)
                     .content(R.string.unofficial_disclaimer_text)
@@ -219,9 +254,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         new CheckConnectivity(this).execute();
 
-        if (deviceID != null){
+        if (deviceID != null) {
             Bundle bundle = new Bundle();
-            bundle.putString("device_id", deviceID);
+            bundle.putString(Constants.EXTRA_DEVICE_ID, deviceID);
             Fragment mainFragment = new MainFragment();
             mainFragment.setArguments(bundle);
             changeFragment(mainFragment);
@@ -235,13 +270,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (!BuildConfig.DEBUG){
+                if (!BuildConfig.DEBUG) {
                     Answers.getInstance().logSearch(new SearchEvent()
                             .putQuery(query));
                 }
                 searchView.close(true);
                 searchIntent = new Intent(Constants.INTENT_SEARCH);
-                searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, query);
+                searchIntent.putExtra(Constants.EXTRA_SEARCH_QUERY, query);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
                 return true;
             }
@@ -249,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             @Override
             public boolean onQueryTextChange(String newText) {
                 searchIntent = new Intent(Constants.INTENT_SEARCH);
-                searchIntent.putExtra(Constants.INTENT_SEARCH_QUERY, newText);
+                searchIntent.putExtra(Constants.EXTRA_SEARCH_QUERY, newText);
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(searchIntent);
                 return true;
             }
@@ -264,16 +299,37 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
 
     public void changeFragment(Fragment fragment) {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = getFragmentManager()
+                .beginTransaction();
+
+        if (snackbar != null)
+            snackbar.dismiss();
+
         if (fragment instanceof MainFragment) {
-            expand();
-            showSearch(true);
+            setText(null);
+            showSearch(true, true);
+            appBarLayout.setExpanded(true, true);
+
+            for (int i = 0; i < getFragmentManager().getBackStackEntryCount(); i++)
+                getFragmentManager().popBackStack();
+
+            drawerPositions.clear();
+            drawerPositions.add(0L);
+        } else {
+            if (fragment instanceof FilesFragment) {
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction
+                        .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
+                                R.animator.fade_in_enter, R.animator.fade_out_exit);
+
+            } else {
+                appBarLayout.setExpanded(false, true);
+                fragmentTransaction.addToBackStack(null);
+                setText(null);
+            }
+            showSearch(false, false);
         }
-        else {
-            collapse();
-            showSearch(false);
-        }
-        fragmentManager.beginTransaction()
+        fragmentTransaction
                 .replace(R.id.mainFrame, fragment)
                 .commit();
     }
@@ -305,21 +361,27 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
-    public void onSuperBack() {
+    public void onBackPressed() {
+        if (snackbar != null)
+            snackbar.dismiss();
+        int size = drawerPositions.size();
+        
+        if (size > 1) {
+            long pos = drawerPositions.get(size - 2);
+            drawerPositions.remove(size - 1);
+            drawer.setSelection(pos);
+        }
         super.onBackPressed();
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent backIntent = new Intent(Constants.INTENT_BACK);
-        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(backIntent);
-    }
-
-    @Override
     @DebugLog
-    public void showSearch(boolean show) {
+    public void showSearch(boolean show, boolean isAnim) {
         final SearchView search = (SearchView) findViewById(R.id.searchView);
-        if(show) {
+        if (!isAnim) {
+            search.setVisibility(show ? View.VISIBLE : View.GONE);
+            return;
+        }
+        if (show) {
             search.setTranslationY(-search.getHeight());
             search.setAlpha(0);
             search.setVisibility(View.VISIBLE);
@@ -336,8 +398,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         }
                     });
 
-        }
-        else {
+        } else {
             search.setTranslationY(0);
             search.setAlpha(1);
             search.setVisibility(View.VISIBLE);
@@ -367,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
-        intent.putExtra("device_id", did);
+        intent.putExtra(Constants.EXTRA_DEVICE_ID, did);
 
         ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "shortcut1")
                 .setIntent(intent)
@@ -380,17 +441,17 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @DebugLog
-    public void updatesCheck(){
+    public void updatesCheck() {
         new AppUpdater(this)
                 .setUpdateFrom(UpdateFrom.GITHUB)
-                .setGitHubUserAndRepo("out386","AndroidFileHost_Browser")
-                .showEvery(5)
+                .setGitHubUserAndRepo("out386", "AndroidFileHost_Browser")
+                .showEvery(2)
                 .showAppUpdated(false)
                 .setDisplay(Display.DIALOG)
                 .start();
     }
 
-    private class CheckConnectivity extends AsyncTask <Void, Void, Void> {
+    private class CheckConnectivity extends AsyncTask<Void, Void, Void> {
         boolean isConnected;
         Context context;
 
@@ -424,13 +485,32 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         }
     }
 
-    public static class MyPreferenceFragment extends PreferenceFragment
-    {
+    public static class MyPreferenceFragment extends PreferenceFragment {
         @Override
-        public void onCreate(final Bundle savedInstanceState)
-        {
+        public void onCreate(final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.preferences);
         }
+    }
+
+    @Override
+    public void showDevice(String did, int position) {
+        if (did == null) {
+            Snackbar.make(frame, "Invalid device selected", Snackbar.LENGTH_INDEFINITE);
+            return;
+        }
+
+        FilesFragment filesFragment = new FilesFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.EXTRA_DEVICE_ID, did);
+        filesFragment.setArguments(bundle);
+
+        changeFragment(filesFragment);
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(snackbarMakeReceiver);
+        super.onDestroy();
     }
 }

@@ -80,7 +80,6 @@ public class FindDevices {
     private final GenericItemAdapter<AfhDevices.Device, DeviceItem> devAdapter;
     private FastAdapter<DeviceItem> fastAdapter;
     private int pages[] = null;
-    private final FindFiles findFiles;
     private boolean morePagesRequested = false;
     private FragmentInterface fragmentInterface;
     private AppbarScroll appbarScroll;
@@ -92,16 +91,7 @@ public class FindDevices {
     private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            devAdapter.filter(intent.getStringExtra(Constants.INTENT_SEARCH_QUERY));
-        }
-    };
-    private final BroadcastReceiver backReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (filesHolder.getVisibility() == View.VISIBLE)
-                animateShowDevices();
-            else
-                fragmentInterface.onSuperBack();
+            devAdapter.filter(intent.getStringExtra(Constants.EXTRA_SEARCH_QUERY));
         }
     };
 
@@ -112,7 +102,9 @@ public class FindDevices {
             this.fragmentInterface = (FragmentInterface) activity;
             this.appbarScroll = (AppbarScroll) activity;
             this.hsShortutInterface = (HSShortutInterface) activity;
-        } catch (ClassCastException ignored) {}
+        } catch (ClassCastException e) {
+            Log.e(TAG, "FindDevices: ", e);
+        }
 
         deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
         filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
@@ -188,8 +180,6 @@ public class FindDevices {
 
         retro = RetroClient.getApi(rootView.getContext(), true);
 
-        findFiles = new FindFiles(rootView);
-
         deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -206,7 +196,7 @@ public class FindDevices {
         fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceItem>() {
             @Override
             public boolean onClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
-                showDevice(item.getModel().did, position);
+                fragmentInterface.showDevice(item.getModel().did, position);
                 return true;
             }
         });
@@ -215,7 +205,7 @@ public class FindDevices {
             @Override
             public boolean onLongClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
                 AfhDevices.Device model = item.getModel();
-                new Prefs(rootView.getContext()).put("device_id", model.did);
+                new Prefs(rootView.getContext()).put(Constants.EXTRA_DEVICE_ID, model.did);
                 new Prefs(rootView.getContext()).put("device_name", model.manufacturer + " " + model.device_name);
                 if (model.did != null && model.device_name != null)
                     hsShortutInterface.setShortcut(model.did, model.manufacturer, model.device_name);
@@ -238,15 +228,11 @@ public class FindDevices {
         IntentFilter search = new IntentFilter();
         search.addAction(Constants.INTENT_SEARCH);
         LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(searchReceiver, search);
-        IntentFilter back = new IntentFilter();
-        back.addAction(Constants.INTENT_BACK);
-        LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(backReceiver, back);
     }
 
     @DebugLog
     public void unregisterReceiver() {
         LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(searchReceiver);
-        LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(backReceiver);
     }
 
     @DebugLog
@@ -340,88 +326,6 @@ public class FindDevices {
         return pages;
     }
 
-    @DebugLog
-    private void animateShowFiles(final String did, final int position) {
-        filesHolder.setTranslationX(filesHolder.getWidth());
-        filesHolder.setAlpha(0.0f);
-        filesHolder.setVisibility(View.VISIBLE);
-        fragmentInterface.showSearch(false);
-        InputMethodManager inputMethodManager = (InputMethodManager) rootView.getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(rootView.getWindowToken(), 0);
-
-        deviceHolder.animate()
-                .setDuration(Constants.ANIM_DURATION)
-                .translationX(-deviceHolder.getWidth())
-                .alpha(0.0f)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        deviceHolder.setVisibility(View.GONE);
-                        appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
-                    }
-                });
-        filesHolder.animate()
-                .translationX(0)
-                .setDuration(Constants.ANIM_DURATION)
-                .alpha(1.0f)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        filesHolder.setVisibility(View.VISIBLE);
-
-                        // Just in case monkeys decide to tap around while the list is refreshing
-                        if (devices.size() > position)
-                            findFiles.start(did);
-                    }
-                });
-    }
-
-    @DebugLog
-    private void animateShowDevices() {
-        deviceHolder.setAlpha(0.0f);
-        deviceHolder.setTranslationX(-deviceHolder.getWidth());
-        deviceHolder.setVisibility(View.VISIBLE);
-        filesHolder.animate()
-                .setDuration(Constants.ANIM_DURATION)
-                .translationX(filesHolder.getWidth())
-                .alpha(0.0f)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        filesHolder.setVisibility(View.GONE);
-                        appbarScroll.setText(null);
-                    }
-                });
-        deviceHolder.animate()
-                .translationX(0)
-                .setDuration(Constants.ANIM_DURATION)
-                .alpha(1.0f)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        deviceHolder.setVisibility(View.VISIBLE);
-                        findFiles.reset();
-                        findFiles.dismissMessageSnackbar();
-                        fragmentInterface.showSearch(true);
-            }
-        });
-    }
-
-    public void showDevice(String did, int position) {
-        if (did == null) {
-            Snackbar.make(rootView, "Invalid device selected", Snackbar.LENGTH_INDEFINITE);
-            return;
-        }
-        animateShowFiles(did, position);
-        appbarScroll.expand();
-        appbarScroll.setText(rootView.getContext().getResources().getString(R.string.files_list_header_text));
-        ((PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout)).setRefreshing(true);
-    }
-
     public interface AppbarScroll {
         void expand();
         void collapse();
@@ -430,8 +334,7 @@ public class FindDevices {
     }
 
     public interface FragmentInterface {
-        void onSuperBack();
-        void showSearch(boolean show);
+        void showDevice(String did, int position);
     }
 
     //Home screen shortcut for favourite device

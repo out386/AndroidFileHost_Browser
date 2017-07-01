@@ -19,48 +19,41 @@
 
 package browser.afh.fragments;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import browser.afh.MainActivity;
 import browser.afh.R;
-import browser.afh.data.FindDevices;
+import browser.afh.data.FindFiles;
 import browser.afh.tools.Constants;
 
-public class MainFragment extends Fragment {
-    View rootView;
-    Activity activity;
-    private FindDevices findDevices;
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        this.activity = activity;
-    }
+public class FilesFragment extends Fragment {
+    private FindFiles findFiles;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        ((MainActivity) activity).showSearch(true, true);
+        View rootView = inflater.inflate(R.layout.files_fragment, container, false);
+        MainActivity activity = (MainActivity) getActivity();
+        activity.setText(getResources().getString(R.string.files_list_header_text));
+        activity.expand();
+        findFiles = new FindFiles(rootView, activity);
+        Bundle bundle = getArguments();
 
-        findDevices = new FindDevices(rootView, activity);
-        findDevices.findFirstDevice();
+        if (bundle != null) {
+            String did = bundle.getString(Constants.EXTRA_DEVICE_ID, null);
+            findFiles.start(did);
+        }
         return rootView;
     }
 
     @Override
-    public void onResume() {
-        findDevices.registerReceiver();
-        super.onResume();
+    public void onDestroyView() {
+        findFiles.reset();
+        super.onDestroyView();
     }
-
-    @Override
-    public void onPause() {
-        findDevices.unregisterReceiver();
-        super.onPause();
-    }
-
 }

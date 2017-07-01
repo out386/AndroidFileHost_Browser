@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import browser.afh.MainActivity;
 import browser.afh.R;
+import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 
 
@@ -34,9 +35,9 @@ public class DeviceTile extends TileService {
 
     @Override
     public void onClick() {
-        String e = new Prefs(getApplicationContext()).get("device_id", null);
+        String e = new Prefs(getApplicationContext()).get(Constants.EXTRA_DEVICE_ID, null);
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("device_id", e);
+        intent.putExtra(Constants.EXTRA_DEVICE_ID, e);
         startActivityAndCollapse(intent);
 
 

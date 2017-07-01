@@ -19,7 +19,9 @@
 
 package browser.afh.data;
 
-import android.support.design.widget.Snackbar;
+import android.content.Context;
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -54,7 +56,7 @@ import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-class FindFiles {
+public class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
@@ -64,16 +66,18 @@ class FindFiles {
     private boolean sortByDate;
     private ApiInterface retroApi;
     private final View rootView;
-    private Snackbar messageSnackbar;
+    private Context mContext;
+    private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
 
     @DebugLog
-    FindFiles(final View rootView) {
+    public FindFiles(final View rootView, Context context) {
         this.rootView = rootView;
+        mContext = context;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         retroApi = RetroClient.getApi(rootView.getContext(), true);
-        ListView fileList = (ListView) rootView.findViewById(R.id.list);
-        CheckBox sortCB = (CheckBox) rootView.findViewById(R.id.sortCB);
+        ListView fileList = rootView.findViewById(R.id.list);
+        CheckBox sortCB = rootView.findViewById(R.id.sortCB);
 
         sortCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
@@ -88,7 +92,7 @@ class FindFiles {
                 adapter.notifyDataSetChanged();
             }
         });
-        pullRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.swipeRefreshLayout);
+        pullRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -103,9 +107,9 @@ class FindFiles {
     }
 
     @DebugLog
-    void start(final String did) {
+    public void start(final String did) {
         savedID = did;
-        
+        pullRefreshLayout.setRefreshing(true);
         Call<AfhDevelopers> call = retroApi.getDevelopers("developers", did, 100);
         call.enqueue(new Callback<AfhDevelopers>() {
             @Override
@@ -122,16 +126,14 @@ class FindFiles {
 
                         // Files might exist, we just didn't get a list of them.
                         // Should probably retry, though.
-                        makeMessageSnackbar(R.string.files_list_no_files_text);
-                        showMessageSnackbar();
+                        showSnackbar(R.string.files_list_no_files_text);
                         return;
                     }
                     if (fid != null && fid.size() > 0) {
                         queryDirs(fid);
                     } else {
                         pullRefreshLayout.setRefreshing(false);
-                        makeMessageSnackbar(R.string.files_list_no_files_text);
-                        showMessageSnackbar();
+                        showSnackbar(R.string.files_list_no_files_text);
                     }
                 }
                 else if(response.code() == 502){
@@ -147,8 +149,7 @@ class FindFiles {
                         }
                     }
                     call.clone().enqueue(this);
-                    makeMessageSnackbar(R.string.files_list_502_text);
-                    showMessageSnackbar();
+                    showSnackbar(R.string.files_list_502_text);
                 }
                 else {
                     try {
@@ -165,8 +166,7 @@ class FindFiles {
             @Override
             public void onFailure(Call<AfhDevelopers> call, Throwable t) {
                 if (t instanceof UnknownHostException) {
-                    makeMessageSnackbar(R.string.files_list_no_cache_text);
-                    showMessageSnackbar();
+                    showSnackbar(R.string.files_list_no_cache_text);
                     pullRefreshLayout.setRefreshing(false);
                     return;
                 }
@@ -282,8 +282,7 @@ class FindFiles {
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
                     }
                     else if (t instanceof UnknownHostException) {
-                        makeMessageSnackbar(R.string.files_list_no_cache_text);
-                        showMessageSnackbar();
+                        showSnackbar(R.string.files_list_no_cache_text);
                     }
                 }
             });
@@ -304,26 +303,16 @@ class FindFiles {
         adapter.notifyDataSetChanged();
     }
 
-    void reset() {
+    public void reset() {
         RetroClient.cancelRequests();
         retroApi = RetroClient.getApi(rootView.getContext(), true);
         filesD.clear();
         adapter.clear();
     }
 
-    void dismissMessageSnackbar() {
-        if (messageSnackbar != null)
-            messageSnackbar.dismiss();
-    }
-
-    private void makeMessageSnackbar(int message) {
-        if (Utils.findSuitableParent(rootView) != null) {
-            messageSnackbar = Snackbar.make(rootView, message, Snackbar.LENGTH_INDEFINITE);
-        }
-    }
-
-    private void showMessageSnackbar() {
-        if (messageSnackbar != null)
-            messageSnackbar.show();
+    private void showSnackbar(int messageRes) {
+        snackbarIntent.removeExtra(Constants.EXTRA_SNACKBAR_MESSAGE);
+        snackbarIntent.putExtra(Constants.EXTRA_SNACKBAR_MESSAGE, messageRes);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(snackbarIntent);
     }
 }
