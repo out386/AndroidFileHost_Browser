@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <CheckBoxPreference
-        android:title="@string/pref_device_images_title"
         android:defaultValue="true"
+        android:key="device_image"
         android:summary="@string/pref_display_images_summary"
-        android:key="device_image" />
+        android:title="@string/pref_device_images_title" />
+
+    <Preference
+        android:key="colour_primary"
+        android:title="@string/pref_colour_primary" />
+
+    <Preference
+        android:key="colour_accent"
+        android:title="@string/pref_colour_accent" />
 </PreferenceScreen>

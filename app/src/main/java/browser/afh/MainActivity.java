@@ -21,38 +21,35 @@ package browser.afh;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.color.ColorChooserDialog;
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.SearchEvent;
@@ -68,7 +65,6 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,20 +73,19 @@ import java.util.List;
 import browser.afh.data.FindDevices.AppbarScroll;
 import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.data.FindDevices.HSShortutInterface;
-import browser.afh.fragments.FilesFragment;
 import browser.afh.fragments.DevicesFragment;
+import browser.afh.fragments.FilesFragment;
 import browser.afh.fragments.SettingsFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
-import browser.afh.types.AfhFolders;
-import browser.afh.types.Files;
 import hugo.weaving.DebugLog;
 import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
 
-public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface, HSShortutInterface {
+public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface,
+        HSShortutInterface, ColorChooserDialog.ColorCallback {
     AppBarLayout appBarLayout;
     TextView headerTV;
     private Intent searchIntent;
@@ -99,6 +94,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Snackbar snackbar;
     private FrameLayout frame;
     private List<Long> drawerPositions = new ArrayList<>();
+    private int colorPrimary = -1;
+    private int colorAccent = -1;
 
     private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
         @Override
@@ -124,11 +121,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             // This will crash the app if a debug build tries to use Crashlytics.log
             Fabric.with(this, new Crashlytics());
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
-        setSupportActionBar(toolbar);
-        assert getSupportActionBar() != null;
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
 
@@ -136,10 +131,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         IntentFilter snackbarMakeFilter = new IntentFilter(Constants.INTENT_SNACKBAR);
         LocalBroadcastManager.getInstance(this).registerReceiver(snackbarMakeReceiver, snackbarMakeFilter);
 
+        findViewById(R.id.app_bar_bg).setBackgroundColor(getPrefsColour(1));
+        getWindow().setNavigationBarColor(getPrefsColour(1));
+
         updatesCheck();
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.color.colorPrimary)
+                .withHeaderBackground(new ColorDrawable(getPrefsColour(1)))
                 .withProfileImagesVisible(false)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
@@ -155,11 +153,19 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home)
                                 .withIcon(R.drawable.ic_home)
                                 .withIdentifier(0)
+                                .withIconColor(getPrefsColour(2))
+                                .withSelectedIconColor(getPrefsColour(1))
+                                .withIconTintingEnabled(true)
+                                .withSelectedTextColor(getPrefsColour(1))
                                 .withDescription(R.string.drawer_desc_home),
                         new PrimaryDrawerItem()
                                 .withName(R.string.drawer_title_info)
                                 .withIcon(R.drawable.ic_info)
                                 .withIdentifier(1)
+                                .withIconColor(getPrefsColour(2))
+                                .withSelectedIconColor(getPrefsColour(1))
+                                .withIconTintingEnabled(true)
+                                .withSelectedTextColor(getPrefsColour(1))
                                 .withDescription(R.string.drawer_desc_info)
                                 .withSelectable(false),
                         new DividerDrawerItem(),
@@ -167,29 +173,30 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                                 .withName(R.string.drawer_title_settings)
                                 .withIcon(R.drawable.ic_settings)
                                 .withIdentifier(2)
+                                .withIconColor(getPrefsColour(2))
+                                .withSelectedIconColor(getPrefsColour(1))
+                                .withIconTintingEnabled(true)
+                                .withSelectedTextColor(getPrefsColour(1))
                                 .withDescription(R.string.drawer_desc_settings)
                 )
                 .withCloseOnClick(true)
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        long index = drawerItem.getIdentifier();
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    long index = drawerItem.getIdentifier();
 
-                        if (drawerPositions.size() > 0 && index == drawerPositions.get(drawerPositions.size() - 1))
-                            return false;
-
-                        if (index == 0) {
-                            changeFragment(new DevicesFragment());
-                            drawerPositions.add(index);
-                        } else if (index == 1) {
-                            // Not adding drawerPositions here because index == 1 is another activity
-                            startActivity(new Intent(getApplicationContext(), AboutActivity.class));
-                        } else if (index == 2) {
-                            changeFragment(new SettingsFragment());
-                            drawerPositions.add(index);
-                        }
+                    if (drawerPositions.size() > 0 && index == drawerPositions.get(drawerPositions.size() - 1))
                         return false;
+
+                    if (index == 0) {
+                        changeFragment(new DevicesFragment());
+                        drawerPositions.add(index);
+                    } else if (index == 1) {
+                        // Not adding drawerPositions here because index == 1 is another activity
+                        startActivity(new Intent(getApplicationContext(), AboutActivity.class));
+                    } else if (index == 2) {
+                        changeFragment(new SettingsFragment());
+                        drawerPositions.add(index);
                     }
+                    return false;
                 })
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -215,24 +222,16 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .content(R.string.disclaimer_google_play_desc)
                 .negativeText(R.string.ok)
                 .positiveText(R.string.download)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialog.dismiss();
+                .onNegative((dialog, which) -> dialog.dismiss())
+                .onPositive((dialog, which) -> {
+                    dialog.dismiss();
+                    if (isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_APP_PAGE_LINK)));
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_DOWNLOAD_PAGE)));
                     }
-                })
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        dialog.dismiss();
-                        if (isPackageInstalled(Constants.XDA_LABS_PACKAGE_NAME, getPackageManager())) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_APP_PAGE_LINK)));
-                        } else {
-                            Toast.makeText(getApplicationContext(), R.string.err_xda_labs_not_installed, Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.XDA_LABS_DOWNLOAD_PAGE)));
-                        }
 
-                    }
                 });
         boolean its_unofficial = prefs.get(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, false);
         if (!its_unofficial) {
@@ -240,19 +239,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .title(R.string.unofficial_disclaimer_title)
                     .content(R.string.unofficial_disclaimer_text)
                     .neutralText(R.string.file_dialog_neutral_button_label)
-                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            dialog.dismiss();
-                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
-                        }
+                    .onNeutral((dialog, which) -> {
+                        dialog.dismiss();
+                        prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
                     })
-                    .dismissListener(new DialogInterface.OnDismissListener() {
-                        @Override
-                        public void onDismiss(DialogInterface dialogInterface) {
-                            prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
-                            if (BuildConfig.PLAY_COMPATIBLE) useLabsVariantDialog.show();
-                        }
+                    .dismissListener(dialogInterface -> {
+                        prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
+                        if (BuildConfig.PLAY_COMPATIBLE) useLabsVariantDialog.show();
                     })
                     .show();
         }
@@ -292,12 +285,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 return true;
             }
         });
-        searchView.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
-            @Override
-            public void onMenuClick() {
-                drawer.openDrawer();
-            }
-        });
+        searchView.setOnMenuClickListener(() -> drawer.openDrawer());
 
 
         if (savedInstanceState == null)
@@ -482,13 +470,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         .setContent(R.string.bottom_dialog_warning_desc)
                         .setPositiveText(R.string.bottom_dialog_positive_text)
                         .setNegativeTextColorResource(R.color.colorAccent)
-                        .onPositive(new BottomDialog.ButtonCallback() {
-                            @SuppressLint("CommitPrefEdits")
-                            @Override
-                            public void onClick(@NonNull BottomDialog bottomDialog) {
-                                bottomDialog.dismiss();
-                            }
-                        })
+                        .onPositive(BottomDialog::dismiss)
                         .show();
             }
         }
@@ -513,5 +495,52 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(snackbarMakeReceiver);
         super.onDestroy();
+    }
+
+    public void showColourDialog(int type) {
+        switch (type) {
+            case 1:
+                new ColorChooserDialog.Builder(this, R.string.dialog_colour_primary_title)
+                        .preselect(getPrefsColour(1))
+                        .show();
+                break;
+            case 2:
+                new ColorChooserDialog.Builder(this, R.string.dialog_colour_accent_title)
+                        .accentMode(true)
+                        .preselect(getPrefsColour(2))
+                        .show();
+                break;
+        }
+    }
+
+    @Override
+    public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int color) {
+        if (R.string.dialog_colour_primary_title == dialog.getTitle()) {
+            prefs.put(Constants.PREFS_COLOR_PRIMARY, String.valueOf(color));
+        } else if (R.string.dialog_colour_accent_title == dialog.getTitle()) {
+            prefs.put(Constants.PREFS_COLOR_ACCENT, String.valueOf(color));
+        }
+        recreate();
+    }
+
+    private int getPrefsColour(int type) {
+        switch (type) {
+            case 1:
+                if (colorPrimary == -1) {
+                    colorPrimary = Integer.parseInt(prefs
+                            .get(Constants.PREFS_COLOR_PRIMARY, String.valueOf(
+                                    ContextCompat.getColor(this, R.color.colorPrimary))));
+                }
+                return colorPrimary;
+            case 2:
+                if (colorAccent == -1) {
+                    colorAccent = Integer.parseInt(prefs
+                            .get(Constants.PREFS_COLOR_ACCENT, String.valueOf(
+                                    ContextCompat.getColor(this, R.color.colorAccent))));
+                }
+                return colorAccent;
+            default:
+                return 0xffffff;
+        }
     }
 }

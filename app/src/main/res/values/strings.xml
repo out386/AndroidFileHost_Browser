@@ -44,4 +44,8 @@
     <string name="no_browser_dialog_assert">Yes I\'m a fool</string>
     <string name="pref_device_images_title">Device images</string>
     <string name="pref_display_images_summary">Display images for available devices</string>
+    <string name="pref_colour_primary">Set the primary colour</string>
+    <string name="dialog_colour_primary_title">Primary colour</string>
+    <string name="pref_colour_accent">Set the accent colour</string>
+    <string name="dialog_colour_accent_title">Accent colour</string>
 </resources>

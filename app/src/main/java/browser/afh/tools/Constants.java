@@ -36,6 +36,8 @@ public class Constants {
     public static final String INTENT_SNACKBAR = "snackbar";
 
     public static final String KEY_FILES_LIST = "filesList";
+    public static final String PREFS_COLOR_PRIMARY = "colorPrimary";
+    public static final String PREFS_COLOR_ACCENT = "colorAccent";
 
     // This is to let users know that the Play Store version is tied down
     public static final String XDA_LABS_PACKAGE_NAME = "com.xda.labs";
