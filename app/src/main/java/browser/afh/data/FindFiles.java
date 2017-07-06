@@ -68,6 +68,7 @@ public class FindFiles {
     private final View rootView;
     private Context mContext;
     private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
+    private ListView fileList;
 
     @DebugLog
     public FindFiles(final View rootView, Context context) {
@@ -76,20 +77,14 @@ public class FindFiles {
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         retroApi = RetroClient.getApi(rootView.getContext(), true);
-        ListView fileList = rootView.findViewById(R.id.list);
+        fileList = rootView.findViewById(R.id.list);
         CheckBox sortCB = rootView.findViewById(R.id.sortCB);
 
         sortCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    sortByDate = true;
-                    Collections.sort(filesD,Comparators.byUploadDate);
-                } else {
-                    sortByDate = false;
-                    Collections.sort(filesD,Comparators.byFileName);
-                }
-                adapter.notifyDataSetChanged();
+                sortByDate = isChecked;
+                print(true);
             }
         });
         pullRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
@@ -301,8 +296,8 @@ public class FindFiles {
             Log.i(TAG, "New Files: Files changed : " + filesD.size() + " items");
         }
         if (isRestore) {
-            adapter.clear();
-            adapter.addAll(filesD);
+            AfhAdapter adapter = new AfhAdapter(rootView.getContext(), R.layout.afh_items, filesD);
+            fileList.setAdapter(adapter);
         }
         adapter.notifyDataSetChanged();
     }
