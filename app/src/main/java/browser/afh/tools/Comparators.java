@@ -23,28 +23,19 @@ import browser.afh.types.AfhDevices;
 import browser.afh.types.Files;
 
 public class Comparators {
-    public static final Comparator <Files> byUploadDate = new Comparator<Files>() {
-        @Override
-        public int compare(Files f1, Files f2) {
-            if (f1 != null && f2 != null && f1.upload_date != null && f2.upload_date != null)
-                return -(f1.upload_date.compareTo(f2.upload_date));
-            return 0;
-        }
+    public static final Comparator<Files> byUploadDate = (f1, f2) -> {
+        if (f1 != null && f2 != null && f1.upload_date != null && f2.upload_date != null)
+            return -(f1.upload_date.compareTo(f2.upload_date));
+        return 0;
     };
-    public static final Comparator <Files> byFileName = new Comparator<Files>() {
-        @Override
-        public int compare(Files f1, Files f2) {
-            if (f1 != null && f2 != null && f1.name != null && f2.name != null)
-                return (f1.name.compareToIgnoreCase(f2.name));
-            return 0;
-        }
+    public static final Comparator<Files> byFileName = (f1, f2) -> {
+        if (f1 != null && f2 != null && f1.name != null && f2.name != null)
+            return (f1.name.compareToIgnoreCase(f2.name));
+        return 0;
     };
-    public static final Comparator <AfhDevices.Device> byManufacturer = new Comparator<AfhDevices.Device>() {
-        @Override
-        public int compare(AfhDevices.Device f1, AfhDevices.Device f2) {
-            if (f1 != null && f2 != null && f1.manufacturer != null && f2.manufacturer != null)
-                return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
-            return 0;
-        }
+    public static final Comparator<AfhDevices.Device> byManufacturer = (f1, f2) -> {
+        if (f1 != null && f2 != null && f1.manufacturer != null && f2.manufacturer != null)
+            return (f1.manufacturer.compareToIgnoreCase(f2.manufacturer));
+        return 0;
     };
 }

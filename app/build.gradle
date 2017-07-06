@@ -10,6 +10,7 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'com.jakewharton.hugo'
+apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -61,6 +62,10 @@ android {
             buildConfigField("boolean", "PLAY_COMPATIBLE", "false")
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -100,6 +105,7 @@ dependencies {
     // dialogs
     compile 'com.github.javiersantos:BottomDialogs:1.2.1'
     compile 'com.afollestad.material-dialogs:core:0.9.1.0'
+    compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
 
     // crashlytics
     debugCompile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {

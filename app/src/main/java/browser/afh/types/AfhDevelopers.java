@@ -25,8 +25,8 @@ import java.util.List;
 public class AfhDevelopers {
     @SerializedName("DATA")
     public final List<Developer> data;
-	
-	public AfhDevelopers(List<Developer> data) {
+
+    public AfhDevelopers(List<Developer> data) {
         this.data = data;
     }
 

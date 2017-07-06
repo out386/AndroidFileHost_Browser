@@ -36,93 +36,84 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.List;
 
 import browser.afh.R;
-import browser.afh.types.AfhFolders.Files;
+import browser.afh.types.Files;
 
-public class AfhAdapter extends ArrayAdapter<Files>
-{
+public class AfhAdapter extends ArrayAdapter<Files> {
     private final Context context;
+
     public AfhAdapter(Context context, int resource, List<Files> items) {
-        super(context,resource,items);
+        super(context, resource, items);
         this.context = context;
     }
 
-    private void customTab(String Url){
+    private void customTab(String Url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.launchUrl(context, Uri.parse(Url));
     }
+
     @NonNull
     @Override
     public View getView(int position, final View convertView, @NonNull ViewGroup parent) {
         View v = convertView;
-        if(v == null)
-            v= LayoutInflater.from(getContext()).inflate(R.layout.afh_items, null);
+        if (v == null)
+            v = LayoutInflater.from(getContext()).inflate(R.layout.afh_items, null);
         final Files p = getItem(position);
-        if(p != null) {
-            TextView name = (TextView) v.findViewById(R.id.rname);
+        if (p != null) {
+            TextView name = v.findViewById(R.id.rname);
             name.setText(p.name);
-            v.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    try {
-                      customTab(p.url);
-                    } catch (ActivityNotFoundException exc){
-                    new MaterialDialog.Builder(context)
-                            .title(R.string.no_browser_dialog_title)
-                            .content(R.string.no_browser_dialog_content)
-                            .neutralText(R.string.no_browser_dialog_assert)
-                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                               @Override
-                               public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which) {
-                                   dialog.dismiss();
-                               }
+            v.setOnLongClickListener(view -> {
+                        try {
+                            customTab(p.url);
+                        } catch (ActivityNotFoundException exc) {
+                            new MaterialDialog.Builder(context)
+                                    .title(R.string.no_browser_dialog_title)
+                                    .content(R.string.no_browser_dialog_content)
+                                    .neutralText(R.string.no_browser_dialog_assert)
+                                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                            dialog.dismiss();
+                                        }
 
-                            })
-                            .show();
+                                    })
+                                    .show();
+                        }
+                        return false;
                     }
-                    return false;
-                }
-            });
-            v.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
+            );
+            v.setOnClickListener(view ->
                     new MaterialDialog.Builder(context)
                             .title(p.name)
                             .content(String.format(context.getString(R.string.file_dialog_content), p.file_size, p.upload_date, p.screenname, p.downloads))
                             .positiveText(R.string.file_dialog_positive_button_label)
                             .neutralText(R.string.file_dialog_neutral_button_label)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    try {
-                                        customTab(p.url);
-                                    } catch (ActivityNotFoundException exc){
-                                        new MaterialDialog.Builder(context)
-                                                .title(R.string.no_browser_dialog_title)
-                                                .content(R.string.no_browser_dialog_content)
-                                                .neutralText(R.string.no_browser_dialog_assert)
-                                                .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                                                    @Override
-                                                    public void onClick(@NonNull MaterialDialog dialog,@NonNull DialogAction which) {
-                                                        dialog.dismiss();
-                                                    }
+                            .onPositive((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> {
+                                        try {
+                                            customTab(p.url);
+                                        } catch (ActivityNotFoundException exc) {
+                                            new MaterialDialog.Builder(context)
+                                                    .title(R.string.no_browser_dialog_title)
+                                                    .content(R.string.no_browser_dialog_content)
+                                                    .neutralText(R.string.no_browser_dialog_assert)
+                                                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
+                                                        @Override
+                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                                            dialog.dismiss();
+                                                        }
 
-                                                })
-                                                .show();
+                                                    })
+                                                    .show();
+                                        }
+                                        dialog.dismiss();
                                     }
-                                    dialog.dismiss();
-                                }
-                            })
-                            .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    dialog.dismiss();
-                                }
-                            })
-                            .show();
-                }
-            });
+                            )
+                            .onNeutral((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> {
+                                        dialog.dismiss();
+                                    }
+                            )
+                            .show());
         }
         return v;
     }

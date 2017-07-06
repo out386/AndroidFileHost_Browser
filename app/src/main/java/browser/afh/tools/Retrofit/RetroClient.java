@@ -115,23 +115,20 @@ public class RetroClient {
     }
 
     private static Interceptor getOfflineCacheInterceptor(final Context context, final boolean useOldCache) {
-        return new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Request request = chain.request();
+        return chain -> {
+            Request request = chain.request();
 
-                // Avoiding isConnectingToInternet to prevent thread troubles
-                if (useOldCache || !ConnectionDetector.networkConnectivity(context)) {
-                    CacheControl cacheControl = new CacheControl.Builder()
-                            .maxStale(30, TimeUnit.DAYS)
-                            .build();
+            // Avoiding isConnectingToInternet to prevent thread troubles
+            if (useOldCache || !ConnectionDetector.networkConnectivity(context)) {
+                CacheControl cacheControl = new CacheControl.Builder()
+                        .maxStale(30, TimeUnit.DAYS)
+                        .build();
 
-                    request = request.newBuilder()
-                            .cacheControl(cacheControl)
-                            .build();
-                }
-                return chain.proceed(request);
+                request = request.newBuilder()
+                        .cacheControl(cacheControl)
+                        .build();
             }
+            return chain.proceed(request);
         };
     }
 

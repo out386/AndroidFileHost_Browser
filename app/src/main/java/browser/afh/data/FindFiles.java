@@ -80,23 +80,19 @@ public class FindFiles {
         fileList = rootView.findViewById(R.id.list);
         CheckBox sortCB = rootView.findViewById(R.id.sortCB);
 
-        sortCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                sortByDate = isChecked;
-                print(true);
-            }
-        });
+        sortCB.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
+                    sortByDate = isChecked;
+                    print(true);
+                }
+        );
         pullRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
-        pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                filesD.clear();
-                adapter.notifyDataSetChanged();
-                retroApi = RetroClient.getApi(rootView.getContext(), false);
-                start(savedID);
-            }
-        });
+        pullRefreshLayout.setOnRefreshListener(() -> {
+                    filesD.clear();
+                    adapter.notifyDataSetChanged();
+                    retroApi = RetroClient.getApi(rootView.getContext(), false);
+                    start(savedID);
+                }
+        );
         adapter = new AfhAdapter(rootView.getContext(), R.layout.afh_items, filesD);
         fileList.setAdapter(adapter);
     }
@@ -130,23 +126,21 @@ public class FindFiles {
                         pullRefreshLayout.setRefreshing(false);
                         showSnackbar(R.string.files_list_no_files_text);
                     }
-                }
-                else if(response.code() == 502){
+                } else if (response.code() == 502) {
                     // Keeps happening for some devices, suspected for files, too. Re-queuing probably won't help, though.
                     // Let's get to know if it happens to files, too.
                     try {
                         throw new IllegalArgumentException();
                     } catch (Exception e) {
                         // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
-                        if (! BuildConfig.DEBUG) {
+                        if (!BuildConfig.DEBUG) {
                             Crashlytics.logException(e);
                             Crashlytics.log("did : " + did);
                         }
                     }
                     call.clone().enqueue(this);
                     showSnackbar(R.string.files_list_502_text);
-                }
-                else {
+                } else {
                     try {
                         // Crashlytics sure loves getting stuff thrown at it.
                         throw new IllegalArgumentException();
@@ -158,6 +152,7 @@ public class FindFiles {
                     }
                 }
             }
+
             @Override
             public void onFailure(Call<AfhDevelopers> call, Throwable t) {
                 if (t instanceof UnknownHostException) {
@@ -165,8 +160,8 @@ public class FindFiles {
                     pullRefreshLayout.setRefreshing(false);
                     return;
                 }
-                if (! (t instanceof JsonSyntaxException)
-                        && ! t.toString().contains("Canceled"))
+                if (!(t instanceof JsonSyntaxException)
+                        && !t.toString().contains("Canceled"))
                     call.clone().enqueue(this);
             }
         });
@@ -237,22 +232,20 @@ public class FindFiles {
                             }
                             queryDirs(foldersList);
                         }
-                    }
-                    else if (response.code() == 502) {
+                    } else if (response.code() == 502) {
                         // Keeps happening for some devices, suspected for files, too. Re-queuing probably won't help, though.
                         // Let's get to know if it happens to files, too.
                         try {
                             throw new IllegalArgumentException();
                         } catch (Exception e) {
                             // Have to catch Exception, Crashlytics doesn't seem to want to know specifics.
-                            if (! BuildConfig.DEBUG) {
+                            if (!BuildConfig.DEBUG) {
                                 Crashlytics.logException(e);
                                 Crashlytics.log("flid : " + url.flid);
                             }
                         }
                         call.clone().enqueue(this);
-                    }
-                    else {
+                    } else {
                         try {
                             // Crashlytics sure loves getting stuff thrown at it.
                             throw new IllegalArgumentException();
@@ -270,13 +263,12 @@ public class FindFiles {
 
                     pullRefreshLayout.setRefreshing(false);
                     // AfhFolders.DATA will be an Object, but if it is empty, it'll be an array
-                    if (! (t instanceof UnknownHostException)
-                            && ! (t instanceof IllegalStateException)
-                            && ! (t instanceof JsonSyntaxException)
-                            && ! t.toString().contains("Canceled")) {
+                    if (!(t instanceof UnknownHostException)
+                            && !(t instanceof IllegalStateException)
+                            && !(t instanceof JsonSyntaxException)
+                            && !t.toString().contains("Canceled")) {
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
-                    }
-                    else if (t instanceof UnknownHostException) {
+                    } else if (t instanceof UnknownHostException) {
                         showSnackbar(R.string.files_list_no_cache_text);
                     }
                 }
@@ -287,7 +279,7 @@ public class FindFiles {
 
     @DebugLog
     private void print(boolean isRestore) {
-        if(sortByDate) {
+        if (sortByDate) {
             Collections.sort(filesD, Comparators.byUploadDate);
         } else {
             Collections.sort(filesD, Comparators.byFileName);

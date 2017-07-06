@@ -22,14 +22,14 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class AfhFolders {
-	@SerializedName("MESSAGE")
+    @SerializedName("MESSAGE")
     private final String message;
     @SerializedName("DATA")
     public final FolderContent data;
 
-	public AfhFolders(String message, FolderContent data) {
-		this.message = message;
-		this.data = data;
+    public AfhFolders(String message, FolderContent data) {
+        this.message = message;
+        this.data = data;
     }
 
     public class FolderContent {

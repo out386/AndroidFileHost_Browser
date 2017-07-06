@@ -48,17 +48,14 @@ public class AboutActivity extends MaterialAboutActivity {
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_licenses_title)
                 .icon(R.drawable.ic_licenses)
-                .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
-                    @Override
-                    public void onClick() {
-                        LibsConfiguration.getInstance().setItemAnimator(new SlideDownAlphaAnimator());
-                        new LibsBuilder()
-                                .withFields(R.string.class.getFields())
-                                .withActivityTitle(getString(R.string.app_name))
-                                .withActivityTheme(R.style.AppTheme_MaterialAboutActivity)
-                                .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-                                .activity(AboutActivity.this);
-                    }
+                .setOnClickListener(() -> {
+                    LibsConfiguration.getInstance().setItemAnimator(new SlideDownAlphaAnimator());
+                    new LibsBuilder()
+                            .withFields(R.string.class.getFields())
+                            .withActivityTitle(getString(R.string.app_name))
+                            .withActivityTheme(R.style.AppTheme_MaterialAboutActivity)
+                            .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                            .activity(AboutActivity.this);
                 })
                 .build());
         MaterialAboutCard.Builder authorCardBuilder = new MaterialAboutCard.Builder();
@@ -73,13 +70,10 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text(R.string.about_activity_github_title)
                 .subText(R.string.about_activity_github_subtitle_1)
                 .icon(R.drawable.ic_github)
-                .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
-                    @Override
-                    public void onClick() {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://github.com/out386/"));
-                        startActivity(i);
-                    }
+                .setOnClickListener(() -> {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse("https://github.com/out386/"));
+                    startActivity(i);
                 })
                 .build());
 
@@ -95,28 +89,22 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text(R.string.about_activity_github_title)
                 .subText(R.string.about_activity_github_subtitle_2)
                 .icon(R.drawable.ic_github)
-                .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
-                    @Override
-                    public void onClick() {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://github.com/MSF-Jarvis/"));
-                        startActivity(i);
-                    }
+                .setOnClickListener(() -> {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse("https://github.com/MSF-Jarvis/"));
+                    startActivity(i);
                 })
                 .build());
 
 
-            author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
+        author2CardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_twitter_title)
                 .subText(R.string.about_activity_twitter_subtitle_2)
                 .icon(R.drawable.ic_twitter)
-                .setOnClickListener(new MaterialAboutActionItem.OnClickListener() {
-                    @Override
-                    public void onClick() {
-                        Intent i = new Intent(Intent.ACTION_VIEW);
-                        i.setData(Uri.parse("https://twitter.com/MSF_Jarvis"));
-                        startActivity(i);
-                    }
+                .setOnClickListener(() -> {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse("https://twitter.com/MSF_Jarvis"));
+                    startActivity(i);
                 })
                 .build());
         return new MaterialAboutList.Builder()

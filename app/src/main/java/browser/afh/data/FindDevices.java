@@ -106,13 +106,13 @@ public class FindDevices {
             Log.e(TAG, "FindDevices: ", e);
         }
 
-        deviceHolder = (CardView) rootView.findViewById(R.id.deviceCardView);
-        filesHolder = (CardView) rootView.findViewById(R.id.filesCardView);
-        deviceRefreshLayout = (PullRefreshLayout) rootView.findViewById(R.id.deviceRefresh);
+        deviceHolder = rootView.findViewById(R.id.deviceCardView);
+        filesHolder = rootView.findViewById(R.id.filesCardView);
+        deviceRefreshLayout = rootView.findViewById(R.id.deviceRefresh);
 
         fastAdapter = new FastAdapter<>();
         devAdapter = new GenericItemAdapter<>(DeviceItem.class, AfhDevices.Device.class);
-        final RecyclerView deviceRecyclerView = (RecyclerView) rootView.findViewById(R.id.deviceList);
+        final RecyclerView deviceRecyclerView = rootView.findViewById(R.id.deviceList);
         final Prefs prefs = new Prefs(rootView.getContext());
         deviceRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
@@ -169,20 +169,14 @@ public class FindDevices {
             }
         });
 
-        devAdapter.withFilterPredicate(new IItemAdapter.Predicate<DeviceItem>() {
-            @Override
-            public boolean filter(DeviceItem item, CharSequence constraint) {
-
-                return ! (item.getModel().device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
-                        || item.getModel().manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()));
-            }
-        });
+        devAdapter.withFilterPredicate((DeviceItem item, CharSequence constraint) ->
+                ! (item.getModel().device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
+                || item.getModel().manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()))
+        );
 
         retro = RetroClient.getApi(rootView.getContext(), true);
 
-        deviceRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        deviceRefreshLayout.setOnRefreshListener(() -> {
                 devices.clear();
                 devAdapter.clear();
                 currentPage = 0;
@@ -191,19 +185,15 @@ public class FindDevices {
                 retro = RetroClient.getApi(rootView.getContext(), false);
                 findFirstDevice();
             }
-        });
+        );
 
-        fastAdapter.withOnClickListener(new FastAdapter.OnClickListener<DeviceItem>() {
-            @Override
-            public boolean onClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
+        fastAdapter.withOnClickListener((View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) -> {
                 fragmentInterface.showDevice(item.getModel().did, position);
                 return true;
             }
-        });
+        );
 
-        fastAdapter.withOnLongClickListener(new FastAdapter.OnLongClickListener<DeviceItem>() {
-            @Override
-            public boolean onLongClick(View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) {
+        fastAdapter.withOnLongClickListener((View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) -> {
                 AfhDevices.Device model = item.getModel();
                 new Prefs(rootView.getContext()).put(Constants.EXTRA_DEVICE_ID, model.did);
                 new Prefs(rootView.getContext()).put("device_name", model.manufacturer + " " + model.device_name);
@@ -218,7 +208,7 @@ public class FindDevices {
 
                 return true;
             }
-        });
+        );
 
         deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter.wrap(fastAdapter)));
     }

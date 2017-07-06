@@ -23,31 +23,28 @@ import android.preference.PreferenceManager;
 
 public class Prefs {
     private final SharedPreferences preferences;
-    private final SharedPreferences.Editor editor;
-    public Prefs(Context context){
+
+    public Prefs(Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        editor = preferences.edit();
     }
 
-    public void put(String prefName, String data){
+    public void put(String prefName, String data) {
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putString(prefName, data);
         editor.apply();
     }
 
-    public void put(String prefName, boolean data){
+    public void put(String prefName, boolean data) {
+        SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean(prefName, data);
         editor.apply();
     }
 
-    public boolean get(String prefName, boolean defaultValue){
+    public boolean get(String prefName, boolean defaultValue) {
         return preferences.getBoolean(prefName, defaultValue);
     }
 
-    public int get(String prefName, int defaultValue){
-        return preferences.getInt(prefName, defaultValue);
-    }
-
-    public String get(String prefName, String defaultValue){
+    public String get(String prefName, String defaultValue) {
         return preferences.getString(prefName, defaultValue);
     }
 }

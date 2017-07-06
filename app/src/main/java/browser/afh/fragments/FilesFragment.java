@@ -22,7 +22,6 @@ package browser.afh.fragments;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +37,6 @@ import browser.afh.types.Files;
 public class FilesFragment extends Fragment {
     private FindFiles findFiles;
     private ArrayList<Files> filesD;
-    private MainActivity mainActivity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,7 +50,7 @@ public class FilesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.files_fragment, container, false);
-        mainActivity = (MainActivity) getActivity();
+        MainActivity mainActivity = (MainActivity) getActivity();
         mainActivity.setText(getResources().getString(R.string.files_list_header_text));
         mainActivity.expand();
         mainActivity.showSearch(false, true);

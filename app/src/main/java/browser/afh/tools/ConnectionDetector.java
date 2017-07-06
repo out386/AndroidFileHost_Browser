@@ -31,7 +31,6 @@ import java.net.URL;
 import hugo.weaving.DebugLog;
 
 public class ConnectionDetector {
-    private final String TAG = getClass().getCanonicalName();
 
     @DebugLog
     public static boolean isConnectingToInternet(Context context) {
@@ -46,7 +45,7 @@ public class ConnectionDetector {
                 urlc.connect();
                 return urlc.getResponseCode() == 200;
             } catch (IOException e) {
-                Log.d(Constants.TAG, String.format("isConnectingToInternet: %s",e.toString()));
+                Log.d(Constants.TAG, String.format("isConnectingToInternet: %s", e.toString()));
                 return false;
             }
         } else

@@ -331,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
             } else {
                 if (fragment instanceof SettingsFragment)
-                appBarLayout.setExpanded(false, true);
+                    appBarLayout.setExpanded(false, true);
                 fragmentTransaction.addToBackStack(null);
                 setText(null);
             }
@@ -514,13 +514,4 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         LocalBroadcastManager.getInstance(this).unregisterReceiver(snackbarMakeReceiver);
         super.onDestroy();
     }
-    private Fragment getCurrentFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        int count = fragmentManager.getBackStackEntryCount();
-        if (count <= 0)
-            return null;
-        String fragmentTag = fragmentManager.getBackStackEntryAt(count - 1).getName();
-        return fragmentManager.findFragmentByTag(fragmentTag);
-    }
-
 }

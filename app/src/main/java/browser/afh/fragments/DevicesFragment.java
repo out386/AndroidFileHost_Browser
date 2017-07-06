@@ -29,7 +29,6 @@ import android.view.ViewGroup;
 import browser.afh.MainActivity;
 import browser.afh.R;
 import browser.afh.data.FindDevices;
-import browser.afh.tools.Constants;
 
 public class DevicesFragment extends Fragment {
     View rootView;

@@ -26,6 +26,7 @@ public class AfhDevices {
     public final String message;
     @SerializedName("DATA")
     public final List<Device> data;
+
     public AfhDevices(String message, List<Device> data) {
         this.message = message;
         this.data = data;

@@ -36,11 +36,6 @@ public class Constants {
     public static final String INTENT_SNACKBAR = "snackbar";
 
     public static final String KEY_FILES_LIST = "filesList";
-    public static final String KEY_LAST_FRAGMENT = "lastFragment";
-
-    public static final String TAG_FILES_FRAGMENT = "filesFragment";
-    public static final String TAG_DEVICES_FRAGMENT = "devicesFragment";
-    public static final String TAG_SETTINGS_FRAGMENT = "settingsFragment";
 
     // This is to let users know that the Play Store version is tied down
     public static final String XDA_LABS_PACKAGE_NAME = "com.xda.labs";

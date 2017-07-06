@@ -81,6 +81,7 @@ public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceIte
             return new ViewHolder(v);
         }
     }
+
     @Override
     public ViewHolderFactory<? extends ViewHolder> getFactory() {
         return FACTORY;
@@ -93,9 +94,9 @@ public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceIte
 
         ViewHolder(View view) {
             super(view);
-            this.mName = (TextView) view.findViewById(R.id.mName);
-            this.dName = (TextView) view.findViewById(R.id.dName);
-            this.dImage = (ImageView) view.findViewById(R.id.deviceImage);
+            this.mName = view.findViewById(R.id.mName);
+            this.dName = view.findViewById(R.id.dName);
+            this.dImage = view.findViewById(R.id.deviceImage);
         }
     }
 }

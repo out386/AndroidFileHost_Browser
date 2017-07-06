@@ -47,7 +47,7 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
 
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
-        TextView textView = (TextView) holder.itemView.findViewById(R.id.headerTV);
+        TextView textView = holder.itemView.findViewById(R.id.headerTV);
 
         IItem item = getItem(position);
         if (item instanceof AfhDevices.Device && ((AfhDevices.Device) item).manufacturer != null) {
