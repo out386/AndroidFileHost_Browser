@@ -20,7 +20,7 @@ package browser.afh.tools;
 import java.util.Comparator;
 
 import browser.afh.types.AfhDevices;
-import browser.afh.types.AfhFolders.Files;
+import browser.afh.types.Files;
 
 public class Comparators {
     public static final Comparator <Files> byUploadDate = new Comparator<Files>() {

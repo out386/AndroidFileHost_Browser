@@ -44,18 +44,5 @@ public class AfhFolders {
         }
     }
 
-    public class Files
-    {
-        @SerializedName("name")
-        public String name;
-        @SerializedName("url")
-        public String url;
-        @SerializedName("file_size")
-        public String file_size;
-        @SerializedName("upload_date")
-        public String upload_date;
-        @SerializedName("downloads")
-        public int downloads;
-        public String screenname;
-    }
+
 }

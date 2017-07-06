@@ -33,18 +33,18 @@ import browser.afh.tools.Constants;
 
 public class DevicesFragment extends Fragment {
     View rootView;
-    Activity activity;
+    MainActivity activity;
     private FindDevices findDevices;
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.activity = activity;
+        this.activity = (MainActivity) activity;
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.main_fragment, container, false);
-        ((MainActivity) activity).showSearch(true, true);
+        activity.showSearch(true, true);
 
         findDevices = new FindDevices(rootView, activity);
         findDevices.findFirstDevice();
@@ -62,5 +62,4 @@ public class DevicesFragment extends Fragment {
         findDevices.unregisterReceiver();
         super.onPause();
     }
-
 }

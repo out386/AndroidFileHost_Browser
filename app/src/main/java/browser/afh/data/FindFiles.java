@@ -50,7 +50,7 @@ import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevelopers;
-import browser.afh.types.AfhFolders.Files;
+import browser.afh.types.Files;
 import browser.afh.types.AfhFolders;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
@@ -60,7 +60,7 @@ public class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
-    private List<Files> filesD = new ArrayList<>();
+    private ArrayList<Files> filesD = new ArrayList<>();
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
@@ -233,7 +233,7 @@ public class FindFiles {
 
                                 filesD.add(file);
                             }
-                            print();
+                            print(false);
                         }
 
                         if (foldersList != null && foldersList.size() > 0) {
@@ -291,14 +291,18 @@ public class FindFiles {
     }
 
     @DebugLog
-    private void print() {
+    private void print(boolean isRestore) {
         if(sortByDate) {
             Collections.sort(filesD, Comparators.byUploadDate);
         } else {
             Collections.sort(filesD, Comparators.byFileName);
         }
         if (BuildConfig.DEBUG) {
-            Log.i(TAG, "New Files: Device changed : " + filesD.size() + " items");
+            Log.i(TAG, "New Files: Files changed : " + filesD.size() + " items");
+        }
+        if (isRestore) {
+            adapter.clear();
+            adapter.addAll(filesD);
         }
         adapter.notifyDataSetChanged();
     }
@@ -314,5 +318,14 @@ public class FindFiles {
         snackbarIntent.removeExtra(Constants.EXTRA_SNACKBAR_MESSAGE);
         snackbarIntent.putExtra(Constants.EXTRA_SNACKBAR_MESSAGE, messageRes);
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(snackbarIntent);
+    }
+
+    public ArrayList<Files> getFiles() {
+        return filesD;
+    }
+
+    public void setList(ArrayList<Files> list) {
+        filesD = list;
+        print(true);
     }
 }

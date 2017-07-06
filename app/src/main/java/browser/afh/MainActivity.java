@@ -24,6 +24,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -44,6 +45,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -81,6 +83,8 @@ import browser.afh.fragments.SettingsFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
+import browser.afh.types.AfhFolders;
+import browser.afh.types.Files;
 import hugo.weaving.DebugLog;
 import io.fabric.sdk.android.Fabric;
 
@@ -264,8 +268,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             return;
         }
 
-        changeFragment(new DevicesFragment());
-
         searchView.setHint(getResources().getString(R.string.search_hint));
         searchView.setFocusable(false);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -296,6 +298,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 drawer.openDrawer();
             }
         });
+
+
+        if (savedInstanceState == null)
+            changeFragment(new DevicesFragment());
     }
 
 
@@ -324,12 +330,14 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                                 R.animator.fade_in_enter, R.animator.fade_out_exit);
 
             } else {
+                if (fragment instanceof SettingsFragment)
                 appBarLayout.setExpanded(false, true);
                 fragmentTransaction.addToBackStack(null);
                 setText(null);
             }
             showSearch(false, false);
         }
+
         fragmentTransaction
                 .replace(R.id.mainFrame, fragment)
                 .commit();
@@ -506,4 +514,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         LocalBroadcastManager.getInstance(this).unregisterReceiver(snackbarMakeReceiver);
         super.onDestroy();
     }
+    private Fragment getCurrentFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count <= 0)
+            return null;
+        String fragmentTag = fragmentManager.getBackStackEntryAt(count - 1).getName();
+        return fragmentManager.findFragmentByTag(fragmentTag);
+    }
+
 }
