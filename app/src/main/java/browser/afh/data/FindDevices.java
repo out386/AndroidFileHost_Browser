@@ -64,6 +64,7 @@ import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
+import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevices;
 import browser.afh.types.DeviceItem;
 import hugo.weaving.DebugLog;
@@ -143,7 +144,7 @@ public class FindDevices {
         final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
         deviceRecyclerView.addItemDecoration(decoration);
         TouchScrollBar materialScrollBar = new TouchScrollBar(rootView.getContext(), deviceRecyclerView, true);
-        materialScrollBar.setHandleColour(ContextCompat.getColor(rootView.getContext(), R.color.accent));
+        materialScrollBar.setHandleColour(Utils.getPrefsColour(2, rootView.getContext()));
         materialScrollBar.addIndicator(new AlphabetIndicator(rootView.getContext()), true);
 
         /* Needed to prevent PullRefreshLayout from refreshing every time someone
