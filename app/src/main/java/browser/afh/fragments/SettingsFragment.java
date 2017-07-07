@@ -31,11 +31,12 @@ import browser.afh.R;
 import static browser.afh.tools.Constants.TAG;
 
 public class SettingsFragment extends PreferenceFragment {
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
-        MainActivity mainActivity =  (MainActivity) getActivity();
+        MainActivity mainActivity = (MainActivity) getActivity();
         getPreferenceScreen().getPreference(1).setOnPreferenceClickListener(preference -> {
             mainActivity.showColourDialog(1);
             return true;

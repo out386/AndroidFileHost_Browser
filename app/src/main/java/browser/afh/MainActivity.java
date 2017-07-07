@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private List<Long> drawerPositions = new ArrayList<>();
     private AsyncTask checkConnectivity;
     private AppUpdater appUpdater;
+    private SearchView searchView;
 
     private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
         @Override
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             // This will crash the app if a debug build tries to use Crashlytics.log
             Fabric.with(this, new Crashlytics());
         }
-        final SearchView searchView = (SearchView) findViewById(R.id.searchView);
+        searchView = (SearchView) findViewById(R.id.searchView);
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
@@ -264,6 +265,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         searchView.setHint(getResources().getString(R.string.search_hint));
         searchView.setFocusable(false);
+        searchView.setVisibility(View.GONE);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -306,7 +308,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
         if (fragment instanceof DevicesFragment) {
             setText(null);
-            showSearch(true, true);
             appBarLayout.setExpanded(true, true);
 
             for (int i = 0; i < getFragmentManager().getBackStackEntryCount(); i++)
@@ -328,8 +329,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
 
             } else {
-                if (fragment instanceof SettingsFragment)
-                    appBarLayout.setExpanded(false, true);
+                if (fragment instanceof SettingsFragment) {
+                    showSearch(false, true);
+                    appBarLayout.setExpanded(true, true);
+                }
                 fragmentTransaction.addToBackStack(null);
                 setText(null);
             }
@@ -383,16 +386,15 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @DebugLog
     public void showSearch(boolean show, boolean isAnim) {
-        final SearchView search = (SearchView) findViewById(R.id.searchView);
         if (!isAnim) {
-            search.setVisibility(show ? View.VISIBLE : View.GONE);
+            searchView.setVisibility(show ? View.VISIBLE : View.GONE);
             return;
         }
         if (show) {
-            search.setTranslationY(-search.getHeight());
-            search.setAlpha(0);
-            search.setVisibility(View.VISIBLE);
-            search.animate()
+            searchView.setTranslationY(-searchView.getHeight());
+            searchView.setAlpha(0);
+            searchView.setVisibility(View.VISIBLE);
+            searchView.animate()
                     .setDuration(Constants.ANIM_DURATION)
                     .translationY(0)
                     .alpha(1)
@@ -400,25 +402,24 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            search.setVisibility(View.VISIBLE);
+                            searchView.setVisibility(View.VISIBLE);
 
                         }
                     });
 
         } else {
-            search.setTranslationY(0);
-            search.setAlpha(1);
-            search.setVisibility(View.VISIBLE);
-            search.animate()
+            searchView.setTranslationY(0);
+            searchView.setAlpha(1);
+            searchView.setVisibility(View.VISIBLE);
+            searchView.animate()
                     .setDuration(Constants.ANIM_DURATION)
-                    .translationY(-search.getHeight())
+                    .translationY(-searchView.getHeight())
                     .alpha(0)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            search.setVisibility(View.GONE);
-
+                            searchView.setVisibility(View.GONE);
                         }
                     });
         }

@@ -56,6 +56,6 @@
         android:id="@+id/searchView"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        app:search_voice="false" />
+        app:search_voice="false"/>
 
 </android.support.design.widget.CoordinatorLayout>
