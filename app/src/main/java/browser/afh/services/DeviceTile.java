@@ -32,20 +32,8 @@ import browser.afh.tools.Prefs;
 
 @TargetApi(Build.VERSION_CODES.N)
 public class DeviceTile extends TileService {
-
     @Override
-    public void onClick() {
-        String e = new Prefs(getApplicationContext()).get(Constants.EXTRA_DEVICE_ID, null);
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(Constants.EXTRA_DEVICE_ID, e);
-        startActivityAndCollapse(intent);
-
-
-        /* This should be done in onStartListening for proper working,
-         * but trying to avoid reading from  sharedprefs every time the user opens QS
-         */
-
-        final Tile tile = getQsTile();
+    public void onStartListening() {final Tile tile = getQsTile();
         String label = new Prefs(getApplicationContext()).get("device_name", null);
 
         if (label == null) {
@@ -56,6 +44,15 @@ public class DeviceTile extends TileService {
             tile.setLabel(label);
             tile.updateTile();
         }
+        super.onStartListening();
+    }
+
+    @Override
+    public void onClick() {
+        String e = new Prefs(getApplicationContext()).get(Constants.EXTRA_DEVICE_ID, null);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(Constants.EXTRA_DEVICE_ID, e);
+        startActivityAndCollapse(intent);
 
         super.onClick();
     }
