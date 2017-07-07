@@ -71,13 +71,7 @@ public class AfhAdapter extends ArrayAdapter<Files> {
                                     .title(R.string.no_browser_dialog_title)
                                     .content(R.string.no_browser_dialog_content)
                                     .neutralText(R.string.no_browser_dialog_assert)
-                                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                            dialog.dismiss();
-                                        }
-
-                                    })
+                                    .onNeutral((dialog, which) -> dialog.dismiss())
                                     .show();
                         }
                         return false;
@@ -97,21 +91,13 @@ public class AfhAdapter extends ArrayAdapter<Files> {
                                                     .title(R.string.no_browser_dialog_title)
                                                     .content(R.string.no_browser_dialog_content)
                                                     .neutralText(R.string.no_browser_dialog_assert)
-                                                    .onNeutral(new MaterialDialog.SingleButtonCallback() {
-                                                        @Override
-                                                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                            dialog.dismiss();
-                                                        }
-
-                                                    })
+                                                    .onNeutral((dialog1, which1) -> dialog1.dismiss())
                                                     .show();
                                         }
                                         dialog.dismiss();
                                     }
                             )
-                            .onNeutral((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> {
-                                        dialog.dismiss();
-                                    }
+                            .onNeutral((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> dialog.dismiss()
                             )
                             .show());
         }

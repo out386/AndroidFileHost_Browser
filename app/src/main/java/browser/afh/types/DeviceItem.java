@@ -18,6 +18,11 @@
 package browser.afh.types;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +36,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import browser.afh.R;
+import browser.afh.tools.Utils;
 
 public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceItem, DeviceItem.ViewHolder> implements Serializable {
     private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
@@ -57,11 +63,13 @@ public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceIte
         viewHolder.dName.setText(getModel().device_name);
 
         if (viewHolder.dImage != null) {
+            Drawable placeholder = ContextCompat.getDrawable(viewHolder.dImage.getContext(), R.drawable.ic_device_placeholder);
+            DrawableCompat.setTint(placeholder, Utils.getPrefsColour(1, viewHolder.dImage.getContext()));
             Context context = viewHolder.dImage.getContext();
             Glide
                     .with(context)
                     .load(getModel().image)
-                    .placeholder(R.drawable.ic_device_placeholder)
+                    .placeholder(placeholder)
                     .crossFade()
                     .fitCenter()
                     .into(viewHolder.dImage);

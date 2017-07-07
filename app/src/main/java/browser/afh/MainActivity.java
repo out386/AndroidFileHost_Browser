@@ -434,7 +434,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                 .setShortLabel(deviceName)
                 .setIcon(Icon.createWithResource(this, R.drawable.ic_device_placeholder))
                 .build();
-
         sM.setDynamicShortcuts(Collections.singletonList(shortcut));
     }
 
