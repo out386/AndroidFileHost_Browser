@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         prefs.put(Constants.PREF_ASSERT_UNOFFICIAL_CLIENT, true);
                         if (BuildConfig.PLAY_COMPATIBLE) useLabsVariantDialog.show();
                     })
+                    .positiveColor(Utils.getPrefsColour(2, this))
                     .show();
         }
 
@@ -478,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         .setTitle(R.string.bottom_dialog_warning_title)
                         .setContent(R.string.bottom_dialog_warning_desc)
                         .setPositiveText(R.string.bottom_dialog_positive_text)
-                        .setNegativeTextColorResource(R.color.colorAccent)
+                        .setNegativeTextColorResource(Utils.getPrefsColour(2,context))
                         .onPositive(BottomDialog::dismiss)
                         .show();
             }

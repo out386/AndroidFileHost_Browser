@@ -21,6 +21,7 @@ package browser.afh.data;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -69,6 +70,7 @@ public class FindFiles {
     private Context mContext;
     private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
     private ListView fileList;
+    private CheckBox sortCB;
 
     @DebugLog
     public FindFiles(final View rootView, Context context) {
@@ -78,7 +80,8 @@ public class FindFiles {
         sdf.setTimeZone(TimeZone.getDefault());
         retroApi = RetroClient.getApi(rootView.getContext(), true);
         fileList = rootView.findViewById(R.id.list);
-        CheckBox sortCB = rootView.findViewById(R.id.sortCB);
+        sortCB = rootView.findViewById(R.id.sortCB);
+        Utils.tintCheckbox(sortCB, mContext);
 
         sortCB.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
                     sortByDate = isChecked;

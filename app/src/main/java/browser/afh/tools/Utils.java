@@ -21,11 +21,13 @@ package browser.afh.tools;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 
 import java.text.DecimalFormat;
@@ -104,5 +106,15 @@ public class Utils {
                 colorAccent = -1;
                 break;
         }
+    }
+
+    public static void tintCheckbox(CheckBox checkBox, Context context) {
+        int[] [] states = {
+                {android.R.attr.state_checked},
+                {-android.R.attr.state_checked}
+        };
+        int [] colours = {Utils.getPrefsColour(2, context), 0xaa000000};
+
+        checkBox.setButtonTintList(new ColorStateList(states, colours));
     }
 }
