@@ -119,7 +119,7 @@ public class RetroClient {
             Request request = chain.request();
 
             // Avoiding isConnectingToInternet to prevent thread troubles
-            if (useOldCache || !ConnectionDetector.networkConnectivity(context)) {
+            if (useOldCache || !(new ConnectionDetector()).networkConnectivity(context)) {
                 CacheControl cacheControl = new CacheControl.Builder()
                         .maxStale(30, TimeUnit.DAYS)
                         .build();

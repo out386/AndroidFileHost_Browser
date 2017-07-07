@@ -33,7 +33,7 @@ import hugo.weaving.DebugLog;
 public class ConnectionDetector {
 
     @DebugLog
-    public static boolean isConnectingToInternet(Context context) {
+    public boolean isConnectingToInternet(Context context) {
         if (networkConnectivity(context)) {
             try {
                 HttpURLConnection urlc = (HttpURLConnection) (new URL(
@@ -52,7 +52,7 @@ public class ConnectionDetector {
             return false;
     }
 
-    public static boolean networkConnectivity(Context context) {
+    public boolean networkConnectivity(Context context) {
         ConnectivityManager cm = (ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = cm.getActiveNetworkInfo();

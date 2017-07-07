@@ -65,6 +65,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Snackbar snackbar;
     private FrameLayout frame;
     private List<Long> drawerPositions = new ArrayList<>();
+    private AsyncTask checkConnectivity;
+    private AppUpdater appUpdater;
 
     private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
         @Override
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         findViewById(R.id.app_bar_bg).setBackgroundColor(Utils.getPrefsColour(1, getApplicationContext()));
         getWindow().setNavigationBarColor(Utils.getPrefsColour(1, getApplicationContext()));
 
-        updatesCheck();
+        updatesCheck(this);
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
                 .withHeaderBackground(new ColorDrawable(Utils.getPrefsColour(1, getApplicationContext())))
@@ -248,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     .show();
         }
 
-        new CheckConnectivity(this).execute();
+        checkConnectivity = new CheckConnectivity(this).execute();
 
         if (deviceID != null) {
             Bundle bundle = new Bundle();
@@ -436,32 +439,31 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @DebugLog
-    public void updatesCheck() {
-        new AppUpdater(this)
+    public void updatesCheck(Context context) {
+        appUpdater = new AppUpdater(context)
                 .setUpdateFrom(UpdateFrom.GITHUB)
                 .setGitHubUserAndRepo("out386", "AndroidFileHost_Browser")
-                .showEvery(2)
                 .showAppUpdated(false)
-                .setDisplay(Display.DIALOG)
-                .start();
+                .setDisplay(Display.DIALOG);
+        appUpdater.start();
     }
 
-    private class CheckConnectivity extends AsyncTask<Void, Void, Void> {
-        boolean isConnected;
-        Context context;
+    private static class CheckConnectivity extends AsyncTask<Void, Void, Boolean> {
+        WeakReference<Context> contextReference;
 
         CheckConnectivity(Context context) {
-            this.context = context;
+            contextReference = new WeakReference<>(context);
         }
 
         @Override
-        protected Void doInBackground(Void... v) {
-            isConnected = ConnectionDetector.isConnectingToInternet(context);
-            return null;
+        protected Boolean doInBackground(Void... v) {
+            Context context = contextReference.get();
+            return context != null && new ConnectionDetector().isConnectingToInternet(context);
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(Boolean isConnected) {
+            Context context = contextReference.get();
             if (!isConnected && !((Activity) context).isFinishing()) {
                 new BottomDialog.Builder(context)
                         .setTitle(R.string.bottom_dialog_warning_title)
@@ -492,6 +494,8 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     @Override
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(snackbarMakeReceiver);
+        checkConnectivity.cancel(true);
+        appUpdater.stop();
         super.onDestroy();
     }
 
