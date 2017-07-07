@@ -256,9 +256,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         if (deviceID != null) {
             Bundle bundle = new Bundle();
             bundle.putString(Constants.EXTRA_DEVICE_ID, deviceID);
-            Fragment mainFragment = new DevicesFragment();
+            Fragment mainFragment = new FilesFragment();
             mainFragment.setArguments(bundle);
-            changeFragment(mainFragment);
+            changeFragment(mainFragment, true);
             return;
         }
 
@@ -293,8 +293,11 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             changeFragment(new DevicesFragment());
     }
 
-
     public void changeFragment(Fragment fragment) {
+        changeFragment(fragment, false);
+    }
+
+    public void changeFragment(Fragment fragment, boolean forceAsFirstFragment) {
         FragmentTransaction fragmentTransaction = getFragmentManager()
                 .beginTransaction();
 
@@ -313,10 +316,16 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             drawerPositions.add(0L);
         } else {
             if (fragment instanceof FilesFragment) {
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction
-                        .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
-                                R.animator.fade_in_enter, R.animator.fade_out_exit);
+                if (! forceAsFirstFragment) {
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction
+                            .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
+                                    R.animator.fade_in_enter, R.animator.fade_out_exit);
+                } else {
+                    for (int i = 0; i < getFragmentManager().getBackStackEntryCount(); i++)
+                        getFragmentManager().popBackStack();
+                }
+
 
             } else {
                 if (fragment instanceof SettingsFragment)
