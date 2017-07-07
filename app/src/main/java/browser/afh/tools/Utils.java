@@ -19,8 +19,10 @@
 
 package browser.afh.tools;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -28,7 +30,12 @@ import android.widget.FrameLayout;
 
 import java.text.DecimalFormat;
 
+import browser.afh.R;
+
 public class Utils {
+    private static int colorPrimary = -1;
+    private static int colorAccent = -1;
+
     public static String sizeFormat(long size) {
         if (size <= 0)
             return null;
@@ -66,4 +73,36 @@ public class Utils {
         }
     }
 
+    public static int getPrefsColour(int type, Context context) {
+        Prefs prefs = new Prefs(context);
+        switch (type) {
+            case 1:
+                if (colorPrimary == -1) {
+                    colorPrimary = Integer.parseInt(prefs
+                            .get(Constants.PREFS_COLOR_PRIMARY, String.valueOf(
+                                    ContextCompat.getColor(context, R.color.colorPrimary))));
+                }
+                return colorPrimary;
+            case 2:
+                if (colorAccent == -1) {
+                    colorAccent = Integer.parseInt(prefs
+                            .get(Constants.PREFS_COLOR_ACCENT, String.valueOf(
+                                    ContextCompat.getColor(context, R.color.colorAccent))));
+                }
+                return colorAccent;
+            default:
+                return 0xffffff;
+        }
+    }
+
+    public static void resetColours(int type) {
+        switch (type) {
+            case 1:
+                colorPrimary = -1;
+                break;
+            case 2:
+                colorAccent = -1;
+                break;
+        }
+    }
 }

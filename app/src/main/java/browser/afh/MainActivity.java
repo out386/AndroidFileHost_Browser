@@ -40,7 +40,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -79,6 +78,7 @@ import browser.afh.fragments.SettingsFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
+import browser.afh.tools.Utils;
 import hugo.weaving.DebugLog;
 import io.fabric.sdk.android.Fabric;
 
@@ -94,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private Snackbar snackbar;
     private FrameLayout frame;
     private List<Long> drawerPositions = new ArrayList<>();
-    private int colorPrimary = -1;
-    private int colorAccent = -1;
 
     private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
         @Override
@@ -131,13 +129,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         IntentFilter snackbarMakeFilter = new IntentFilter(Constants.INTENT_SNACKBAR);
         LocalBroadcastManager.getInstance(this).registerReceiver(snackbarMakeReceiver, snackbarMakeFilter);
 
-        findViewById(R.id.app_bar_bg).setBackgroundColor(getPrefsColour(1));
-        getWindow().setNavigationBarColor(getPrefsColour(1));
+        findViewById(R.id.app_bar_bg).setBackgroundColor(Utils.getPrefsColour(1, getApplicationContext()));
+        getWindow().setNavigationBarColor(Utils.getPrefsColour(1, getApplicationContext()));
 
         updatesCheck();
         AccountHeader header = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(new ColorDrawable(getPrefsColour(1)))
+                .withHeaderBackground(new ColorDrawable(Utils.getPrefsColour(1, getApplicationContext())))
                 .withProfileImagesVisible(false)
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
@@ -153,19 +151,19 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                         new PrimaryDrawerItem().withName(R.string.drawer_title_home)
                                 .withIcon(R.drawable.ic_home)
                                 .withIdentifier(0)
-                                .withIconColor(getPrefsColour(2))
-                                .withSelectedIconColor(getPrefsColour(1))
+                                .withIconColor(Utils.getPrefsColour(2, getApplicationContext()))
+                                .withSelectedIconColor(Utils.getPrefsColour(1, getApplicationContext()))
                                 .withIconTintingEnabled(true)
-                                .withSelectedTextColor(getPrefsColour(1))
+                                .withSelectedTextColor(Utils.getPrefsColour(1, getApplicationContext()))
                                 .withDescription(R.string.drawer_desc_home),
                         new PrimaryDrawerItem()
                                 .withName(R.string.drawer_title_info)
                                 .withIcon(R.drawable.ic_info)
                                 .withIdentifier(1)
-                                .withIconColor(getPrefsColour(2))
-                                .withSelectedIconColor(getPrefsColour(1))
+                                .withIconColor(Utils.getPrefsColour(2, getApplicationContext()))
+                                .withSelectedIconColor(Utils.getPrefsColour(1, getApplicationContext()))
                                 .withIconTintingEnabled(true)
-                                .withSelectedTextColor(getPrefsColour(1))
+                                .withSelectedTextColor(Utils.getPrefsColour(1, getApplicationContext()))
                                 .withDescription(R.string.drawer_desc_info)
                                 .withSelectable(false),
                         new DividerDrawerItem(),
@@ -173,10 +171,10 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                                 .withName(R.string.drawer_title_settings)
                                 .withIcon(R.drawable.ic_settings)
                                 .withIdentifier(2)
-                                .withIconColor(getPrefsColour(2))
-                                .withSelectedIconColor(getPrefsColour(1))
+                                .withIconColor(Utils.getPrefsColour(2, getApplicationContext()))
+                                .withSelectedIconColor(Utils.getPrefsColour(1, getApplicationContext()))
                                 .withIconTintingEnabled(true)
-                                .withSelectedTextColor(getPrefsColour(1))
+                                .withSelectedTextColor(Utils.getPrefsColour(1, getApplicationContext()))
                                 .withDescription(R.string.drawer_desc_settings)
                 )
                 .withCloseOnClick(true)
@@ -501,13 +499,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         switch (type) {
             case 1:
                 new ColorChooserDialog.Builder(this, R.string.dialog_colour_primary_title)
-                        .preselect(getPrefsColour(1))
+                        .preselect(Utils.getPrefsColour(1, getApplicationContext()))
                         .show();
                 break;
             case 2:
                 new ColorChooserDialog.Builder(this, R.string.dialog_colour_accent_title)
                         .accentMode(true)
-                        .preselect(getPrefsColour(2))
+                        .preselect(Utils.getPrefsColour(2, getApplicationContext()))
                         .show();
                 break;
         }
@@ -517,30 +515,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     public void onColorSelection(@NonNull ColorChooserDialog dialog, @ColorInt int color) {
         if (R.string.dialog_colour_primary_title == dialog.getTitle()) {
             prefs.put(Constants.PREFS_COLOR_PRIMARY, String.valueOf(color));
+            Utils.resetColours(1);
         } else if (R.string.dialog_colour_accent_title == dialog.getTitle()) {
             prefs.put(Constants.PREFS_COLOR_ACCENT, String.valueOf(color));
+            Utils.resetColours(2);
         }
         recreate();
     }
 
-    private int getPrefsColour(int type) {
-        switch (type) {
-            case 1:
-                if (colorPrimary == -1) {
-                    colorPrimary = Integer.parseInt(prefs
-                            .get(Constants.PREFS_COLOR_PRIMARY, String.valueOf(
-                                    ContextCompat.getColor(this, R.color.colorPrimary))));
-                }
-                return colorPrimary;
-            case 2:
-                if (colorAccent == -1) {
-                    colorAccent = Integer.parseInt(prefs
-                            .get(Constants.PREFS_COLOR_ACCENT, String.valueOf(
-                                    ContextCompat.getColor(this, R.color.colorAccent))));
-                }
-                return colorAccent;
-            default:
-                return 0xffffff;
-        }
-    }
+
 }
