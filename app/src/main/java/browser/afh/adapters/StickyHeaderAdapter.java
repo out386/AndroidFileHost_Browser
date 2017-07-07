@@ -1,5 +1,6 @@
 package browser.afh.adapters;
 
+import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 
 import browser.afh.R;
+import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevices;
 import browser.afh.types.DeviceItem;
 
@@ -31,8 +33,10 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
 
         //in our sample we want a separate header per first letter of our items
         //this if is not necessary for your code, we only use it as this sticky header is reused for different item implementations
-        if (item instanceof AfhDevices.Device && ((AfhDevices.Device) item).manufacturer != null) {
-            return Character.toUpperCase(((AfhDevices.Device) item).manufacturer.charAt(0));
+        if (item instanceof DeviceItem) {
+            AfhDevices.Device data = ((DeviceItem) item).getModel();
+            if (data.manufacturer != null)
+                return Character.toUpperCase((data.manufacturer.charAt(0)));
         }
         return -1;
     }
@@ -41,18 +45,25 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
         //we create the view for the header
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_header, parent, false);
+        TextView tv = view.findViewById(R.id.header_textview);
+        View v = view.findViewById(R.id.header_line);
+        tv.setTextColor(Utils.getPrefsColour(2, view.getContext()));
+        v.setBackground(new ColorDrawable(Utils.getPrefsColour(2, view.getContext())));
         return new RecyclerView.ViewHolder(view) {
         };
     }
 
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
-        TextView textView = holder.itemView.findViewById(R.id.headerTV);
+        TextView textView = holder.itemView.findViewById(R.id.header_textview);
 
         IItem item = getItem(position);
-        if (item instanceof AfhDevices.Device && ((AfhDevices.Device) item).manufacturer != null) {
-            //based on the position we set the headers text
-            textView.setText(String.valueOf(((AfhDevices.Device) item).manufacturer.charAt(0)).toUpperCase(Locale.getDefault()));
+        if (item instanceof DeviceItem) {
+            AfhDevices.Device data = ((DeviceItem) item).getModel();
+            if (data.manufacturer != null) {
+                //based on the position we set the headers text
+                textView.setText(String.valueOf(data.manufacturer.charAt(0)).toUpperCase(Locale.getDefault()));
+            }
         }
     }
 
