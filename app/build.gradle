@@ -19,17 +19,10 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "26.0.1"
 
     lintOptions {
         abortOnError false
-    }
-
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File(
-                    output.outputFile.parent, "afh-browser_beta_"+versionCode+".apk")
-        }
     }
 
     defaultConfig {
@@ -40,6 +33,13 @@ android {
         versionName "1.0.4"
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            output.outputFile = new File(
+                    output.outputFile.parent, "afh-browser_beta_"+versionCode+".apk")
+        }
+    }
+    
     signingConfigs {
         release {
             storeFile file("../extras/keystore/keystore.jks")
@@ -52,7 +52,7 @@ android {
         release {
             signingConfig signingConfigs.release
             minifyEnabled false
-            shrinkResources true
+            shrinkResources false
             buildConfigField("boolean", "PLAY_COMPATIBLE", "false")
         }
         debug {

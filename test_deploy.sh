@@ -16,4 +16,4 @@ curl -F chat_id="$tg_msf_id" -F parse_mode="markdown" -F text="$tg_message" "htt
 
 # Send the APK directly to the Telegram bot
 curl -F chat_id="$tg_out_id" -F document=@$apk "https://api.telegram.org/bot$tg_bot_key/sendDocument"
-curl -F chat_id="$tg_msf_id" -F document=@$apk "https://api.telegram.org/bot$tg_bot_id/sendDocument"
+curl -F chat_id="$tg_msf_id" -F document=@$apk "https://api.telegram.org/bot$tg_bot_key/sendDocument"
