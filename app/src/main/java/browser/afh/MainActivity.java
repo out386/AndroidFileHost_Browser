@@ -373,6 +373,11 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public void onBackPressed() {
+        getFragmentManager()
+                .beginTransaction()
+                .remove(getFragmentManager()
+                        .findFragmentByTag(FilesFragment.KEY_FILES_RETAIN_FRAGMENT))
+                .commit();
         if (snackbar != null)
             snackbar.dismiss();
         int size = drawerPositions.size();

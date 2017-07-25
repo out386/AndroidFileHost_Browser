@@ -21,7 +21,6 @@ package browser.afh.data;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -51,8 +50,8 @@ import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevelopers;
-import browser.afh.types.Files;
 import browser.afh.types.AfhFolders;
+import browser.afh.types.Files;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,12 +60,12 @@ public class FindFiles {
     private final PullRefreshLayout pullRefreshLayout;
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
+    private final View rootView;
     private ArrayList<Files> filesD = new ArrayList<>();
     private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
     private ApiInterface retroApi;
-    private final View rootView;
     private Context mContext;
     private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
     private ListView fileList;
@@ -293,8 +292,8 @@ public class FindFiles {
         if (isRestore) {
             AfhAdapter adapter = new AfhAdapter(rootView.getContext(), R.layout.afh_items, filesD);
             fileList.setAdapter(adapter);
-        }
-        adapter.notifyDataSetChanged();
+        } else
+            adapter.notifyDataSetChanged();
     }
 
     public void reset() {
