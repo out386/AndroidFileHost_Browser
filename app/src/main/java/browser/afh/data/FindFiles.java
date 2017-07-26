@@ -23,6 +23,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -80,7 +81,9 @@ public class FindFiles {
     private Context mContext;
     private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
     private RecyclerView mRecyclerView;
-    private FastAdapter<FileItem> fastAdapter;
+    private Handler mDisplayHandler = new Handler();
+    private ClearRunnable mRunnable = new ClearRunnable();
+    private LinearLayoutManager layoutManager;
 
     @DebugLog
     public FindFiles(final View rootView, Context context) {
@@ -99,9 +102,10 @@ public class FindFiles {
                 }
         );
 
-        fastAdapter = new FastAdapter<>();
+        layoutManager = new LinearLayoutManager(rootView.getContext());
+        FastAdapter<FileItem> fastAdapter = new FastAdapter<>();
         mFilesAdapter = new GenericItemAdapter<>(FileItem.class, Files.class);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         fastAdapter.withSelectable(true);
 
@@ -274,7 +278,6 @@ public class FindFiles {
                         }
 
                         if (filesList != null && filesList.size() > 0) {
-                            pullRefreshLayout.setRefreshing(false);
 
                             for (Files file : filesList) {
                                 file.screenname = url.screenname;
@@ -308,7 +311,6 @@ public class FindFiles {
                                 }
 
                                 filesD.add(file);
-                                mFilesAdapter.addModel(file);
                             }
                             print(false);
                         }
@@ -348,12 +350,12 @@ public class FindFiles {
                 @Override
                 public void onFailure(Call<AfhFolders> call, Throwable t) {
 
-                    pullRefreshLayout.setRefreshing(false);
                     // AfhFolders.DATA will be an Object, but if it is empty, it'll be an array
                     if (!(t instanceof UnknownHostException)
                             && !(t instanceof IllegalStateException)
                             && !(t instanceof JsonSyntaxException)
                             && !t.toString().contains("Canceled")) {
+                        pullRefreshLayout.setRefreshing(false);
                         Log.i(TAG, "onErrorResponse dirs " + t.toString());
                     } else if (t instanceof UnknownHostException) {
                         showSnackbar(R.string.files_list_no_cache_text);
@@ -365,18 +367,15 @@ public class FindFiles {
     }
 
     @DebugLog
-    private void print(boolean isRestore) {
-        if (sortByDate) {
-            Collections.sort(filesD, Comparators.byUploadDate);
-        } else {
-            Collections.sort(filesD, Comparators.byFileName);
-        }
-        if (BuildConfig.DEBUG) {
-            Log.i(TAG, "New Files: Files changed : " + filesD.size() + " items");
-        }
-        if (isRestore) {
-            mFilesAdapter.clear();
-            mFilesAdapter.addModel(filesD);
+    private void print(boolean isInstant) {
+        final int INTERVAL = isInstant ? 0 : 1000;
+
+        // Quit laughing. Please?
+        if (System.currentTimeMillis() - mRunnable.time >= INTERVAL) {
+            mDisplayHandler.removeCallbacks(mRunnable);
+            mRunnable = new ClearRunnable();
+            // Needed to prevent 500+ rapid calls to reload while loading from the cache
+            mDisplayHandler.postDelayed(mRunnable, INTERVAL);
         }
     }
 
@@ -409,5 +408,24 @@ public class FindFiles {
         builder.setShowTitle(true);
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.launchUrl(mContext, Uri.parse(Url));
+    }
+
+    private class ClearRunnable implements Runnable {
+        long time = System.currentTimeMillis();
+
+        @Override
+        public void run() {
+            if (sortByDate) {
+                Collections.sort(filesD, Comparators.byUploadDate);
+            } else {
+                Collections.sort(filesD, Comparators.byFileName);
+            }
+            if (pullRefreshLayout != null)
+                pullRefreshLayout.setRefreshing(false);
+            int position = layoutManager.findFirstVisibleItemPosition();
+            mFilesAdapter.clear();
+            mFilesAdapter.addModel(filesD);
+            mRecyclerView.scrollToPosition(position);
+        }
     }
 }
