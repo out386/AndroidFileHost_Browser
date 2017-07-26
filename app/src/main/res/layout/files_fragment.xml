@@ -32,7 +32,7 @@
                 android:layout_centerInParent="true"
                 android:padding="20dp"
                 android:text="@string/sort"
-                android:textColor="@color/dark_text_color"/>
+                android:textColor="@color/dark_text_color" />
 
             <com.baoyz.widget.PullRefreshLayout
                 android:id="@+id/swipeRefreshLayout"
@@ -41,14 +41,22 @@
                 android:layout_below="@id/sortCB"
                 android:background="@color/list_card_background">
 
-                <ListView
-                    android:id="@+id/list"
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_alignParentStart="true"
                     android:layout_below="@+id/sortCB"
                     android:background="@color/list_card_background"
-                    android:divider="@null" />
+                    android:clickable="false">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recycler"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="true"
+                        android:background="@color/list_card_background"
+                        android:divider="@null" />
+
+                </RelativeLayout>
 
             </com.baoyz.widget.PullRefreshLayout>
 

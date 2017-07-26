@@ -34,11 +34,13 @@ public class DevicesFragment extends Fragment {
     View rootView;
     MainActivity activity;
     private FindDevices findDevices;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.activity = (MainActivity) activity;
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

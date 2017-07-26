@@ -19,18 +19,29 @@
 
 package browser.afh.data;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ListView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.baoyz.widget.PullRefreshLayout;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonSyntaxException;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.adapters.GenericItemAdapter;
 
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -43,7 +54,7 @@ import java.util.TimeZone;
 
 import browser.afh.BuildConfig;
 import browser.afh.R;
-import browser.afh.adapters.AfhAdapter;
+import browser.afh.recycler.FileItem;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Retrofit.ApiInterface;
@@ -61,15 +72,15 @@ public class FindFiles {
     private final String TAG = Constants.TAG;
     private final SimpleDateFormat sdf;
     private final View rootView;
+    private final GenericItemAdapter<Files, FileItem> mFilesAdapter;
     private ArrayList<Files> filesD = new ArrayList<>();
-    private AfhAdapter adapter;
     private String savedID;
     private boolean sortByDate;
     private ApiInterface retroApi;
     private Context mContext;
     private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
-    private ListView fileList;
-    private CheckBox sortCB;
+    private RecyclerView mRecyclerView;
+    private FastAdapter<FileItem> fastAdapter;
 
     @DebugLog
     public FindFiles(final View rootView, Context context) {
@@ -78,8 +89,8 @@ public class FindFiles {
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         retroApi = RetroClient.getApi(rootView.getContext(), true);
-        fileList = rootView.findViewById(R.id.list);
-        sortCB = rootView.findViewById(R.id.sortCB);
+        mRecyclerView = rootView.findViewById(R.id.recycler);
+        CheckBox sortCB = rootView.findViewById(R.id.sortCB);
         Utils.tintCheckbox(sortCB, mContext);
 
         sortCB.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
@@ -87,16 +98,89 @@ public class FindFiles {
                     print(true);
                 }
         );
+
+        fastAdapter = new FastAdapter<>();
+        mFilesAdapter = new GenericItemAdapter<>(FileItem.class, Files.class);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        fastAdapter.withSelectable(true);
+
         pullRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(() -> {
                     filesD.clear();
-                    adapter.notifyDataSetChanged();
+                    mFilesAdapter.clear();
                     retroApi = RetroClient.getApi(rootView.getContext(), false);
                     start(savedID);
                 }
         );
-        adapter = new AfhAdapter(rootView.getContext(), R.layout.afh_items, filesD);
-        fileList.setAdapter(adapter);
+
+        /* Needed to prevent PullRefreshLayout from refreshing every time someone
+         * tries to scroll up. The fast scrollbar needs RecyclerView to be a child
+         * of a RelativeLayout. PullRefreshLayout needs a scrollable child. That makes this
+         * workaround necessary.
+         */
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int scroll = mRecyclerView.computeVerticalScrollOffset();
+                if (scroll == 0) {
+                    /*appbarScroll.setText(null);
+                    appbarScroll.expand();*/
+                    pullRefreshLayout.setEnabled(true);
+                } else {
+                    pullRefreshLayout.setEnabled(false);
+                    /*if (scroll > 50) {
+                        appbarScroll.collapse();
+                    }*/
+                }
+            }
+        });
+
+        fastAdapter.withOnClickListener((View v, IAdapter<FileItem> adapter, FileItem item, int position) -> {
+                    Files p = item.getModel();
+                    new MaterialDialog.Builder(context)
+                            .title(p.name)
+                            .content(String.format(context.getString(R.string.file_dialog_content), p.file_size, p.upload_date, p.screenname, p.downloads))
+                            .positiveText(R.string.file_dialog_positive_button_label)
+                            .neutralText(R.string.file_dialog_neutral_button_label)
+                            .onPositive((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> {
+                                        try {
+                                            customTab(p.url);
+                                        } catch (ActivityNotFoundException exc) {
+                                            new MaterialDialog.Builder(context)
+                                                    .title(R.string.no_browser_dialog_title)
+                                                    .content(R.string.no_browser_dialog_content)
+                                                    .neutralText(R.string.no_browser_dialog_assert)
+                                                    .onNeutral((dialog1, which1) -> dialog1.dismiss())
+                                                    .show();
+                                        }
+                                        dialog.dismiss();
+                                    }
+                            )
+                            .onNeutral((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> dialog.dismiss()
+                            )
+                            .show();
+                    return true;
+                }
+        );
+
+        fastAdapter.withOnLongClickListener((View v, IAdapter<FileItem> adapter, FileItem item, int position) -> {
+                    try {
+                        customTab(item.getModel().url);
+                    } catch (ActivityNotFoundException exc) {
+                        new MaterialDialog.Builder(context)
+                                .title(R.string.no_browser_dialog_title)
+                                .content(R.string.no_browser_dialog_content)
+                                .neutralText(R.string.no_browser_dialog_assert)
+                                .onNeutral((dialog, which) -> dialog.dismiss())
+                                .show();
+                    }
+                    return true;
+                }
+        );
+
+        mRecyclerView.setAdapter(mFilesAdapter.wrap(fastAdapter));
     }
 
     @DebugLog
@@ -224,6 +308,7 @@ public class FindFiles {
                                 }
 
                                 filesD.add(file);
+                                mFilesAdapter.addModel(file);
                             }
                             print(false);
                         }
@@ -290,17 +375,16 @@ public class FindFiles {
             Log.i(TAG, "New Files: Files changed : " + filesD.size() + " items");
         }
         if (isRestore) {
-            AfhAdapter adapter = new AfhAdapter(rootView.getContext(), R.layout.afh_items, filesD);
-            fileList.setAdapter(adapter);
-        } else
-            adapter.notifyDataSetChanged();
+            mFilesAdapter.clear();
+            mFilesAdapter.addModel(filesD);
+        }
     }
 
     public void reset() {
         RetroClient.cancelRequests();
         retroApi = RetroClient.getApi(rootView.getContext(), true);
         filesD.clear();
-        adapter.clear();
+        mFilesAdapter.clear();
     }
 
     private void showSnackbar(int messageRes) {
@@ -315,6 +399,15 @@ public class FindFiles {
 
     public void setList(ArrayList<Files> list) {
         filesD = list;
+        mFilesAdapter.clear();
+        mFilesAdapter.addModel(list);
         print(true);
+    }
+
+    private void customTab(String Url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setShowTitle(true);
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(mContext, Uri.parse(Url));
     }
 }

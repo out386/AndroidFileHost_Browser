@@ -15,11 +15,9 @@
  * along with AFH Browser. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package browser.afh.types;
+package browser.afh.recycler;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -37,6 +35,7 @@ import java.util.List;
 
 import browser.afh.R;
 import browser.afh.tools.Utils;
+import browser.afh.types.AfhDevices;
 
 public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceItem, DeviceItem.ViewHolder> implements Serializable {
     private static final ViewHolderFactory<? extends ViewHolder> FACTORY = new ItemFactory();
@@ -84,15 +83,15 @@ public class DeviceItem extends GenericAbstractItem<AfhDevices.Device, DeviceIte
             holder.dImage.setImageDrawable(null);
     }
 
+    @Override
+    public ViewHolderFactory<? extends ViewHolder> getFactory() {
+        return FACTORY;
+    }
+
     private static class ItemFactory implements ViewHolderFactory<ViewHolder> {
         public ViewHolder create(View v) {
             return new ViewHolder(v);
         }
-    }
-
-    @Override
-    public ViewHolderFactory<? extends ViewHolder> getFactory() {
-        return FACTORY;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

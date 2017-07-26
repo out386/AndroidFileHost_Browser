@@ -19,17 +19,13 @@
 
 package browser.afh.data;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,14 +33,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 
 import com.baoyz.widget.PullRefreshLayout;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonSyntaxException;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
-import com.mikepenz.fastadapter.IItemAdapter;
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
@@ -58,7 +52,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import browser.afh.R;
-import browser.afh.adapters.StickyHeaderAdapter;
+import browser.afh.recycler.DeviceItem;
+import browser.afh.recycler.StickyHeaderAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
@@ -66,7 +61,6 @@ import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevices;
-import browser.afh.types.DeviceItem;
 import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,25 +70,22 @@ public class FindDevices {
     private final String TAG = Constants.TAG;
     private final View rootView;
     private final PullRefreshLayout deviceRefreshLayout;
-    private List<AfhDevices.Device> devices = new ArrayList<>();
-    private int currentPage = 0;
     private final GenericItemAdapter<AfhDevices.Device, DeviceItem> devAdapter;
-    private FastAdapter<DeviceItem> fastAdapter;
-    private int pages[] = null;
-    private boolean morePagesRequested = false;
-    private FragmentInterface fragmentInterface;
-    private AppbarScroll appbarScroll;
-    private HSShortutInterface hsShortutInterface;
-    private final CardView deviceHolder;
-    private final CardView filesHolder;
-    private ApiInterface retro;
-
     private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             devAdapter.filter(intent.getStringExtra(Constants.EXTRA_SEARCH_QUERY));
         }
     };
+    private List<AfhDevices.Device> devices = new ArrayList<>();
+    private int currentPage = 0;
+    private FastAdapter<DeviceItem> fastAdapter;
+    private int pages[] = null;
+    private boolean morePagesRequested = false;
+    private FragmentInterface fragmentInterface;
+    private AppbarScroll appbarScroll;
+    private HSShortutInterface hsShortutInterface;
+    private ApiInterface retro;
 
     @DebugLog
     public FindDevices(final View rootView, Activity activity) {
@@ -107,8 +98,6 @@ public class FindDevices {
             Log.e(TAG, "FindDevices: ", e);
         }
 
-        deviceHolder = rootView.findViewById(R.id.deviceCardView);
-        filesHolder = rootView.findViewById(R.id.filesCardView);
         deviceRefreshLayout = rootView.findViewById(R.id.deviceRefresh);
 
         fastAdapter = new FastAdapter<>();
@@ -130,6 +119,7 @@ public class FindDevices {
                         LayoutInflater.from(rootView.getContext()).inflate(deviceLayoutRes, parent, false)
                 );
             }
+
             @Override
             public RecyclerView.ViewHolder onPostCreateViewHolder(RecyclerView.ViewHolder viewHolder) {
                 return viewHolder;
@@ -171,44 +161,44 @@ public class FindDevices {
         });
 
         devAdapter.withFilterPredicate((DeviceItem item, CharSequence constraint) ->
-                ! (item.getModel().device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
-                || item.getModel().manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()))
+                !(item.getModel().device_name.toUpperCase().contains(String.valueOf(constraint).toUpperCase())
+                        || item.getModel().manufacturer.toUpperCase().startsWith(String.valueOf(constraint).toUpperCase()))
         );
 
         retro = RetroClient.getApi(rootView.getContext(), true);
 
         deviceRefreshLayout.setOnRefreshListener(() -> {
-                devices.clear();
-                devAdapter.clear();
-                currentPage = 0;
-                morePagesRequested = false;
-                pages = null;
-                retro = RetroClient.getApi(rootView.getContext(), false);
-                findFirstDevice();
-            }
+                    devices.clear();
+                    devAdapter.clear();
+                    currentPage = 0;
+                    morePagesRequested = false;
+                    pages = null;
+                    retro = RetroClient.getApi(rootView.getContext(), false);
+                    findFirstDevice();
+                }
         );
 
         fastAdapter.withOnClickListener((View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) -> {
-                fragmentInterface.showDevice(item.getModel().did, position);
-                return true;
-            }
+                    fragmentInterface.showDevice(item.getModel().did, position);
+                    return true;
+                }
         );
 
         fastAdapter.withOnLongClickListener((View v, IAdapter<DeviceItem> adapter, DeviceItem item, int position) -> {
-                AfhDevices.Device model = item.getModel();
-                new Prefs(rootView.getContext()).put(Constants.EXTRA_DEVICE_ID, model.did);
-                new Prefs(rootView.getContext()).put("device_name", model.manufacturer + " " + model.device_name);
-                if (model.did != null && model.device_name != null)
-                    hsShortutInterface.setShortcut(model.did, model.manufacturer, model.device_name);
+                    AfhDevices.Device model = item.getModel();
+                    new Prefs(rootView.getContext()).put(Constants.EXTRA_DEVICE_ID, model.did);
+                    new Prefs(rootView.getContext()).put("device_name", model.manufacturer + " " + model.device_name);
+                    if (model.did != null && model.device_name != null)
+                        hsShortutInterface.setShortcut(model.did, model.manufacturer, model.device_name);
 
-                Snackbar.make(rootView,
-                        String.format(
-                                rootView.getContext().getResources().getString(R.string.device_list_add_qs_text),
-                                model.device_name),
-                        Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(rootView,
+                            String.format(
+                                    rootView.getContext().getResources().getString(R.string.device_list_add_qs_text),
+                                    model.device_name),
+                            Snackbar.LENGTH_LONG).show();
 
-                return true;
-            }
+                    return true;
+                }
         );
 
         deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter.wrap(fastAdapter)));
@@ -280,8 +270,7 @@ public class FindDevices {
                             }
                         }
                     }
-                }
-                else if (response.code() == 502) {
+                } else if (response.code() == 502) {
                     // Keeps happening for some devices, re-queuing probably won't help, though
                     call.clone().enqueue(this);
                 }
@@ -289,7 +278,7 @@ public class FindDevices {
 
             @Override
             public void onFailure(Call<AfhDevices> call, Throwable t) {
-                if (! (t instanceof UnknownHostException) && ! (t instanceof JsonSyntaxException)) {
+                if (!(t instanceof UnknownHostException) && !(t instanceof JsonSyntaxException)) {
                     Log.i(TAG, "onErrorResponse: " + t.toString());
                     call.clone().enqueue(this);
                 }
@@ -319,9 +308,12 @@ public class FindDevices {
 
     public interface AppbarScroll {
         void expand();
+
         void collapse();
-        void setText(String text);
+
         String getText();
+
+        void setText(String text);
     }
 
     public interface FragmentInterface {

@@ -1,4 +1,4 @@
-package browser.afh.adapters;
+package browser.afh.recycler;
 
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +18,6 @@ import java.util.Locale;
 import browser.afh.R;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevices;
-import browser.afh.types.DeviceItem;
 
 /**
  * Created by mikepenz on 30.12.15.
