@@ -92,6 +92,7 @@ public class FilesFragment extends Fragment {
                 fi.screenname = file.screenname;
                 fi.url = file.url;
                 fi.upload_date = file.upload_date;
+                fi.upload_date_long = file.upload_date_long;
                 f.add(fi);
             }
             filesRetainFragment.setFiles(f);

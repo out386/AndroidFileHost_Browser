@@ -45,6 +45,7 @@ import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
+import com.turingtechnologies.materialscrollbar.DateAndTimeIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
 import java.net.UnknownHostException;
@@ -59,6 +60,7 @@ import java.util.TimeZone;
 import browser.afh.BuildConfig;
 import browser.afh.MainActivity;
 import browser.afh.R;
+import browser.afh.recycler.DateStickyHeaderAdapter;
 import browser.afh.recycler.FileItem;
 import browser.afh.recycler.StickyHeaderAdapter;
 import browser.afh.tools.Comparators;
@@ -90,6 +92,10 @@ public class FindFiles {
     private Handler mDisplayHandler = new Handler();
     private ClearRunnable mRunnable = new ClearRunnable();
     private LinearLayoutManager layoutManager;
+    private StickyHeaderAdapter stickyHeaderAdapter;
+    private StickyRecyclerHeadersDecoration stickyRecyclerHeadersDecoration;
+    private DateStickyHeaderAdapter dateStickyHeaderAdapter;
+    private StickyRecyclerHeadersDecoration dateStickyRecyclerHeadersDecoration;
 
     @DebugLog
     public FindFiles(final View rootView, MainActivity activity) {
@@ -102,12 +108,6 @@ public class FindFiles {
         mRecyclerView = rootView.findViewById(R.id.recycler);
         CheckBox sortCB = rootView.findViewById(R.id.sortCB);
         Utils.tintCheckbox(sortCB, mContext);
-
-        sortCB.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
-                    sortByDate = isChecked;
-                    print(true);
-                }
-        );
 
         layoutManager = new LinearLayoutManager(rootView.getContext());
         FastAdapter<FileItem> fastAdapter = new FastAdapter<>();
@@ -190,14 +190,36 @@ public class FindFiles {
                 }
         );
 
-        final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();
-        final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
-        mRecyclerView.addItemDecoration(decoration);
-        mRecyclerView.setAdapter(stickyHeaderAdapter.wrap(mFilesAdapter.wrap(fastAdapter)));
+        stickyHeaderAdapter = new StickyHeaderAdapter();
+        stickyRecyclerHeadersDecoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
+        dateStickyHeaderAdapter = new DateStickyHeaderAdapter();
+        dateStickyRecyclerHeadersDecoration = new StickyRecyclerHeadersDecoration(dateStickyHeaderAdapter);
 
         TouchScrollBar materialScrollBar = new TouchScrollBar(rootView.getContext(), mRecyclerView, true);
         materialScrollBar.setHandleColour(Utils.getPrefsColour(2, mContext));
+        mRecyclerView.addItemDecoration(stickyRecyclerHeadersDecoration);
+        mRecyclerView.setAdapter(stickyHeaderAdapter.wrap(mFilesAdapter.wrap(fastAdapter)));
         materialScrollBar.addIndicator(new AlphabetIndicator(mContext), true);
+
+        sortCB.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked) -> {
+                    sortByDate = isChecked;
+                    if (!isChecked) {
+                        materialScrollBar.removeIndicator();
+                        mRecyclerView.setAdapter(stickyHeaderAdapter.wrap(mFilesAdapter.wrap(fastAdapter)));
+                        mRecyclerView.removeItemDecoration(dateStickyRecyclerHeadersDecoration);
+                        mRecyclerView.addItemDecoration(stickyRecyclerHeadersDecoration);
+                        materialScrollBar.addIndicator(new AlphabetIndicator(mContext), true);
+                    } else {
+                        materialScrollBar.removeIndicator();
+                        mRecyclerView.setAdapter(dateStickyHeaderAdapter.wrap(mFilesAdapter.wrap(fastAdapter)));
+                        mRecyclerView.removeItemDecoration(stickyRecyclerHeadersDecoration);
+                        mRecyclerView.addItemDecoration(dateStickyRecyclerHeadersDecoration);
+                        materialScrollBar.addIndicator(new DateAndTimeIndicator(mContext,
+                                false, true, true, false), true);
+                    }
+                    print(true);
+                }
+        );
     }
 
     @DebugLog
@@ -297,7 +319,8 @@ public class FindFiles {
 
                                 try {
                                     file.file_size = Utils.sizeFormat(Integer.parseInt(file.file_size));
-                                    file.upload_date = sdf.format(new Date(Integer.parseInt(file.upload_date) * 1000L));
+                                    file.upload_date_long = Long.parseLong(file.upload_date) * 1000;
+                                    file.upload_date = sdf.format(new Date(file.upload_date_long));
                                 } catch (Exception e) {
                                     Crashlytics.logException(e);
                                     Crashlytics.log("flid : " + url.flid);
