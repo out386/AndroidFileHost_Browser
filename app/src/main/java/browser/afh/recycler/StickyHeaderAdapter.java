@@ -18,6 +18,7 @@ import java.util.Locale;
 import browser.afh.R;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevices;
+import browser.afh.types.Files;
 
 /**
  * Created by mikepenz on 30.12.15.
@@ -36,6 +37,10 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
             AfhDevices.Device data = ((DeviceItem) item).getModel();
             if (data.manufacturer != null)
                 return Character.toUpperCase((data.manufacturer.charAt(0)));
+        } else if (item instanceof FileItem) {
+            Files data = ((FileItem) item).getModel();
+            if (data.name != null)
+                return Character.toUpperCase((data.name.charAt(0)));
         }
         return -1;
     }
@@ -62,6 +67,12 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
             if (data.manufacturer != null) {
                 //based on the position we set the headers text
                 textView.setText(String.valueOf(data.manufacturer.charAt(0)).toUpperCase(Locale.getDefault()));
+            }
+        } else if (item instanceof FileItem) {
+            Files data = ((FileItem) item).getModel();
+            if (data.name != null) {
+                //based on the position we set the headers text
+                textView.setText(String.valueOf(data.name.charAt(0)).toUpperCase(Locale.getDefault()));
             }
         }
     }
@@ -106,9 +117,16 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
     public Character getCharacterForElement(int element) {
         IItem item = getItem(element);
         if (item != null) {
-            AfhDevices.Device data = ((DeviceItem) item).getModel();
-            if (data.manufacturer != null && data.manufacturer.length() > 0)
-                return (data.manufacturer.charAt(0));
+            if (item instanceof DeviceItem) {
+                AfhDevices.Device data = ((DeviceItem) item).getModel();
+                if (data.manufacturer != null && data.manufacturer.length() > 0)
+                    return (data.manufacturer.charAt(0));
+            } else
+            if (item instanceof FileItem) {
+                Files data = ((FileItem) item).getModel();
+                if (data.name != null && data.name.length() > 0)
+                    return (data.name.charAt(0));
+            }
         }
         return 0;
     }

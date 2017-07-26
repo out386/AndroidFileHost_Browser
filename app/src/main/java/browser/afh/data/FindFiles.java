@@ -43,6 +43,9 @@ import com.google.gson.JsonSyntaxException;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
+import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
+import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -54,8 +57,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import browser.afh.BuildConfig;
+import browser.afh.MainActivity;
 import browser.afh.R;
 import browser.afh.recycler.FileItem;
+import browser.afh.recycler.StickyHeaderAdapter;
 import browser.afh.tools.Comparators;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Retrofit.ApiInterface;
@@ -78,6 +83,7 @@ public class FindFiles {
     private String savedID;
     private boolean sortByDate;
     private ApiInterface retroApi;
+    private FindDevices.AppbarScroll appbarScroll;
     private Context mContext;
     private Intent snackbarIntent = new Intent(Constants.INTENT_SNACKBAR);
     private RecyclerView mRecyclerView;
@@ -86,9 +92,10 @@ public class FindFiles {
     private LinearLayoutManager layoutManager;
 
     @DebugLog
-    public FindFiles(final View rootView, Context context) {
+    public FindFiles(final View rootView, MainActivity activity) {
         this.rootView = rootView;
-        mContext = context;
+        mContext = activity.getApplicationContext();
+        appbarScroll = activity;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
         retroApi = RetroClient.getApi(rootView.getContext(), true);
@@ -129,30 +136,29 @@ public class FindFiles {
                 super.onScrolled(recyclerView, dx, dy);
                 int scroll = mRecyclerView.computeVerticalScrollOffset();
                 if (scroll == 0) {
-                    /*appbarScroll.setText(null);
-                    appbarScroll.expand();*/
+                    appbarScroll.expand();
                     pullRefreshLayout.setEnabled(true);
                 } else {
                     pullRefreshLayout.setEnabled(false);
-                    /*if (scroll > 50) {
+                    if (scroll > 50) {
                         appbarScroll.collapse();
-                    }*/
+                    }
                 }
             }
         });
 
         fastAdapter.withOnClickListener((View v, IAdapter<FileItem> adapter, FileItem item, int position) -> {
                     Files p = item.getModel();
-                    new MaterialDialog.Builder(context)
+                    new MaterialDialog.Builder(activity)
                             .title(p.name)
-                            .content(String.format(context.getString(R.string.file_dialog_content), p.file_size, p.upload_date, p.screenname, p.downloads))
+                            .content(String.format(activity.getString(R.string.file_dialog_content), p.file_size, p.upload_date, p.screenname, p.downloads))
                             .positiveText(R.string.file_dialog_positive_button_label)
                             .neutralText(R.string.file_dialog_neutral_button_label)
                             .onPositive((@NonNull MaterialDialog dialog, @NonNull DialogAction which) -> {
                                         try {
                                             customTab(p.url);
                                         } catch (ActivityNotFoundException exc) {
-                                            new MaterialDialog.Builder(context)
+                                            new MaterialDialog.Builder(activity)
                                                     .title(R.string.no_browser_dialog_title)
                                                     .content(R.string.no_browser_dialog_content)
                                                     .neutralText(R.string.no_browser_dialog_assert)
@@ -173,7 +179,7 @@ public class FindFiles {
                     try {
                         customTab(item.getModel().url);
                     } catch (ActivityNotFoundException exc) {
-                        new MaterialDialog.Builder(context)
+                        new MaterialDialog.Builder(activity)
                                 .title(R.string.no_browser_dialog_title)
                                 .content(R.string.no_browser_dialog_content)
                                 .neutralText(R.string.no_browser_dialog_assert)
@@ -184,7 +190,14 @@ public class FindFiles {
                 }
         );
 
-        mRecyclerView.setAdapter(mFilesAdapter.wrap(fastAdapter));
+        final StickyHeaderAdapter stickyHeaderAdapter = new StickyHeaderAdapter();
+        final StickyRecyclerHeadersDecoration decoration = new StickyRecyclerHeadersDecoration(stickyHeaderAdapter);
+        mRecyclerView.addItemDecoration(decoration);
+        mRecyclerView.setAdapter(stickyHeaderAdapter.wrap(mFilesAdapter.wrap(fastAdapter)));
+
+        TouchScrollBar materialScrollBar = new TouchScrollBar(rootView.getContext(), mRecyclerView, true);
+        materialScrollBar.setHandleColour(Utils.getPrefsColour(2, mContext));
+        materialScrollBar.addIndicator(new AlphabetIndicator(mContext), true);
     }
 
     @DebugLog
