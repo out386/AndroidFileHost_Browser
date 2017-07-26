@@ -42,6 +42,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -75,6 +76,7 @@ import browser.afh.data.FindDevices.FragmentInterface;
 import browser.afh.data.FindDevices.HSShortutInterface;
 import browser.afh.fragments.DevicesFragment;
 import browser.afh.fragments.FilesFragment;
+import browser.afh.fragments.FilesRetainFragment;
 import browser.afh.fragments.SettingsFragment;
 import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
@@ -372,11 +374,15 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public void onBackPressed() {
-        getFragmentManager()
-                .beginTransaction()
-                .remove(getFragmentManager()
-                        .findFragmentByTag(FilesFragment.KEY_FILES_RETAIN_FRAGMENT))
-                .commit();
+        FilesRetainFragment filesRetainFragment = (FilesRetainFragment) getFragmentManager()
+                .findFragmentByTag(FilesFragment.KEY_FILES_RETAIN_FRAGMENT);
+        if (filesRetainFragment != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .remove(filesRetainFragment)
+                    .commit();
+        }
+
         if (snackbar != null)
             snackbar.dismiss();
         int size = drawerPositions.size();
