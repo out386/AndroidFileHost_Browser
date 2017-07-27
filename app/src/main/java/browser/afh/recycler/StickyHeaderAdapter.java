@@ -120,12 +120,12 @@ public class StickyHeaderAdapter extends AbstractAdapter implements StickyRecycl
             if (item instanceof DeviceItem) {
                 AfhDevices.Device data = ((DeviceItem) item).getModel();
                 if (data.manufacturer != null && data.manufacturer.length() > 0)
-                    return (data.manufacturer.charAt(0));
+                    return data.manufacturer.charAt(0);
             } else
             if (item instanceof FileItem) {
                 Files data = ((FileItem) item).getModel();
                 if (data.name != null && data.name.length() > 0)
-                    return (data.name.charAt(0));
+                    return data.name.charAt(0);
             }
         }
         return 0;

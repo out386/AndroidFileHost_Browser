@@ -126,7 +126,7 @@ public class DateStickyHeaderAdapter extends AbstractAdapter implements StickyRe
             if (item instanceof FileItem) {
                 Files data = ((FileItem) item).getModel();
                 if (data.name != null && data.name.length() > 0)
-                    return (data.name.charAt(0));
+                    return data.name.charAt(0);
             }
         }
         return 0;

@@ -14,14 +14,14 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <View
                 android:id="@+id/app_bar_bg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"/>
+                android:fitsSystemWindows="true" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -54,8 +54,8 @@
 
     <com.lapism.searchview.SearchView
         android:id="@+id/searchView"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        app:search_voice="false"/>
+        android:layout_height="match_parent"
+        app:search_voice="false" />
 
 </android.support.design.widget.CoordinatorLayout>

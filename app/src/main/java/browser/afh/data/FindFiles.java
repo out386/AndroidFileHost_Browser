@@ -100,7 +100,7 @@ public class FindFiles {
     @DebugLog
     public FindFiles(final View rootView, MainActivity activity) {
         this.rootView = rootView;
-        mContext = activity.getApplicationContext();
+        mContext = activity;
         appbarScroll = activity;
         sdf = new SimpleDateFormat("yyyy/MM/dd, HH:mm", Locale.getDefault());
         sdf.setTimeZone(TimeZone.getDefault());
