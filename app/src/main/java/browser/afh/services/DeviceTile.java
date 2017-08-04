@@ -32,19 +32,17 @@ import browser.afh.tools.Prefs;
 
 @TargetApi(Build.VERSION_CODES.N)
 public class DeviceTile extends TileService {
-    @Override
-    public void onStartListening() {final Tile tile = getQsTile();
-        String label = new Prefs(getApplicationContext()).get("device_name", null);
 
-        if (label == null) {
-            Toast.makeText(getApplicationContext(),
-                    getApplicationContext().getString(R.string.tile_unavailable),
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            tile.setLabel(label);
-            tile.updateTile();
-        }
+    @Override
+    public void onStartListening() {
+        updateState();
         super.onStartListening();
+    }
+
+    @Override
+    public void onTileAdded() {
+        updateState();
+        super.onTileAdded();
     }
 
     @Override
@@ -57,4 +55,17 @@ public class DeviceTile extends TileService {
         super.onClick();
     }
 
+    private void updateState() {
+        final Tile tile = getQsTile();
+        String label = new Prefs(getApplicationContext()).get("device_name", null);
+
+        if (label == null) {
+            Toast.makeText(getApplicationContext(),
+                    getApplicationContext().getString(R.string.tile_unavailable),
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            tile.setLabel(label);
+            tile.updateTile();
+        }
+    }
 }
