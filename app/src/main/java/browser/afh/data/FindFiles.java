@@ -296,7 +296,6 @@ public class FindFiles {
     private void queryDirs(final List<AfhDevelopers.Developer> did) {
 
         for (final AfhDevelopers.Developer url : did) {
-
             Call<AfhFolders> call = retroApi.getFolderContents("folder", url.flid, 100);
             call.enqueue(new Callback<AfhFolders>() {
                 @Override
@@ -403,15 +402,20 @@ public class FindFiles {
     }
 
     @DebugLog
-    private void print(boolean isInstant) {
+    private synchronized void print(boolean isInstant) {
         final int INTERVAL = isInstant ? 0 : 1000;
+        final int MESSAGE_INT = 1;
 
         // Quit laughing. Please?
-        if (System.currentTimeMillis() - mRunnable.time >= INTERVAL) {
+        // The hasMessages ensures that files are displayed at least once, even if all calls are made in < INTERVAL ms
+        if (! mDisplayHandler.hasMessages(MESSAGE_INT)
+                || System.currentTimeMillis() - mRunnable.time >= INTERVAL) {
             mDisplayHandler.removeCallbacks(mRunnable);
             mRunnable = new ClearRunnable();
             // Needed to prevent 500+ rapid calls to reload while loading from the cache
             mDisplayHandler.postDelayed(mRunnable, INTERVAL);
+            if (! mDisplayHandler.hasMessages(MESSAGE_INT))
+                mDisplayHandler.sendEmptyMessage(MESSAGE_INT);
         }
     }
 
