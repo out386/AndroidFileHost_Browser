@@ -22,6 +22,7 @@ package browser.afh.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +30,13 @@ import android.view.ViewGroup;
 import browser.afh.MainActivity;
 import browser.afh.R;
 import browser.afh.data.FindDevices;
+import browser.afh.interfaces.DevicesSearchInterface;
 
 public class DevicesFragment extends Fragment {
-    View rootView;
-    MainActivity activity;
+    private MainActivity activity;
     private FindDevices findDevices;
+    private DevicesSearchInterface dsi;
+    private String searchQuery;
 
     @Override
     public void onAttach(Activity activity) {
@@ -42,19 +45,26 @@ public class DevicesFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        dsi = query -> searchQuery = query;
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.main_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.main_fragment, container, false);
         activity.showSearch(true, true);
 
-        findDevices = new FindDevices(rootView, activity);
+        findDevices = new FindDevices();
+        findDevices.initialize(rootView, activity, dsi);
         findDevices.findFirstDevice();
         return rootView;
     }
 
     @Override
     public void onResume() {
-        findDevices.registerReceiver();
+        findDevices.resume(searchQuery);
         super.onResume();
     }
 

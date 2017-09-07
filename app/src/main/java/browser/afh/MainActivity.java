@@ -42,7 +42,6 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -319,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             drawerPositions.add(0L);
         } else {
             if (fragment instanceof FilesFragment) {
-                if (! forceAsFirstFragment) {
+                if (!forceAsFirstFragment) {
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction
                             .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
@@ -468,34 +467,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         appUpdater.start();
     }
 
-    private static class CheckConnectivity extends AsyncTask<Void, Void, Boolean> {
-        WeakReference<Context> contextReference;
-
-        CheckConnectivity(Context context) {
-            contextReference = new WeakReference<>(context);
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... v) {
-            Context context = contextReference.get();
-            return context != null && new ConnectionDetector().isConnectingToInternet(context);
-        }
-
-        @Override
-        protected void onPostExecute(Boolean isConnected) {
-            Context context = contextReference.get();
-            if (!isConnected && !((Activity) context).isFinishing()) {
-                new BottomDialog.Builder(context)
-                        .setTitle(R.string.bottom_dialog_warning_title)
-                        .setContent(R.string.bottom_dialog_warning_desc)
-                        .setPositiveText(R.string.bottom_dialog_positive_text)
-                        .setNegativeTextColorResource(R.color.colorAccent)
-                        .onPositive(BottomDialog::dismiss)
-                        .show();
-            }
-        }
-    }
-
     @Override
     public void showDevice(String did, int position) {
         if (did == null) {
@@ -545,6 +516,34 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             Utils.resetColours(2);
         }
         recreate();
+    }
+
+    private static class CheckConnectivity extends AsyncTask<Void, Void, Boolean> {
+        WeakReference<Context> contextReference;
+
+        CheckConnectivity(Context context) {
+            contextReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... v) {
+            Context context = contextReference.get();
+            return context != null && new ConnectionDetector().isConnectingToInternet(context);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isConnected) {
+            Context context = contextReference.get();
+            if (!isConnected && !((Activity) context).isFinishing()) {
+                new BottomDialog.Builder(context)
+                        .setTitle(R.string.bottom_dialog_warning_title)
+                        .setContent(R.string.bottom_dialog_warning_desc)
+                        .setPositiveText(R.string.bottom_dialog_positive_text)
+                        .setNegativeTextColorResource(R.color.colorAccent)
+                        .onPositive(BottomDialog::dismiss)
+                        .show();
+            }
+        }
     }
 
 

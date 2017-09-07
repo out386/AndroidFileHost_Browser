@@ -24,6 +24,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -45,7 +46,6 @@ import com.turingtechnologies.materialscrollbar.AlphabetIndicator;
 import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,6 +53,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import browser.afh.R;
+import browser.afh.interfaces.DevicesSearchInterface;
 import browser.afh.recycler.DeviceItem;
 import browser.afh.recycler.StickyHeaderAdapter;
 import browser.afh.tools.Comparators;
@@ -69,16 +70,10 @@ import retrofit2.Callback;
 public class FindDevices {
 
     private final String TAG = Constants.TAG;
-    private final View rootView;
-    private final PullRefreshLayout deviceRefreshLayout;
-    private final GenericItemAdapter<AfhDevices.Device, DeviceItem> devAdapter;
-    private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            devAdapter.filter(intent.getStringExtra(Constants.EXTRA_SEARCH_QUERY));
-        }
-    };
-    final private List<AfhDevices.Device> devices;
+    private View rootView;
+    private PullRefreshLayout deviceRefreshLayout;
+    private GenericItemAdapter<AfhDevices.Device, DeviceItem> devAdapter;
+    private List<AfhDevices.Device> devices;
     private int currentPage = 0;
     private FastAdapter<DeviceItem> fastAdapter;
     private int pages[] = null;
@@ -87,9 +82,19 @@ public class FindDevices {
     private AppbarScroll appbarScroll;
     private HSShortutInterface hsShortutInterface;
     private ApiInterface retro;
+    private DevicesSearchInterface dsi;
+    private final BroadcastReceiver searchReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String searchQuery;
+            searchQuery = intent.getStringExtra(Constants.EXTRA_SEARCH_QUERY);
+            devAdapter.filter(searchQuery);
+            dsi.filter(searchQuery);
+        }
+    };
 
     @DebugLog
-    public FindDevices(final View rootView, Activity activity) {
+    public void initialize(final View rootView, Activity activity, DevicesSearchInterface dsi) {
         this.rootView = rootView;
         try {
             this.fragmentInterface = (FragmentInterface) activity;
@@ -99,6 +104,7 @@ public class FindDevices {
             Log.e(TAG, "FindDevices: ", e);
         }
 
+        this.dsi = dsi;
         devices = Collections.synchronizedList(new LinkedList<AfhDevices.Device>());
         deviceRefreshLayout = rootView.findViewById(R.id.deviceRefresh);
 
@@ -207,10 +213,16 @@ public class FindDevices {
     }
 
     @DebugLog
-    public void registerReceiver() {
+    public void resume(String searchQuery) {
         IntentFilter search = new IntentFilter();
         search.addAction(Constants.INTENT_SEARCH);
-        LocalBroadcastManager.getInstance(rootView.getContext()).registerReceiver(searchReceiver, search);
+        LocalBroadcastManager.getInstance(rootView.getContext())
+                .registerReceiver(searchReceiver, search);
+        if (searchQuery != null && !"".equals(searchQuery)) {
+            new Handler().postDelayed(() ->
+                    devAdapter.filter(searchQuery),
+                    250);
+        }
     }
 
     @DebugLog
