@@ -84,6 +84,7 @@ public class FindFiles {
     final private List<Files> filesD;
     private String savedID;
     private boolean sortByDate;
+    private boolean isPrintFirstRun = true;
     private ApiInterface retroApi;
     private FindDevices.AppbarScroll appbarScroll;
     private Context mContext;
@@ -406,18 +407,16 @@ public class FindFiles {
     @DebugLog
     private synchronized void print(boolean isInstant) {
         final int INTERVAL = isInstant ? 0 : 1000;
-        final int MESSAGE_INT = 1;
+        final int SLOP = 250;
 
-        // Quit laughing. Please?
-        // The hasMessages ensures that files are displayed at least once, even if all calls are made in < INTERVAL ms
-        if (! mDisplayHandler.hasMessages(MESSAGE_INT)
-                || System.currentTimeMillis() - mRunnable.time >= INTERVAL) {
+        // isPrintFirstRun ensures that files are displayed at least once, even if all calls are made in < INTERVAL ms of  mRunnable instantiation
+        if (isPrintFirstRun
+                || System.currentTimeMillis() - mRunnable.time >= INTERVAL - SLOP) {
+            isPrintFirstRun = false;
             mDisplayHandler.removeCallbacks(mRunnable);
             mRunnable = new ClearRunnable();
             // Needed to prevent 500+ rapid calls to reload while loading from the cache
             mDisplayHandler.postDelayed(mRunnable, INTERVAL);
-            if (! mDisplayHandler.hasMessages(MESSAGE_INT))
-                mDisplayHandler.sendEmptyMessage(MESSAGE_INT);
         }
     }
 
