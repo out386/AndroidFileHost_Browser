@@ -47,6 +47,7 @@ import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,7 +78,7 @@ public class FindDevices {
             devAdapter.filter(intent.getStringExtra(Constants.EXTRA_SEARCH_QUERY));
         }
     };
-    private List<AfhDevices.Device> devices = new ArrayList<>();
+    final private List<AfhDevices.Device> devices;
     private int currentPage = 0;
     private FastAdapter<DeviceItem> fastAdapter;
     private int pages[] = null;
@@ -98,6 +99,7 @@ public class FindDevices {
             Log.e(TAG, "FindDevices: ", e);
         }
 
+        devices = Collections.synchronizedList(new LinkedList<AfhDevices.Device>());
         deviceRefreshLayout = rootView.findViewById(R.id.deviceRefresh);
 
         fastAdapter = new FastAdapter<>();
@@ -260,7 +262,9 @@ public class FindDevices {
                         pages = findDevicePageNumbers(message);
                     } else {
                         if (currentPage >= pages[3]) {
-                            Collections.sort(devices, Comparators.byManufacturer);
+                            synchronized (devices) {
+                                Collections.sort(devices, Comparators.byManufacturer);
+                            }
                             displayDevices();
                         } else {
                             if (!morePagesRequested) {
@@ -287,7 +291,7 @@ public class FindDevices {
     }
 
     @DebugLog
-    private void displayDevices() {
+    private synchronized void displayDevices() {
         devAdapter.addModel(devices);
         deviceRefreshLayout.setRefreshing(false);
         retro = RetroClient.getApi(rootView.getContext(), true);

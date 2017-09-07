@@ -26,7 +26,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import browser.afh.MainActivity;
 import browser.afh.R;
@@ -37,7 +38,7 @@ import browser.afh.types.Files;
 public class FilesFragment extends Fragment {
     public static final String KEY_FILES_RETAIN_FRAGMENT = "retainFragment";
     private FindFiles findFiles;
-    private ArrayList<Files> filesD;
+    private List<Files> filesD;
     private FilesRetainFragment filesRetainFragment;
 
     @Override
@@ -83,7 +84,8 @@ public class FilesFragment extends Fragment {
         filesRetainFragment = (FilesRetainFragment) getFragmentManager()
                 .findFragmentByTag(KEY_FILES_RETAIN_FRAGMENT);
         if (filesRetainFragment != null) {
-            ArrayList<Files> f = new ArrayList<>();
+            // Has to be copied, else the list has all nulls after restore. Don't ask how that happened.
+            LinkedList<Files> f = new LinkedList<>();
             for (Files file : findFiles.getFiles()) {
                 Files fi = new Files();
                 fi.downloads = file.downloads;

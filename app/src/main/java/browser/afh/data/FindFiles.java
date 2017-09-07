@@ -50,9 +50,9 @@ import com.turingtechnologies.materialscrollbar.TouchScrollBar;
 
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -81,7 +81,7 @@ public class FindFiles {
     private final SimpleDateFormat sdf;
     private final View rootView;
     private final GenericItemAdapter<Files, FileItem> mFilesAdapter;
-    private ArrayList<Files> filesD = new ArrayList<>();
+    final private List<Files> filesD;
     private String savedID;
     private boolean sortByDate;
     private ApiInterface retroApi;
@@ -115,6 +115,8 @@ public class FindFiles {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         fastAdapter.withSelectable(true);
+
+        filesD = Collections.synchronizedList(new LinkedList<Files>());
 
         pullRefreshLayout = rootView.findViewById(R.id.swipeRefreshLayout);
         pullRefreshLayout.setOnRefreshListener(() -> {
@@ -432,12 +434,13 @@ public class FindFiles {
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(snackbarIntent);
     }
 
-    public ArrayList<Files> getFiles() {
+    public List<Files> getFiles() {
         return filesD;
     }
 
-    public void setList(ArrayList<Files> list) {
-        filesD = list;
+    public void setList(List<Files> list) {
+        filesD.clear();
+        filesD.addAll(list);
         mFilesAdapter.clear();
         mFilesAdapter.addModel(list);
         print(true);
@@ -456,9 +459,13 @@ public class FindFiles {
         @Override
         public void run() {
             if (sortByDate) {
-                Collections.sort(filesD, Comparators.byUploadDate);
+                synchronized (filesD) {
+                    Collections.sort(filesD, Comparators.byUploadDate);
+                }
             } else {
-                Collections.sort(filesD, Comparators.byFileName);
+                synchronized (filesD) {
+                    Collections.sort(filesD, Comparators.byFileName);
+                }
             }
             if (pullRefreshLayout != null)
                 pullRefreshLayout.setRefreshing(false);
