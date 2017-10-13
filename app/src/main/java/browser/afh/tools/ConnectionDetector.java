@@ -37,7 +37,7 @@ public class ConnectionDetector {
         if (networkConnectivity(context)) {
             try {
                 HttpURLConnection urlc = (HttpURLConnection) (new URL(
-                        "https://www.androidfilehost.com").openConnection());
+                        Constants.BASE_URL).openConnection());
                 urlc.setRequestProperty("User-Agent", "AFHBrowser");
                 urlc.setRequestProperty("Connection", "close");
                 urlc.setConnectTimeout(30000);

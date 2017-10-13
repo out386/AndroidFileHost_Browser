@@ -18,7 +18,7 @@
 package browser.afh.tools;
 
 public class Constants {
-    public static final String BASE_URL = "https://www.androidfilehost.com/";
+    public static final String BASE_URL = "https://androidfilehost.com/";
     public static final String ENDPOINT = "api";
 
     /* The number of pages of devices at the time of writing
