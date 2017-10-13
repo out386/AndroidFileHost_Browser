@@ -50,7 +50,8 @@ public class RetroClient {
     private static Interceptor removeHeadersInterceptor;
 
     private static Retrofit getRetrofit(final Context context, final boolean useOldCache) {
-        dispatcher.setMaxRequests(10);
+        if (BuildConfig.DEBUG)
+            dispatcher.setMaxRequestsPerHost(10);
 
         if (useOldCache && retrofitForceCache != null)
             return retrofitForceCache;
