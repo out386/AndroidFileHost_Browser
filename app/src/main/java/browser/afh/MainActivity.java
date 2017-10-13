@@ -42,6 +42,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -308,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             snackbar.dismiss();
 
         if (fragment instanceof DevicesFragment) {
-            setText(null);
+            setText("");
             appBarLayout.setExpanded(true, true);
 
             for (int i = 0; i < getFragmentManager().getBackStackEntryCount(); i++)
@@ -335,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     appBarLayout.setExpanded(true, true);
                 }
                 fragmentTransaction.addToBackStack(null);
-                setText(null);
+                setText("");
             }
             showSearch(false, false);
         }
@@ -361,8 +362,19 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
-    public void setText(String message) {
+    public void setText(SpannableString message) {
         if (message != null)
+            headerTV.setVisibility(View.VISIBLE);
+        else {
+            headerTV.setVisibility(View.GONE);
+            return;
+        }
+        headerTV.setText(message);
+    }
+
+    @Override
+    public void setText(String message) {
+        if (message != null && !"".equals(message))
             headerTV.setVisibility(View.VISIBLE);
         else {
             headerTV.setVisibility(View.GONE);

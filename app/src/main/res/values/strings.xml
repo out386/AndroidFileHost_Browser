@@ -15,7 +15,7 @@
     <string name="files_list_no_cache_text">There is no cache for this device. Connect to the internet to get files.</string>
     <string name="files_list_502_text">Server error. Trying again, but it might be impossible to show files.</string>
     <string name="device_list_add_qs_text">%s added to Quick Settings and home screen</string>
-    <string name="files_list_header_text">Pull down to refresh and show new files. If the list blinks, files are still being loaded.</string>
+    <string name="files_list_header_text">Loading a list of files.</string>
     <string name="file_dialog_content" formatted="false">Size : %s\n\nUpload Date : %s\n\nDeveloper : %s\n\nDownloads : %d</string>
     <string name="file_dialog_positive_button_label">Open</string>
     <string name="file_dialog_neutral_button_label">OK</string>
@@ -48,4 +48,5 @@
     <string name="dialog_colour_primary_title">Primary colour</string>
     <string name="pref_colour_accent">Set the accent colour</string>
     <string name="dialog_colour_accent_title">Accent colour</string>
+    <string name="num_files">Showing %d files\nPull down to refresh</string>
 </resources>

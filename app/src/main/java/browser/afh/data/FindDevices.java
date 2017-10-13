@@ -30,6 +30,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -157,7 +158,7 @@ public class FindDevices {
                 super.onScrolled(recyclerView, dx, dy);
                 int scroll = deviceRecyclerView.computeVerticalScrollOffset();
                 if (scroll == 0) {
-                    appbarScroll.setText(null);
+                    appbarScroll.setText("");
                     appbarScroll.expand();
                     deviceRefreshLayout.setEnabled(true);
                 } else {
@@ -333,6 +334,8 @@ public class FindDevices {
         String getText();
 
         void setText(String text);
+
+        void setText(SpannableString text);
     }
 
     public interface FragmentInterface {

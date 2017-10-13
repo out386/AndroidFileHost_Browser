@@ -24,6 +24,10 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.Layout;
+import android.text.SpannableString;
+import android.text.style.AlignmentSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -116,5 +120,16 @@ public class Utils {
         int [] colours = {Utils.getPrefsColour(2, context), 0xaa000000};
 
         checkBox.setButtonTintList(new ColorStateList(states, colours));
+    }
+
+    public static SpannableString generateSpannable(String message, int number, int spaceBeforeNumber) {
+        SpannableString text = new SpannableString(
+                String.format(message, number));
+
+        int numberSize = String.valueOf(number).length() + spaceBeforeNumber;
+        text.setSpan(new RelativeSizeSpan(1.5f), 0 , numberSize, 0);
+        text.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),
+                numberSize + 1, text.length(), 0);
+        return text;
     }
 }

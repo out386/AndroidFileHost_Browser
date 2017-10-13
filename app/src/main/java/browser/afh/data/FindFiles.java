@@ -123,6 +123,9 @@ public class FindFiles {
         pullRefreshLayout.setOnRefreshListener(() -> {
                     filesD.clear();
                     mFilesAdapter.clear();
+                    appbarScroll.setText(Utils.generateSpannable(
+                            rootView.getResources().getString(R.string.num_files),
+                            0, 14));
                     retroApi = RetroClient.getApi(rootView.getContext(), false);
                     start(savedID);
                 }
@@ -432,6 +435,9 @@ public class FindFiles {
         retroApi = RetroClient.getApi(rootView.getContext(), true);
         filesD.clear();
         mFilesAdapter.clear();
+        appbarScroll.setText(Utils.generateSpannable(
+                rootView.getResources().getString(R.string.num_files),
+                0, 14));
     }
 
     private void showSnackbar(int messageRes) {
@@ -448,6 +454,9 @@ public class FindFiles {
         filesD.clear();
         filesD.addAll(list);
         mFilesAdapter.clear();
+        appbarScroll.setText(Utils.generateSpannable(
+                rootView.getResources().getString(R.string.num_files),
+                0, 14));
         mFilesAdapter.addModel(list);
         print(true);
     }
@@ -479,8 +488,11 @@ public class FindFiles {
             mFilesAdapter.clear();
             mFilesAdapter.addModel(filesD);
             mRecyclerView.scrollToPosition(position);
-            if (BuildConfig.DEBUG)
-                Log.i(TAG, "Number of files: " + mFilesAdapter.getModels().size());
+            int numberOfFiles = mFilesAdapter.getModels().size();
+
+            appbarScroll.setText(Utils.generateSpannable(
+                    rootView.getResources().getString(R.string.num_files),
+                    numberOfFiles, 14));
         }
     }
 }
