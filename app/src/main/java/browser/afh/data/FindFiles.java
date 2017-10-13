@@ -289,8 +289,12 @@ public class FindFiles {
                     return;
                 }
                 if (!(t instanceof JsonSyntaxException)
-                        && !t.toString().contains("Canceled"))
+                        && !t.toString().contains("Canceled")) {
+                    if (BuildConfig.DEBUG)
+                        Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
+                                + call.request().url().queryParameter("did"));
                     call.clone().enqueue(this);
+                }
             }
         });
     }
@@ -394,7 +398,10 @@ public class FindFiles {
                             && !(t instanceof JsonSyntaxException)
                             && !t.toString().contains("Canceled")) {
                         pullRefreshLayout.setRefreshing(false);
-                        Log.i(TAG, "onErrorResponse dirs " + t.toString());
+                        if (BuildConfig.DEBUG)
+                            Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
+                                    + call.request().url().queryParameter("flid"));
+                        call.clone().enqueue(this);
                     } else if (t instanceof UnknownHostException) {
                         showSnackbar(R.string.files_list_no_cache_text);
                     }
@@ -472,6 +479,8 @@ public class FindFiles {
             mFilesAdapter.clear();
             mFilesAdapter.addModel(filesD);
             mRecyclerView.scrollToPosition(position);
+            if (BuildConfig.DEBUG)
+                Log.i(TAG, "Number of files: " + mFilesAdapter.getModels().size());
         }
     }
 }

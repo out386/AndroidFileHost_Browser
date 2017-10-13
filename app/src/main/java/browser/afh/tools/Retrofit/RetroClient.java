@@ -23,7 +23,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import browser.afh.BuildConfig;
@@ -51,6 +50,8 @@ public class RetroClient {
     private static Interceptor removeHeadersInterceptor;
 
     private static Retrofit getRetrofit(final Context context, final boolean useOldCache) {
+        dispatcher.setMaxRequests(10);
+
         if (useOldCache && retrofitForceCache != null)
             return retrofitForceCache;
         else if (!useOldCache && retrofitNoForceCache != null)
@@ -61,14 +62,14 @@ public class RetroClient {
         else
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
 
-        OkHttpClient.Builder client = new OkHttpClient.Builder();
-        client.dispatcher(dispatcher);
-        client.addInterceptor(loggingInterceptor);
-        client.addInterceptor(getOfflineCacheInterceptor(context, useOldCache));
-        client.addNetworkInterceptor(removeHeaders());
-        client.cache(getCache(context));
-        client.readTimeout(180, TimeUnit.SECONDS);
-        client.connectTimeout(180, TimeUnit.SECONDS);
+        OkHttpClient.Builder client = new OkHttpClient.Builder()
+                .dispatcher(dispatcher)
+                .addInterceptor(loggingInterceptor)
+                .addInterceptor(getOfflineCacheInterceptor(context, useOldCache))
+                .addNetworkInterceptor(removeHeaders())
+                .cache(getCache(context))
+                .readTimeout(4, TimeUnit.SECONDS)
+                .connectTimeout(4, TimeUnit.SECONDS);
 
         if (useOldCache) {
             retrofitForceCache = new Retrofit.Builder()
@@ -100,15 +101,12 @@ public class RetroClient {
 
     private static Interceptor removeHeaders() {
         if (removeHeadersInterceptor == null) {
-            removeHeadersInterceptor = new Interceptor() {
-                @Override
-                public Response intercept(Chain chain) throws IOException {
-                    Response response = chain.proceed(chain.request());
-                    return response.newBuilder()
-                            .removeHeader("pragma")
-                            .removeHeader("cache-control")
-                            .build();
-                }
+            removeHeadersInterceptor = chain -> {
+                Response response = chain.proceed(chain.request());
+                return response.newBuilder()
+                        .removeHeader("pragma")
+                        .removeHeader("cache-control")
+                        .build();
             };
         }
         return removeHeadersInterceptor;

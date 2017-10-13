@@ -41,7 +41,7 @@ public class ConnectionDetector {
                 urlc.setRequestProperty("User-Agent", "AFHBrowser");
                 urlc.setRequestProperty("Connection", "close");
                 urlc.setConnectTimeout(30000);
-                urlc.setReadTimeout(10000);
+                urlc.setReadTimeout(30000);
                 urlc.connect();
                 return urlc.getResponseCode() == 200;
             } catch (IOException e) {

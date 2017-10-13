@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import browser.afh.BuildConfig;
 import browser.afh.R;
 import browser.afh.interfaces.DevicesSearchInterface;
 import browser.afh.recycler.DeviceItem;
@@ -220,7 +221,7 @@ public class FindDevices {
                 .registerReceiver(searchReceiver, search);
         if (searchQuery != null && !"".equals(searchQuery)) {
             new Handler().postDelayed(() ->
-                    devAdapter.filter(searchQuery),
+                            devAdapter.filter(searchQuery),
                     250);
         }
     }
@@ -295,7 +296,9 @@ public class FindDevices {
             @Override
             public void onFailure(Call<AfhDevices> call, Throwable t) {
                 if (!(t instanceof UnknownHostException) && !(t instanceof JsonSyntaxException)) {
-                    Log.i(TAG, "onErrorResponse: " + t.toString());
+                    if (BuildConfig.DEBUG)
+                        Log.i(TAG, "onErrorResponse: " + t.toString() + " on "
+                                + call.request().url().queryParameter("page"));
                     call.clone().enqueue(this);
                 }
             }
