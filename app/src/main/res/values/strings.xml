@@ -8,8 +8,10 @@
     <string name="drawer_desc_settings">Settings for AFH Browser</string>
     <string name="drawer_title_info">Info</string>
     <string name="drawer_desc_info">About The App</string>
-    <string name="bottom_dialog_warning_title">Offline mode</string>
-    <string name="bottom_dialog_warning_desc">The app needs internet connectivity to function. You\'ll now see cached data. Go online to get updated data.</string>
+    <string name="no_afh_title">Could not connect to AFH</string>
+    <string name="no_internet_title">No internet connection</string>
+    <string name="no_afh_desc">Could not connect to AndroidFileHost.com. Try again later. You\'ll now see cached files.</string>
+    <string name="no_internet_desc">The app needs internet connectivity to function. You\'ll now see cached data. Go online to get updated data.</string>
     <string name="bottom_dialog_positive_text">OK</string>
     <string name="files_list_no_files_text">There are no files for this device</string>
     <string name="files_list_no_cache_text">There is no cache for this device. Connect to the internet to get files.</string>

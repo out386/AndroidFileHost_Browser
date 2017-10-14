@@ -23,28 +23,43 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.util.Pair;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 
 import hugo.weaving.DebugLog;
 
 public class ConnectionDetector {
 
+    private static final int MAX_RETRIES = 5;
+
+    public Pair<Boolean, Boolean> isConnectingToInternet(Context context) {
+        boolean isAfhAvailable;
+        boolean isGoogleAvailable = isConnectingToHost(
+                context, Constants.CONNECTIVITY_CHECK_GOOGLE, 204, 1);
+        // Highly unlikely that Google will be unavailable and AFH will be, but IDK if gstatic works in China, so checking anyway
+        isAfhAvailable = isConnectingToHost(
+                context, Constants.BASE_URL, 200, 1);
+        return new Pair<>(isGoogleAvailable, isAfhAvailable);
+    }
+
     @DebugLog
-    public boolean isConnectingToInternet(Context context) {
+    private boolean isConnectingToHost(Context context, String hostName, int code, int tryNumber) {
         if (networkConnectivity(context)) {
             try {
-                HttpURLConnection urlc = (HttpURLConnection) (new URL(
-                        Constants.BASE_URL).openConnection());
+                HttpURLConnection urlc = (HttpURLConnection) (new URL(hostName).openConnection());
                 urlc.setRequestProperty("User-Agent", "AFHBrowser");
                 urlc.setRequestProperty("Connection", "close");
-                urlc.setConnectTimeout(30000);
-                urlc.setReadTimeout(30000);
+                urlc.setConnectTimeout(4000);
+                urlc.setReadTimeout(4000);
                 urlc.connect();
-                return urlc.getResponseCode() == 200;
+                return urlc.getResponseCode() == code;
             } catch (IOException e) {
+                if (e instanceof SocketTimeoutException && tryNumber < MAX_RETRIES)
+                    return isConnectingToHost(context, hostName, code, tryNumber + 1);
                 Log.d(Constants.TAG, String.format("isConnectingToInternet: %s", e.toString()));
                 return false;
             }

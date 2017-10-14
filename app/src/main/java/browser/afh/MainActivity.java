@@ -44,6 +44,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
+import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -368,19 +369,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
-    public void setText(String message) {
-        if (message != null && !"".equals(message)) {
-            headerTV.setVisibility(View.VISIBLE);
-            progress.setVisibility(View.VISIBLE);
-        } else {
-            headerTV.setVisibility(View.GONE);
-            progress.setVisibility(View.GONE);
-            return;
-        }
-        headerTV.setText(message);
-    }
-
-    @Override
     public void setText(SpannableString message) {
         if (message != null) {
             headerTV.setVisibility(View.VISIBLE);
@@ -390,6 +378,19 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             progress.setVisibility(View.GONE);
             progress.setProgress(0);
             progress.setMax(0);
+            return;
+        }
+        headerTV.setText(message);
+    }
+
+    @Override
+    public void setText(String message) {
+        if (message != null && !"".equals(message)) {
+            headerTV.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.VISIBLE);
+        } else {
+            headerTV.setVisibility(View.GONE);
+            progress.setVisibility(View.GONE);
             return;
         }
         headerTV.setText(message);
@@ -548,7 +549,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         recreate();
     }
 
-    private static class CheckConnectivity extends AsyncTask<Void, Void, Boolean> {
+    private static class CheckConnectivity extends AsyncTask<Void, Void, Pair<Boolean, Boolean>> {
         WeakReference<Context> contextReference;
 
         CheckConnectivity(Context context) {
@@ -556,18 +557,34 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         }
 
         @Override
-        protected Boolean doInBackground(Void... v) {
+        protected Pair<Boolean, Boolean> doInBackground(Void... v) {
             Context context = contextReference.get();
-            return context != null && new ConnectionDetector().isConnectingToInternet(context);
+            if (context != null) {
+                return new ConnectionDetector().isConnectingToInternet(context);
+            }
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean isConnected) {
+        protected void onPostExecute(Pair<Boolean, Boolean> connectionPair) {
             Context context = contextReference.get();
-            if (!isConnected && !((Activity) context).isFinishing()) {
+            if (connectionPair == null || context == null)
+                return;
+            String message = null;
+            String title = null;
+            if (connectionPair.first) {
+                if (!connectionPair.second) {
+                    message = context.getResources().getString(R.string.no_afh_desc);
+                    title = context.getResources().getString(R.string.no_afh_title);
+                }
+            } else if (!connectionPair.second) {
+                message = context.getResources().getString(R.string.no_internet_desc);
+                title = context.getResources().getString(R.string.no_internet_title);
+            }
+            if (!((Activity) context).isFinishing() && message != null) {
                 new BottomDialog.Builder(context)
-                        .setTitle(R.string.bottom_dialog_warning_title)
-                        .setContent(R.string.bottom_dialog_warning_desc)
+                        .setTitle(title)
+                        .setContent(message)
                         .setPositiveText(R.string.bottom_dialog_positive_text)
                         .setNegativeTextColorResource(R.color.colorAccent)
                         .onPositive(BottomDialog::dismiss)
