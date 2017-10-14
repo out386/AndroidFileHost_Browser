@@ -40,6 +40,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.baoyz.widget.PullRefreshLayout;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.MalformedJsonException;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter;
@@ -304,13 +305,24 @@ public class FindFiles {
                     pullRefreshLayout.setRefreshing(false);
                     return;
                 }
-                if (!(t instanceof JsonSyntaxException)
-                        && !t.toString().contains("Canceled")) {
-                    if (BuildConfig.DEBUG)
-                        Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
-                                + call.request().url().queryParameter("did"));
-                    incFreqCounter();
-                    call.clone().enqueue(this);
+                if (!(t instanceof JsonSyntaxException)) {
+                    if (!t.toString().contains("Canceled")) {
+                        if ((t instanceof MalformedJsonException)) {
+                            pullRefreshLayout.setRefreshing(false);
+                            showSnackbar(R.string.internal_error);
+                        } else {
+                            if (BuildConfig.DEBUG)
+                                Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
+                                        + call.request().url().queryParameter("did"));
+                            incFreqCounter();
+                            call.clone().enqueue(this);
+                        }
+                    }
+                } else {
+                    // As the list on devs is only fetched once, if it doesn't exist, then there are no files
+                    // API causes this sometimes if no data exists
+                    showSnackbar(R.string.files_list_no_files_text);
+                    pullRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -420,12 +432,17 @@ public class FindFiles {
                             && !(t instanceof JsonSyntaxException)
                             && !t.toString().contains("Canceled")) {
                         pullRefreshLayout.setRefreshing(false);
-                        if (BuildConfig.DEBUG)
-                            Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
-                                    + call.request().url().queryParameter("flid"));
-                        incFreqCounter();
-                        call.clone().enqueue(this);
+                        if (t instanceof MalformedJsonException)
+                            showSnackbar(R.string.internal_error);
+                        else {
+                            if (BuildConfig.DEBUG)
+                                Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
+                                        + call.request().url().queryParameter("flid"));
+                            incFreqCounter();
+                            call.clone().enqueue(this);
+                        }
                     } else if (t instanceof UnknownHostException) {
+                        pullRefreshLayout.setRefreshing(false);
                         showSnackbar(R.string.files_list_no_cache_text);
                     }
                 }
