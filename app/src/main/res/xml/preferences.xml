@@ -6,6 +6,12 @@
         android:summary="@string/pref_display_images_summary"
         android:title="@string/pref_device_images_title" />
 
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="retroEnableFast"
+        android:summary="@string/retro_fast_summary"
+        android:title="@string/retro_fast_title" />
+
     <Preference
         android:key="colour_primary"
         android:title="@string/pref_colour_primary" />

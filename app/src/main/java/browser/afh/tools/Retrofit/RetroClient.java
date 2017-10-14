@@ -20,6 +20,7 @@
 package browser.afh.tools.Retrofit;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.File;
@@ -48,11 +49,10 @@ public class RetroClient {
     private static ApiInterface apiNoForceCache;
     private static Cache cache;
     private static Interceptor removeHeadersInterceptor;
+    private static boolean isCurrentlyFast = false;
+
 
     private static Retrofit getRetrofit(final Context context, final boolean useOldCache) {
-        if (BuildConfig.DEBUG)
-            dispatcher.setMaxRequestsPerHost(10);
-
         if (useOldCache && retrofitForceCache != null)
             return retrofitForceCache;
         else if (!useOldCache && retrofitNoForceCache != null)
@@ -136,6 +136,20 @@ public class RetroClient {
     }
 
     public static ApiInterface getApi(Context context, boolean useOldCache) {
+        boolean isNowFast = PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean("retroEnableFast", false);
+        if (isNowFast != isCurrentlyFast) {
+            isCurrentlyFast = isNowFast;
+            retrofitForceCache = null;
+            retrofitNoForceCache = null;
+            apiForceCache = null;
+            apiNoForceCache = null;
+            if (isNowFast)
+                dispatcher.setMaxRequestsPerHost(10);
+            else
+                dispatcher.setMaxRequestsPerHost(5);
+        }
+
         if (useOldCache) {
             if (apiForceCache == null)
                 apiForceCache = getRetrofit(context, true).create(ApiInterface.class);

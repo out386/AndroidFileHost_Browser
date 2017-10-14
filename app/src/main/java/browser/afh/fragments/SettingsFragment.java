@@ -37,12 +37,12 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         MainActivity mainActivity = (MainActivity) getActivity();
-        getPreferenceScreen().getPreference(1).setOnPreferenceClickListener(preference -> {
+        getPreferenceScreen().getPreference(2).setOnPreferenceClickListener(preference -> {
             mainActivity.showColourDialog(1);
             return true;
         });
 
-        getPreferenceScreen().getPreference(2).setOnPreferenceClickListener(preference -> {
+        getPreferenceScreen().getPreference(3).setOnPreferenceClickListener(preference -> {
             mainActivity.showColourDialog(2);
             return true;
         });

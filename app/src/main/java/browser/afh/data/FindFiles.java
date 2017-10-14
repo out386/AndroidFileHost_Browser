@@ -572,7 +572,6 @@ public class FindFiles {
 
             setHeaderText(numberOfFiles);
             updateProgress(maxProgressCounter.get(), filesReqCounter.get());
-            Log.i(TAG, "run: Atomic" + filesReqCounter.get() + ", " + maxProgressCounter.get());
         }
     }
 }

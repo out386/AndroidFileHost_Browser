@@ -52,4 +52,7 @@
     <string name="num_files_current_loading">Showing %d files\nFiles are still being fetched</string>
     <string name="num_files_cached">Showing %d cached files\nPull down to refresh</string>
     <string name="internal_error">Internal error. Please refresh files.</string>
+    <string name="retro_fast_title">Enable much faster loading of files</string>
+    <string name="retro_fast_summary">This might cause internal errors. Disable if you have problems.</string>
 </resources>
+
