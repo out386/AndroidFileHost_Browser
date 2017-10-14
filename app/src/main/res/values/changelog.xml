@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="changelog_version_code">16</string>
+    <string name="changelog_title">Changelog</string>
+    <string name="changelog">Version 1.2.1:\n* Speed up loading\n* Toggle to load even faster (check settings)\n* Show progress while loading\n* Improved connectivity checks\n* Made things more stable</string>
+</resources>

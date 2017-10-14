@@ -40,11 +40,21 @@ public class Prefs {
         editor.apply();
     }
 
+    public void putInt(String prefName, int value) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(prefName, value);
+        editor.apply();
+    }
+
     public boolean get(String prefName, boolean defaultValue) {
         return preferences.getBoolean(prefName, defaultValue);
     }
 
     public String get(String prefName, String defaultValue) {
         return preferences.getString(prefName, defaultValue);
+    }
+
+    public int getInt(String prefName, int defaultValue) {
+        return preferences.getInt(prefName, defaultValue);
     }
 }

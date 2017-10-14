@@ -92,6 +92,7 @@ import static browser.afh.tools.Utils.isPackageInstalled;
 
 public class MainActivity extends AppCompatActivity implements AppbarScroll, FragmentInterface,
         HSShortutInterface, ColorChooserDialog.ColorCallback {
+    private static final String KEY_VERSION = "appVersion";
     AppBarLayout appBarLayout;
     TextView headerTV;
     private Intent searchIntent;
@@ -104,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private AppUpdater appUpdater;
     private SearchView searchView;
     private ProgressBar progress;
-
     private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -227,6 +227,16 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
                     }
                 })
                 .build();
+
+        int lastChangelogVersion = Integer.parseInt(getString(R.string.changelog_version_code));
+        if (prefs.getInt(KEY_VERSION, 0) < lastChangelogVersion) {
+            new MaterialDialog.Builder(this)
+                    .title(R.string.changelog_title)
+                    .content(getString(R.string.changelog))
+                    .neutralText(R.string.ok)
+                    .show();
+            prefs.putInt(KEY_VERSION, lastChangelogVersion);
+        }
 
         final MaterialDialog.Builder useLabsVariantDialog = new MaterialDialog.Builder(getApplicationContext())
                 .title(R.string.disclaimer_google_play_title)
@@ -369,6 +379,19 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
+    public void setText(String message) {
+        if (message != null && !"".equals(message)) {
+            headerTV.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.VISIBLE);
+        } else {
+            headerTV.setVisibility(View.GONE);
+            progress.setVisibility(View.GONE);
+            return;
+        }
+        headerTV.setText(message);
+    }
+
+    @Override
     public void setText(SpannableString message) {
         if (message != null) {
             headerTV.setVisibility(View.VISIBLE);
@@ -378,19 +401,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             progress.setVisibility(View.GONE);
             progress.setProgress(0);
             progress.setMax(0);
-            return;
-        }
-        headerTV.setText(message);
-    }
-
-    @Override
-    public void setText(String message) {
-        if (message != null && !"".equals(message)) {
-            headerTV.setVisibility(View.VISIBLE);
-            progress.setVisibility(View.VISIBLE);
-        } else {
-            headerTV.setVisibility(View.GONE);
-            progress.setVisibility(View.GONE);
             return;
         }
         headerTV.setText(message);
