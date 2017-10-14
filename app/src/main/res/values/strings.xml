@@ -48,5 +48,7 @@
     <string name="dialog_colour_primary_title">Primary colour</string>
     <string name="pref_colour_accent">Set the accent colour</string>
     <string name="dialog_colour_accent_title">Accent colour</string>
-    <string name="num_files">Showing %d files\nPull down to refresh</string>
+    <string name="num_files_current_loaded">Showing %d files\nFiles were just fetched</string>
+    <string name="num_files_current_loading">Showing %d files\nFiles are still being fetched</string>
+    <string name="num_files_cached">Showing %d cached files\nPull down to refresh</string>
 </resources>

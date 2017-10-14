@@ -368,30 +368,28 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     @Override
-    public void setText(SpannableString message) {
-        if (message != null) {
+    public void setText(String message) {
+        if (message != null && !"".equals(message)) {
             headerTV.setVisibility(View.VISIBLE);
             progress.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             headerTV.setVisibility(View.GONE);
             progress.setVisibility(View.GONE);
-            progress.setProgress(0);
-            progress.setMax(0);
             return;
         }
         headerTV.setText(message);
     }
 
     @Override
-    public void setText(String message) {
-        if (message != null && !"".equals(message)) {
+    public void setText(SpannableString message) {
+        if (message != null) {
             headerTV.setVisibility(View.VISIBLE);
             progress.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             headerTV.setVisibility(View.GONE);
             progress.setVisibility(View.GONE);
+            progress.setProgress(0);
+            progress.setMax(0);
             return;
         }
         headerTV.setText(message);
@@ -404,6 +402,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     }
 
     public void onBackPressed() {
+        setText("");
         FilesRetainFragment filesRetainFragment = (FilesRetainFragment) getFragmentManager()
                 .findFragmentByTag(FilesFragment.KEY_FILES_RETAIN_FRAGMENT);
         if (filesRetainFragment != null) {

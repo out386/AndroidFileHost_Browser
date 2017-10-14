@@ -100,6 +100,8 @@ public class FindFiles {
     private StickyRecyclerHeadersDecoration dateStickyRecyclerHeadersDecoration;
     private AtomicInteger filesReqCounter = new AtomicInteger(0);
     private AtomicInteger maxProgressCounter = new AtomicInteger(0);
+    private boolean usingCache = false;
+    private boolean isCacheRequested = true;
 
     @DebugLog
     public FindFiles(final View rootView, MainActivity activity) {
@@ -126,13 +128,12 @@ public class FindFiles {
         pullRefreshLayout.setOnRefreshListener(() -> {
                     filesD.clear();
                     mFilesAdapter.clear();
-                    appbarScroll.setText(Utils.generateSpannable(
-                            rootView.getResources().getString(R.string.num_files),
-                            0, 14));
-            maxProgressCounter.set(0);
-            filesReqCounter.set(0);
-            updateProgress(maxProgressCounter.get(), filesReqCounter.get());
+                    maxProgressCounter.set(0);
+                    filesReqCounter.set(0);
+                    updateProgress(maxProgressCounter.get(), filesReqCounter.get());
                     retroApi = RetroClient.getApi(rootView.getContext(), false);
+                    isCacheRequested = false;
+                    setHeaderText(0);
                     start(savedID);
                 }
         );
@@ -243,6 +244,7 @@ public class FindFiles {
         call.enqueue(new Callback<AfhDevelopers>() {
             @Override
             public void onResponse(Call<AfhDevelopers> call, retrofit2.Response<AfhDevelopers> response) {
+                usingCache = isFromCache(response);
                 List<AfhDevelopers.Developer> fid;
                 filesReqCounter.decrementAndGet();
                 if (response.isSuccessful()) {
@@ -323,6 +325,7 @@ public class FindFiles {
             call.enqueue(new Callback<AfhFolders>() {
                 @Override
                 public void onResponse(Call<AfhFolders> call, retrofit2.Response<AfhFolders> response) {
+                    usingCache = isFromCache(response);
                     List<Files> filesList = null;
                     List<AfhDevelopers.Developer> foldersList = null;
                     filesReqCounter.decrementAndGet();
@@ -452,11 +455,13 @@ public class FindFiles {
         retroApi = RetroClient.getApi(rootView.getContext(), true);
         filesD.clear();
         mFilesAdapter.clear();
-        appbarScroll.setText(Utils.generateSpannable(
-                rootView.getResources().getString(R.string.num_files),
-                0, 14));
+        setHeaderText(0);
         maxProgressCounter.set(0);
         filesReqCounter.set(0);
+        mDisplayHandler.removeCallbacks(mRunnable);
+        isPrintFirstRun = true;
+        usingCache = false;
+        isCacheRequested = true;
         updateProgress(maxProgressCounter.get(), filesReqCounter.get());
     }
 
@@ -474,10 +479,9 @@ public class FindFiles {
         filesD.clear();
         filesD.addAll(list);
         mFilesAdapter.clear();
-        appbarScroll.setText(Utils.generateSpannable(
-                rootView.getResources().getString(R.string.num_files),
-                0, 14));
-        maxProgressCounter.set(0);
+        setHeaderText(0);
+        // So setHeaderText knows to not say that files are being loaded
+        maxProgressCounter.set(1);
         filesReqCounter.set(0);
         updateProgress(maxProgressCounter.get(), filesReqCounter.get());
         mFilesAdapter.addModel(list);
@@ -489,6 +493,42 @@ public class FindFiles {
         builder.setShowTitle(true);
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.launchUrl(mContext, Uri.parse(Url));
+    }
+
+    private void incFreqCounter() {
+        // Yes, 2 Atomics are a bad idea
+        maxProgressCounter.addAndGet(1);
+        filesReqCounter.addAndGet(1);
+    }
+
+    private void updateProgress(int max, int now) {
+        int progressNow = max - now;
+        appbarScroll.setProgress(progressNow, max);
+    }
+
+    private void setHeaderText(int numberOfFiles) {
+        String text;
+        int lettersBeforeNum;
+        if (usingCache) {
+            text = rootView.getResources().getString(R.string.num_files_cached);
+            lettersBeforeNum = 21;
+        } else {
+            // As the 2nd condition will be true only when files have just started loading
+            if (filesReqCounter.get() > 0 || (filesReqCounter.get() == 0 && maxProgressCounter.get() == 0))
+                text = rootView.getResources().getString(R.string.num_files_current_loading);
+            else
+                text = rootView.getResources().getString(R.string.num_files_current_loaded);
+            lettersBeforeNum = 14;
+        }
+        appbarScroll.setText(Utils.generateSpannable(text, numberOfFiles, lettersBeforeNum));
+    }
+
+    /**
+     * Not thread safe, but assuming that if one response in a sequence is from the cache, others will be, too.
+     * This won't be true in case loading was previously canceled, then some responses will be live, others will be cached.
+     */
+    private boolean isFromCache(retrofit2.Response<?> response) {
+        return response != null && response.raw().cacheResponse() != null && isCacheRequested;
     }
 
     private class ClearRunnable implements Runnable {
@@ -513,22 +553,9 @@ public class FindFiles {
             mRecyclerView.scrollToPosition(position);
             int numberOfFiles = mFilesAdapter.getModels().size();
 
-            appbarScroll.setText(Utils.generateSpannable(
-                    rootView.getResources().getString(R.string.num_files),
-                    numberOfFiles, 14));
+            setHeaderText(numberOfFiles);
             updateProgress(maxProgressCounter.get(), filesReqCounter.get());
             Log.i(TAG, "run: Atomic" + filesReqCounter.get() + ", " + maxProgressCounter.get());
         }
-    }
-
-    private void incFreqCounter(){
-        // Yes, 2 Atomics are a bad idea
-        maxProgressCounter.addAndGet(1);
-        filesReqCounter.addAndGet(1);
-    }
-
-    private void updateProgress(int max, int now) {
-        int progressNow = max - now;
-        appbarScroll.setProgress(progressNow, max);
     }
 }

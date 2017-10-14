@@ -29,10 +29,10 @@
 
                 <TextView
                     android:id="@+id/header_tv"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
+                    android:gravity="center_horizontal"
                     android:paddingBottom="10dp"
                     android:paddingEnd="10dp"
                     android:paddingStart="25dp"
@@ -56,10 +56,10 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:maxHeight="2dp"
             android:minHeight="2dp"
-            android:progressTint="@color/colorAccent" />
+            android:progressTint="@color/colorAccent"
+            android:visibility="gone" />
 
         <FrameLayout
             android:id="@+id/mainFrame"
