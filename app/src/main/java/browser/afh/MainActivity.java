@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
@@ -45,6 +46,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -100,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
     private AsyncTask checkConnectivity;
     private AppUpdater appUpdater;
     private SearchView searchView;
+    private ProgressBar progress;
 
     private BroadcastReceiver snackbarMakeReceiver = new BroadcastReceiver() {
         @Override
@@ -130,6 +133,9 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         headerTV = (TextView) findViewById(R.id.header_tv);
+        progress = (ProgressBar) findViewById(R.id.progressBar);
+
+        progress.setProgressTintList(ColorStateList.valueOf(Utils.getPrefsColour(2, getApplicationContext())));
 
         frame = (FrameLayout) findViewById(R.id.mainFrame);
         IntentFilter snackbarMakeFilter = new IntentFilter(Constants.INTENT_SNACKBAR);
@@ -363,10 +369,15 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public void setText(SpannableString message) {
-        if (message != null)
+        if (message != null) {
             headerTV.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.VISIBLE);
+        }
         else {
             headerTV.setVisibility(View.GONE);
+            progress.setVisibility(View.GONE);
+            progress.setProgress(0);
+            progress.setMax(0);
             return;
         }
         headerTV.setText(message);
@@ -374,16 +385,24 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
 
     @Override
     public void setText(String message) {
-        if (message != null && !"".equals(message))
+        if (message != null && !"".equals(message)) {
             headerTV.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.VISIBLE);
+        }
         else {
             headerTV.setVisibility(View.GONE);
+            progress.setVisibility(View.GONE);
             return;
         }
         headerTV.setText(message);
     }
 
     @Override
+    public void setProgress(int curProgress, int max) {
+        progress.setMax(max);
+        progress.setProgress(curProgress);
+    }
+
     public void onBackPressed() {
         FilesRetainFragment filesRetainFragment = (FilesRetainFragment) getFragmentManager()
                 .findFragmentByTag(FilesFragment.KEY_FILES_RETAIN_FRAGMENT);

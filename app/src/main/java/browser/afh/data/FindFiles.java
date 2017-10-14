@@ -56,6 +56,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import browser.afh.BuildConfig;
 import browser.afh.MainActivity;
@@ -97,6 +98,8 @@ public class FindFiles {
     private StickyRecyclerHeadersDecoration stickyRecyclerHeadersDecoration;
     private DateStickyHeaderAdapter dateStickyHeaderAdapter;
     private StickyRecyclerHeadersDecoration dateStickyRecyclerHeadersDecoration;
+    private AtomicInteger filesReqCounter = new AtomicInteger(0);
+    private AtomicInteger maxProgressCounter = new AtomicInteger(0);
 
     @DebugLog
     public FindFiles(final View rootView, MainActivity activity) {
@@ -126,6 +129,9 @@ public class FindFiles {
                     appbarScroll.setText(Utils.generateSpannable(
                             rootView.getResources().getString(R.string.num_files),
                             0, 14));
+            maxProgressCounter.set(0);
+            filesReqCounter.set(0);
+            updateProgress(maxProgressCounter.get(), filesReqCounter.get());
                     retroApi = RetroClient.getApi(rootView.getContext(), false);
                     start(savedID);
                 }
@@ -233,10 +239,12 @@ public class FindFiles {
         savedID = did;
         pullRefreshLayout.setRefreshing(true);
         Call<AfhDevelopers> call = retroApi.getDevelopers("developers", did, 100);
+        incFreqCounter();
         call.enqueue(new Callback<AfhDevelopers>() {
             @Override
             public void onResponse(Call<AfhDevelopers> call, retrofit2.Response<AfhDevelopers> response) {
                 List<AfhDevelopers.Developer> fid;
+                filesReqCounter.decrementAndGet();
                 if (response.isSuccessful()) {
                     try {
                         fid = response.body().data;
@@ -269,6 +277,7 @@ public class FindFiles {
                             Crashlytics.log("did : " + did);
                         }
                     }
+                    incFreqCounter();
                     call.clone().enqueue(this);
                     showSnackbar(R.string.files_list_502_text);
                 } else {
@@ -286,6 +295,8 @@ public class FindFiles {
 
             @Override
             public void onFailure(Call<AfhDevelopers> call, Throwable t) {
+                filesReqCounter.decrementAndGet();
+                maxProgressCounter.decrementAndGet();
                 if (t instanceof UnknownHostException) {
                     showSnackbar(R.string.files_list_no_cache_text);
                     pullRefreshLayout.setRefreshing(false);
@@ -296,6 +307,7 @@ public class FindFiles {
                     if (BuildConfig.DEBUG)
                         Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
                                 + call.request().url().queryParameter("did"));
+                    incFreqCounter();
                     call.clone().enqueue(this);
                 }
             }
@@ -307,11 +319,13 @@ public class FindFiles {
 
         for (final AfhDevelopers.Developer url : did) {
             Call<AfhFolders> call = retroApi.getFolderContents("folder", url.flid, 100);
+            incFreqCounter();
             call.enqueue(new Callback<AfhFolders>() {
                 @Override
                 public void onResponse(Call<AfhFolders> call, retrofit2.Response<AfhFolders> response) {
                     List<Files> filesList = null;
                     List<AfhDevelopers.Developer> foldersList = null;
+                    filesReqCounter.decrementAndGet();
                     if (response.isSuccessful()) {
                         try {
                             filesList = response.body().data.files;
@@ -378,6 +392,7 @@ public class FindFiles {
                                 Crashlytics.log("flid : " + url.flid);
                             }
                         }
+                        incFreqCounter();
                         call.clone().enqueue(this);
                     } else {
                         try {
@@ -394,7 +409,8 @@ public class FindFiles {
 
                 @Override
                 public void onFailure(Call<AfhFolders> call, Throwable t) {
-
+                    filesReqCounter.decrementAndGet();
+                    maxProgressCounter.decrementAndGet();
                     // AfhFolders.DATA will be an Object, but if it is empty, it'll be an array
                     if (!(t instanceof UnknownHostException)
                             && !(t instanceof IllegalStateException)
@@ -404,6 +420,7 @@ public class FindFiles {
                         if (BuildConfig.DEBUG)
                             Log.i(TAG, "onErrorResponse dirs " + t.toString() + " on "
                                     + call.request().url().queryParameter("flid"));
+                        incFreqCounter();
                         call.clone().enqueue(this);
                     } else if (t instanceof UnknownHostException) {
                         showSnackbar(R.string.files_list_no_cache_text);
@@ -438,6 +455,9 @@ public class FindFiles {
         appbarScroll.setText(Utils.generateSpannable(
                 rootView.getResources().getString(R.string.num_files),
                 0, 14));
+        maxProgressCounter.set(0);
+        filesReqCounter.set(0);
+        updateProgress(maxProgressCounter.get(), filesReqCounter.get());
     }
 
     private void showSnackbar(int messageRes) {
@@ -457,6 +477,9 @@ public class FindFiles {
         appbarScroll.setText(Utils.generateSpannable(
                 rootView.getResources().getString(R.string.num_files),
                 0, 14));
+        maxProgressCounter.set(0);
+        filesReqCounter.set(0);
+        updateProgress(maxProgressCounter.get(), filesReqCounter.get());
         mFilesAdapter.addModel(list);
         print(true);
     }
@@ -493,6 +516,19 @@ public class FindFiles {
             appbarScroll.setText(Utils.generateSpannable(
                     rootView.getResources().getString(R.string.num_files),
                     numberOfFiles, 14));
+            updateProgress(maxProgressCounter.get(), filesReqCounter.get());
+            Log.i(TAG, "run: Atomic" + filesReqCounter.get() + ", " + maxProgressCounter.get());
         }
+    }
+
+    private void incFreqCounter(){
+        // Yes, 2 Atomics are a bad idea
+        maxProgressCounter.addAndGet(1);
+        filesReqCounter.addAndGet(1);
+    }
+
+    private void updateProgress(int max, int now) {
+        int progressNow = max - now;
+        appbarScroll.setProgress(progressNow, max);
     }
 }

@@ -336,6 +336,8 @@ public class FindDevices {
         void setText(String text);
 
         void setText(SpannableString text);
+
+        void setProgress(int progress, int max);
     }
 
     public interface FragmentInterface {
