@@ -27,10 +27,10 @@ android {
 
     defaultConfig {
         applicationId "browser.afh"
-        minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 16
-        versionName "1.2.1"
+        minSdkVersion 7
+
+        versionCode 200
+        versionName "2.0.0"
     }
 
     applicationVariants.all { variant ->
