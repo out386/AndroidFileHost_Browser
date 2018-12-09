@@ -65,7 +65,6 @@ import browser.afh.tools.Retrofit.ApiInterface;
 import browser.afh.tools.Retrofit.RetroClient;
 import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevices;
-import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -95,7 +94,6 @@ public class FindDevices {
         }
     };
 
-    @DebugLog
     public void initialize(final View rootView, Activity activity, DevicesSearchInterface dsi) {
         this.rootView = rootView;
         try {
@@ -214,7 +212,6 @@ public class FindDevices {
         deviceRecyclerView.setAdapter(stickyHeaderAdapter.wrap(devAdapter.wrap(fastAdapter)));
     }
 
-    @DebugLog
     public void resume(String searchQuery) {
         IntentFilter search = new IntentFilter();
         search.addAction(Constants.INTENT_SEARCH);
@@ -227,12 +224,10 @@ public class FindDevices {
         }
     }
 
-    @DebugLog
     public void unregisterReceiver() {
         LocalBroadcastManager.getInstance(rootView.getContext()).unregisterReceiver(searchReceiver);
     }
 
-    @DebugLog
     public void findFirstDevice() {
         deviceRefreshLayout.setRefreshing(true);
 
@@ -241,7 +236,6 @@ public class FindDevices {
         }
     }
 
-    @DebugLog
     private void findDevices(final int pageNumber, final ApiInterface retro) {
         Log.i(TAG, "findDevices: Queueing page : " + pageNumber);
         Call<AfhDevices> call = retro.getDevices("devices", pageNumber, 100);
@@ -306,7 +300,6 @@ public class FindDevices {
         });
     }
 
-    @DebugLog
     private synchronized void displayDevices() {
         devAdapter.addModel(devices);
         deviceRefreshLayout.setRefreshing(false);

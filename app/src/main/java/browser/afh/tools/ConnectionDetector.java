@@ -30,8 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import hugo.weaving.DebugLog;
-
 public class ConnectionDetector {
 
     private static final int MAX_RETRIES = 5;
@@ -46,7 +44,6 @@ public class ConnectionDetector {
         return new Pair<>(isGoogleAvailable, isAfhAvailable);
     }
 
-    @DebugLog
     private boolean isConnectingToHost(Context context, String hostName, int code, int tryNumber) {
         if (networkConnectivity(context)) {
             try {

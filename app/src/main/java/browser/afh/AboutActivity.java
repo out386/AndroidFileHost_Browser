@@ -17,14 +17,16 @@
 
 package browser.afh;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import com.danielstone.materialaboutlibrary.MaterialAboutActivity;
-import com.danielstone.materialaboutlibrary.model.MaterialAboutActionItem;
+import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard;
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList;
-import com.danielstone.materialaboutlibrary.model.MaterialAboutTitleItem;
+import com.danielstone.materialaboutlibrary.items.MaterialAboutTitleItem;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.aboutlibraries.LibsConfiguration;
@@ -33,7 +35,7 @@ import com.mikepenz.itemanimators.SlideDownAlphaAnimator;
 public class AboutActivity extends MaterialAboutActivity {
 
     @Override
-    protected MaterialAboutList getMaterialAboutList() {
+    protected MaterialAboutList getMaterialAboutList(@NonNull Context context) {
         MaterialAboutCard.Builder appCardBuilder = new MaterialAboutCard.Builder();
         appCardBuilder.title(getString(R.string.app_name));
         appCardBuilder.addItem(new MaterialAboutTitleItem.Builder()
@@ -48,7 +50,7 @@ public class AboutActivity extends MaterialAboutActivity {
         appCardBuilder.addItem(new MaterialAboutActionItem.Builder()
                 .text(R.string.about_activity_licenses_title)
                 .icon(R.drawable.ic_licenses)
-                .setOnClickListener(() -> {
+                .setOnClickAction(() -> {
                     LibsConfiguration.getInstance().setItemAnimator(new SlideDownAlphaAnimator());
                     new LibsBuilder()
                             .withFields(R.string.class.getFields())
@@ -70,7 +72,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text(R.string.about_activity_github_title)
                 .subText(R.string.about_activity_github_subtitle_1)
                 .icon(R.drawable.ic_github)
-                .setOnClickListener(() -> {
+                .setOnClickAction(() -> {
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse("https://github.com/out386/"));
                     startActivity(i);
@@ -89,7 +91,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text(R.string.about_activity_github_title)
                 .subText(R.string.about_activity_github_subtitle_2)
                 .icon(R.drawable.ic_github)
-                .setOnClickListener(() -> {
+                .setOnClickAction(() -> {
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse("https://github.com/MSF-Jarvis/"));
                     startActivity(i);
@@ -101,7 +103,7 @@ public class AboutActivity extends MaterialAboutActivity {
                 .text(R.string.about_activity_twitter_title)
                 .subText(R.string.about_activity_twitter_subtitle_2)
                 .icon(R.drawable.ic_twitter)
-                .setOnClickListener(() -> {
+                .setOnClickAction(() -> {
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse("https://twitter.com/MSF_Jarvis"));
                     startActivity(i);

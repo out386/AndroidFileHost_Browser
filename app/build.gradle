@@ -4,13 +4,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.22.0'
+        classpath 'io.fabric.tools:gradle:1.25.4'
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.jakewharton.hugo'
-apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -18,8 +16,8 @@ repositories {
 
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     lintOptions {
         abortOnError false
@@ -28,16 +26,9 @@ android {
     defaultConfig {
         applicationId "browser.afh"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 16
         versionName "1.2.1"
-    }
-
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File(
-                    output.outputFile.parent, "afh-browser_beta_"+versionCode+".apk")
-        }
     }
     
     signingConfigs {
@@ -71,51 +62,50 @@ android {
 dependencies {
 
     // support libraries
-    compile 'com.android.support:cardview-v7:25.0.0'
-    compile 'com.android.support:design:25.0.0'
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.android.support:support-v4:25.0.0'
-    compile 'com.android.support:recyclerview-v7:25.0.0'
-    compile 'com.android.support:customtabs:25.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:customtabs:28.0.0'
     // networking
-    compile 'com.squareup.retrofit2:retrofit:2.0.2'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
     // network response parsing
-    compile 'com.google.code.gson:gson:2.7'
-    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     // ui
-    compile 'com.baoyz.pullrefreshlayout:library:1.2.0'
+    implementation 'com.baoyz.pullrefreshlayout:library:1.2.0'
     compile('com.mikepenz:materialdrawer:5.8.1@aar') {
         transitive = true
     }
     compile('com.mikepenz:fastadapter:2.1.5@aar') {
         transitive = true
     }
-    compile 'com.mikepenz:fastadapter-commons:2.1.0@aar'
-    compile 'com.mikepenz.thirdparty:stickyheadersrecyclerview:0.4.4-SNAPSHOT@aar'
-    compile 'com.turingtechnologies.materialscrollbar:lib:10.0.1'
-    compile 'com.lapism:searchview:4.0'
+    implementation 'com.mikepenz:fastadapter-commons:3.0.5@aar'
+    implementation 'com.mikepenz.thirdparty:stickyheadersrecyclerview:0.4.4-SNAPSHOT@aar'
+    implementation 'com.turingtechnologies.materialscrollbar:lib:10.0.1'
+    implementation 'com.lapism:searchview:4.0'
     // dialogs
-    compile 'com.github.javiersantos:BottomDialogs:1.2.1'
-    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
-    compile 'com.afollestad.material-dialogs:commons:0.9.1.0'
+    implementation 'com.github.javiersantos:BottomDialogs:1.2.1'
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
     // crashlytics
-    debugCompile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+    debugImplementation('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
-    releaseCompile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+    releaseImplementation('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
     // updates
-    compile 'com.github.javiersantos:AppUpdater:2.5'
+    implementation 'com.github.javiersantos:AppUpdater:2.5'
     // the cool stuff
     compile('com.mikepenz:aboutlibraries:5.9.1@aar') {
         transitive = true
     }
-    compile 'com.github.daniel-stoneuk:material-about-library:1.1.1'
-    compile 'com.mikepenz:itemanimators:0.5.0@aar'
+    implementation 'com.github.daniel-stoneuk:material-about-library:2.3.0'
+    implementation 'com.mikepenz:itemanimators:0.5.0@aar'
 }
-

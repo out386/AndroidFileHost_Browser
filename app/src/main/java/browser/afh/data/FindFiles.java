@@ -73,7 +73,6 @@ import browser.afh.tools.Utils;
 import browser.afh.types.AfhDevelopers;
 import browser.afh.types.AfhFolders;
 import browser.afh.types.Files;
-import hugo.weaving.DebugLog;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -104,7 +103,6 @@ public class FindFiles {
     private boolean usingCache = false;
     private boolean isCacheRequested = true;
 
-    @DebugLog
     public FindFiles(final View rootView, MainActivity activity) {
         this.rootView = rootView;
         mContext = activity;
@@ -236,7 +234,6 @@ public class FindFiles {
         );
     }
 
-    @DebugLog
     public void start(final String did) {
         savedID = did;
         pullRefreshLayout.setRefreshing(true);
@@ -328,7 +325,6 @@ public class FindFiles {
         });
     }
 
-    @DebugLog
     private void queryDirs(final List<AfhDevelopers.Developer> did) {
 
         for (final AfhDevelopers.Developer url : did) {
@@ -451,7 +447,6 @@ public class FindFiles {
 
     }
 
-    @DebugLog
     private synchronized void print(boolean isInstant) {
         final int INTERVAL = isInstant ? 0 : 1000;
         final int SLOP = 250;

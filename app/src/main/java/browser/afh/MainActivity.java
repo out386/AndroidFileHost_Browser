@@ -85,7 +85,6 @@ import browser.afh.tools.ConnectionDetector;
 import browser.afh.tools.Constants;
 import browser.afh.tools.Prefs;
 import browser.afh.tools.Utils;
-import hugo.weaving.DebugLog;
 import io.fabric.sdk.android.Fabric;
 
 import static browser.afh.tools.Utils.isPackageInstalled;
@@ -435,7 +434,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         super.onBackPressed();
     }
 
-    @DebugLog
     public void showSearch(boolean show, boolean isAnim) {
         if (!isAnim) {
             searchView.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -498,7 +496,6 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
         sM.setDynamicShortcuts(Collections.singletonList(shortcut));
     }
 
-    @DebugLog
     public void updatesCheck(Context context) {
         appUpdater = new AppUpdater(context)
                 .setUpdateFrom(UpdateFrom.GITHUB)
@@ -536,13 +533,13 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             case 1:
                 new ColorChooserDialog.Builder(this, R.string.dialog_colour_primary_title)
                         .preselect(Utils.getPrefsColour(1, getApplicationContext()))
-                        .show();
+                        .show(getSupportFragmentManager());
                 break;
             case 2:
                 new ColorChooserDialog.Builder(this, R.string.dialog_colour_accent_title)
                         .accentMode(true)
                         .preselect(Utils.getPrefsColour(2, getApplicationContext()))
-                        .show();
+                        .show(getSupportFragmentManager());
                 break;
         }
     }
@@ -557,6 +554,11 @@ public class MainActivity extends AppCompatActivity implements AppbarScroll, Fra
             Utils.resetColours(2);
         }
         recreate();
+    }
+
+    @Override
+    public void onColorChooserDismissed(@NonNull ColorChooserDialog dialog) {
+
     }
 
     private static class CheckConnectivity extends AsyncTask<Void, Void, Pair<Boolean, Boolean>> {
