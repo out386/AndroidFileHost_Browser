@@ -19,8 +19,10 @@ package browser.afh.tools;
 
 public class Constants {
     public static final String BASE_URL = "https://androidfilehost.com/";
-    public static final String ENDPOINT = "api";
+    public static final String ENDPOINT = "api/";
     public static final String CONNECTIVITY_CHECK_GOOGLE = "https://connectivitycheck.gstatic.com/generate_204";
+    public static final String USER_AGENT=
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36";
 
     /* The number of pages of devices at the time of writing
      * This allows parallel requesting of multiple pages

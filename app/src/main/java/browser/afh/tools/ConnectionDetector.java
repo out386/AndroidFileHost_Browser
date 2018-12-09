@@ -48,7 +48,7 @@ public class ConnectionDetector {
         if (networkConnectivity(context)) {
             try {
                 HttpURLConnection urlc = (HttpURLConnection) (new URL(hostName).openConnection());
-                urlc.setRequestProperty("User-Agent", "AFHBrowser");
+                urlc.setRequestProperty("User-Agent", Constants.USER_AGENT);
                 urlc.setRequestProperty("Connection", "close");
                 urlc.setConnectTimeout(4000);
                 urlc.setReadTimeout(4000);

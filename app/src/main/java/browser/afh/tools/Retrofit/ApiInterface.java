@@ -28,7 +28,7 @@ import retrofit2.http.Query;
 
 public interface ApiInterface {
     @Headers({
-            "User-Agent: AFHBrowser"
+            "User-Agent: " + Constants.USER_AGENT
     })
     @GET(Constants.ENDPOINT)
     Call<AfhDevelopers> getDevelopers(
@@ -36,12 +36,18 @@ public interface ApiInterface {
             @Query("did") String page,
             @Query("limit") int limit);
 
+    @Headers({
+            "User-Agent: " + Constants.USER_AGENT
+    })
     @GET(Constants.ENDPOINT)
     Call<AfhDevices> getDevices(
             @Query("action") String action,
             @Query("page") int page,
             @Query("limit") int limit);
 
+    @Headers({
+            "User-Agent: " + Constants.USER_AGENT
+    })
     @GET(Constants.ENDPOINT)
     Call<AfhFolders> getFolderContents(
             @Query("action") String action,
